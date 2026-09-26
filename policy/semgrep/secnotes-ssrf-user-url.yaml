@@ -1,0 +1,40 @@
+rules:
+  - id: secnotes-ssrf-user-url
+    languages: [python]
+    severity: ERROR
+    mode: taint
+    message: >-
+      A URL taken from the request reaches an outbound HTTP call without
+      validation (SSRF). Attackers can reach cloud metadata (169.254.169.254)
+      or in-cluster services. Allow-list schemes and hosts and reject private,
+      loopback and link-local addresses before fetching.
+    pattern-sources:
+      - patterns:
+          - pattern-inside: |
+              @$ROUTER.$METHOD(...)
+              def $HANDLER(..., $URL: str, ...):
+                  ...
+          - pattern: $URL
+          - metavariable-regex:
+              metavariable: $URL
+              regex: (?i).*(url|uri|link|href|target|endpoint).*
+    pattern-sinks:
+      - pattern-either:
+          - pattern: httpx.get($SINK, ...)
+          - pattern: httpx.post($SINK, ...)
+          - pattern: httpx.request($M, $SINK, ...)
+          - pattern: requests.get($SINK, ...)
+          - pattern: requests.post($SINK, ...)
+          - pattern: requests.request($M, $SINK, ...)
+          - pattern: urllib.request.urlopen($SINK, ...)
+          - pattern: $CLIENT.get($SINK, ...)
+          - pattern: $CLIENT.stream($M, $SINK, ...)
+    pattern-sanitizers:
+      - pattern: validate_url(...)
+    metadata:
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp: "A10:2021 - Server-Side Request Forgery"
+      category: security
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH

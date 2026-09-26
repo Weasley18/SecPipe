@@ -1,0 +1,62 @@
+# SecPipe secrets-scanning configuration (Gitleaks v8.25+).
+# Used identically by the pre-commit hook and the CI `secrets` job, which scans
+# the full git history (checkout with fetch-depth: 0).
+
+title = "SecPipe gitleaks config"
+minVersion = "v8.25.0"
+
+[extend]
+# Start from Gitleaks' maintained ruleset (AWS, GitHub, Slack, private keys, JWTs, ...).
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Custom rules: detections for this project's own secret formats.
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "secnotes-api-token"
+description = "SecNotes service token (secnotes_ prefix + 32 lowercase alphanumerics)"
+regex = '''\b(secnotes_[a-z0-9]{32})\b'''
+secretGroup = 1
+entropy = 3.0
+keywords = ["secnotes_"]
+
+[[rules]]
+id = "secnotes-hardcoded-jwt-secret"
+description = "JWT signing key assigned as a string literal; it must come from a secret store"
+regex = '''(?i)\bjwt[_-]?(?:secret|signing)[_-]?(?:key)?\b["']?\s*[:=]\s*["']([^"'\s]{6,})["']'''
+secretGroup = 1
+keywords = ["jwt"]
+
+[[rules]]
+id = "secnotes-hardcoded-db-password"
+description = "Database password assigned as a string literal"
+regex = '''(?i)\b(?:db|database|postgres|pg)[_-]?pass(?:word|wd)?\b["']?\s*[:=]\s*["']([^"'\s$]{6,})["']'''
+secretGroup = 1
+keywords = ["pass"]
+
+[[rules]]
+id = "dockerfile-env-secret"
+description = "Secret-looking value baked into an image layer with ENV/ARG"
+regex = '''(?im)^\s*(?:ENV|ARG)\s+[A-Z0-9_]*(?:PASSWORD|PASSWD|SECRET|TOKEN|API_KEY|PRIVATE_KEY)[A-Z0-9_]*\s*[= ]\s*["']?([^\s"'$]{6,})'''
+secretGroup = 1
+path = '''(?i)(?:^|/)[^/]*dockerfile[^/]*$'''
+keywords = ["env", "arg"]
+
+# ---------------------------------------------------------------------------
+# Allowlists: test fixtures only, by path, never by secret value.
+# Every entry says why it is safe. Accepted historical findings go in
+# .gitleaksignore by fingerprint instead.
+# ---------------------------------------------------------------------------
+
+[[allowlists]]
+description = "Sanitised scanner reports used as parser test fixtures (values already redacted by the tools)"
+paths = ['''^secpipe/tests/fixtures/''']
+
+[[allowlists]]
+description = "Test asserting that a weak JWT secret is rejected at startup; the literal is the point of the test"
+paths = ['''^app/tests/test_config\.py$''']
+
+[[allowlists]]
+description = "Semgrep rule tests contain intentionally vulnerable example code with dummy literals"
+paths = ['''^policy/semgrep/[^/]+\.py$''']

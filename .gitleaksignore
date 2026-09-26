@@ -1,0 +1,4 @@
+# Fingerprints of historical findings that were triaged and accepted.
+# Format (from the Gitleaks report): <commit>:<file>:<rule-id>:<line>
+# Every entry must reference a triage-log entry in docs/triage-log.md.
+# Currently empty on main: no accepted findings.

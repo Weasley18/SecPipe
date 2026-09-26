@@ -1,0 +1,24 @@
+rules:
+  - id: secnotes-unsafe-yaml-load
+    languages: [python]
+    severity: ERROR
+    message: >-
+      YAML loaded with a loader that can construct arbitrary Python objects
+      (`!!python/object/apply:os.system`). Use `yaml.safe_load` and validate the
+      result with a Pydantic schema.
+    pattern-either:
+      - patterns:
+          - pattern: yaml.load(...)
+          - pattern-not: yaml.load(..., Loader=yaml.SafeLoader, ...)
+          - pattern-not: yaml.load(..., Loader=yaml.CSafeLoader, ...)
+          - pattern-not: yaml.load(..., Loader=SafeLoader, ...)
+      - pattern: yaml.unsafe_load(...)
+      - pattern: yaml.full_load(...)
+      - pattern: yaml.load_all(..., Loader=yaml.Loader, ...)
+    metadata:
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      owasp: "A08:2021 - Software and Data Integrity Failures"
+      category: security
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH

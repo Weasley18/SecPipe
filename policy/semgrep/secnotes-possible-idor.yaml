@@ -1,0 +1,30 @@
+rules:
+  - id: secnotes-possible-idor
+    languages: [python]
+    severity: WARNING
+    message: >-
+      Note fetched by id with no owner filter. Check authorisation: filter on
+      `Note.owner_id == current_user.id` (and return 404 for foreign ids).
+    patterns:
+      - pattern-either:
+          - pattern: $DB.get(Note, $ID)
+          - pattern: $DB.query(Note).get($ID)
+          - pattern: $DB.query(Note).filter(Note.id == $ID)
+          - pattern: select(Note).where(Note.id == $ID)
+      - pattern-not-inside: |
+          $N = $DB.get(Note, $ID)
+          ...
+          if <... $N.owner_id != $USER.id ...>:
+              ...
+      - pattern-not-inside: |
+          $N = $DB.get(Note, $ID)
+          ...
+          if <... $N.owner_id == $USER.id ...>:
+              ...
+    metadata:
+      cwe: "CWE-639: Authorization Bypass Through User-Controlled Key"
+      owasp: "A01:2021 - Broken Access Control"
+      category: security
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH

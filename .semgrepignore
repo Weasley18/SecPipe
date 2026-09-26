@@ -1,0 +1,17 @@
+# Paths Semgrep never scans (a custom .semgrepignore replaces Semgrep's defaults,
+# so the defaults we still want are repeated here).
+:include .gitignore
+.git/
+.venv/
+.secpipe-tools/
+node_modules/
+build/
+dist/
+
+# Tests are not shipped and deliberately contain attack payloads (forged JWTs,
+# SSRF targets, malicious YAML); scanning them yields only false positives.
+app/tests/
+secpipe/tests/
+
+# Semgrep rule test files: intentionally vulnerable examples for `semgrep --test`.
+policy/semgrep/

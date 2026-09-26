@@ -32,3 +32,5 @@ out/
 baseline/
 evidence/
 .secpipe-cache/
+.secpipe-tools/
+.secpipe-tooling/

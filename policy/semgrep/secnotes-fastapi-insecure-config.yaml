@@ -1,0 +1,37 @@
+rules:
+  - id: secnotes-fastapi-cors-wildcard-credentials
+    languages: [python]
+    severity: ERROR
+    message: >-
+      CORS allows any origin together with credentials. Starlette reflects the
+      caller's Origin in that case, so any website can make authenticated
+      requests and read the responses. List explicit origins.
+    pattern-either:
+      - pattern: $APP.add_middleware(CORSMiddleware, ..., allow_origins=["*"], ..., allow_credentials=True, ...)
+      - pattern: $APP.add_middleware(CORSMiddleware, ..., allow_credentials=True, ..., allow_origins=["*"], ...)
+      - pattern: $APP.add_middleware(CORSMiddleware, ..., allow_origin_regex=".*", ..., allow_credentials=True, ...)
+    metadata:
+      cwe: "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      owasp: "A05:2021 - Security Misconfiguration"
+      category: security
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+
+  - id: secnotes-fastapi-debug-enabled
+    languages: [python]
+    severity: WARNING
+    message: >-
+      FastAPI/Starlette debug mode returns full tracebacks (paths, SQL,
+      secrets in locals) to the client. Keep `debug=False` and use a generic
+      error handler.
+    pattern-either:
+      - pattern: FastAPI(..., debug=True, ...)
+      - pattern: Starlette(..., debug=True, ...)
+    metadata:
+      cwe: "CWE-209: Generation of Error Message Containing Sensitive Information"
+      owasp: "A05:2021 - Security Misconfiguration"
+      category: security
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM

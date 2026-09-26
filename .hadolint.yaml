@@ -1,0 +1,11 @@
+# Dockerfile lint policy (pre-commit hook and CI `build-scan` job).
+failure-threshold: warning
+trustedRegistries:
+  - docker.io
+  - ghcr.io
+  - cgr.dev
+override:
+  error:
+    - DL3002   # last USER must not be root
+    - DL3004   # no sudo
+    - DL3020   # COPY instead of ADD for files and folders
