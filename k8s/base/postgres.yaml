@@ -1,5 +1,6 @@
 # Single-replica Postgres for the demo. Production would use a managed
-# database (RDS/Cloud SQL) with backups, TLS and IAM auth; see docs/adr.
+# database (RDS/Cloud SQL) with backups, TLS and IAM auth; see
+# docs/adr/0007-aws-profile-cost-tradeoffs.md.
 apiVersion: v1
 kind: Service
 metadata:

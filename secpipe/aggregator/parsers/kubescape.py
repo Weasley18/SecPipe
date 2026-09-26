@@ -72,8 +72,15 @@ def parse(path: Path) -> ParseResult:
             result.raw_count += 1
             cid = as_str(control.get("controlID") or control.get("id"))
             meta = as_dict(summary_controls.get(cid))
+            # A path entry names the offending field as failedPath, deletePath
+            # (remove it), reviewPath (inspect it) or fixPath.path (set it).
             paths = [
-                as_str(as_dict(p).get("failedPath") or as_dict(p).get("fixPath", {}).get("path"))
+                as_str(
+                    as_dict(p).get("failedPath")
+                    or as_dict(p).get("deletePath")
+                    or as_dict(p).get("reviewPath")
+                    or as_dict(as_dict(p).get("fixPath")).get("path")
+                )
                 for rule in as_list(control.get("rules"))
                 for p in as_list(as_dict(rule).get("paths"))
             ]

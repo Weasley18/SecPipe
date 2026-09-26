@@ -16,6 +16,7 @@ truncated copy generated at test time.
 | `checkov-dockerfile.json` | Real: Checkov 3.3.19 on the vulnerable Dockerfile; absolute paths normalised. |
 | `zap-api.json`, `zap-baseline.json` | Real: ZAP 2.17 authenticated API scan / baseline scan against the vulnerable app, at most 3 instances per alert. |
 | `zizmor.sarif` | Real: zizmor 1.30.1 on a deliberately unsafe sample workflow. |
-| `snyk.json`, `kubescape.json`, `sonarqube.json`, `grype.json`, `prowler.json` | Synthesised from each tool's documented JSON schema (they need an account token, a cluster, a blocked database download or a cloud account to run here). Replace with real CI output when available. |
+| `kubescape.json` | Real: Kubescape 4.0.14 (NSA framework, SecPipe controls-inputs) on the rendered `k8s/overlays/ci` of the `vulnerable` branch (flaw #14). |
+| `snyk.json`, `sonarqube.json`, `grype.json`, `prowler.json` | Synthesised from each tool's documented JSON schema (they need an account token, a cluster, a blocked database download or a cloud account to run here). Replace with real CI output when available. |
 
 Fixtures are excluded from Semgrep and allowlisted in `.gitleaks.toml` by path.

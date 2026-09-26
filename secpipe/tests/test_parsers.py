@@ -394,13 +394,23 @@ def test_checkov_multi_framework(tmp_path: Path) -> None:
 
 
 def test_kubescape() -> None:
+    """Real Kubescape 4.0 (NSA framework) report on the vulnerable branch's manifests (flaw #14)."""
     result = parse("kubescape.json")
-    assert {f.rule_id for f in result.findings} == {"C-0057", "C-0013", "C-0009"}
+    assert {f.rule_id for f in result.findings} == {
+        "C-0013",  # non-root containers
+        "C-0016",  # allow privilege escalation
+        "C-0017",  # immutable container filesystem
+        "C-0055",  # Linux hardening
+        "C-0057",  # privileged container
+        "C-0270",  # CPU limits
+        "C-0271",  # memory limits
+    }
     privileged = next(f for f in result.findings if f.rule_id == "C-0057")
     assert privileged.location == "Deployment.secnotes.secnotes-api"
     assert privileged.severity == Severity.HIGH
     assert "securityContext.privileged" in privileged.description
-    assert result.raw_count == 3
+    assert result.raw_count == 7
+    assert all(f.location != "StatefulSet.secnotes.postgres" for f in result.findings), "postgres stays hardened"
 
 
 def test_zap() -> None:

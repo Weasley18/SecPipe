@@ -15,6 +15,18 @@ BUILD_DIR="$APP_ROOT/build/k8s"
 
 klog() { printf '[k8s] %s\n' "$*" >&2; }
 
+# retry <attempts> <delay-seconds> <command...>
+retry() {
+  local attempts=$1 delay=$2 n=1
+  shift 2
+  until "$@"; do
+    ((n >= attempts)) && return 1
+    klog "retry $n/$attempts in ${delay}s: $*"
+    sleep "$delay"
+    n=$((n + 1))
+  done
+}
+
 # fetch_verified <url> <sha256> <dest>
 fetch_verified() {
   curl -fsSL -o "$3" "$1"
@@ -35,6 +47,10 @@ install_kyverno() {
   kubectl apply --server-side --force-conflicts -f "$manifest" >/dev/null
   rm -f "$manifest"
   kubectl -n kyverno wait --for=condition=Available deployment --all --timeout=300s
+  # "Available" can precede the webhook Service having ready endpoints; policy
+  # creation goes through Kyverno's own webhook, so wait for it to answer.
+  retry 30 2 bash -c '[[ -n "$(kubectl -n kyverno get endpointslices -l kubernetes.io/service-name=kyverno-svc \
+    -o jsonpath="{.items[*].endpoints[?(@.conditions.ready==true)].addresses[0]}")" ]]'
 }
 
 install_cert_manager() {
@@ -63,7 +79,7 @@ install_traefik() {
 apply_policies() {
   local extra_ref="${1:-}"
   local dir="$K8S_ROOT/policy/kyverno"
-  kubectl apply -f "$dir/disallow-latest-tag.yaml" -f "$dir/require-non-root.yaml" \
+  retry 10 6 kubectl apply -f "$dir/disallow-latest-tag.yaml" -f "$dir/require-non-root.yaml" \
     -f "$dir/require-limits.yaml" -f "$dir/disallow-privileged.yaml"
   local policy
   policy="$(cat "$dir/verify-image-signature.yaml")"
@@ -78,7 +94,11 @@ apply_policies() {
     # Private registry: Kyverno reads signatures with this secret (namespace kyverno).
     policy="$(sed "s#^\(\s*\)- type: SigstoreBundle#&\n\1  imageRegistryCredentials:\n\1    secrets: [${KYVERNO_REGISTRY_SECRET}]#" <<<"$policy")"
   fi
-  kubectl apply -f - <<<"$policy"
+  local rendered
+  rendered="$(mktemp --suffix=.yaml)"
+  printf '%s\n' "$policy" >"$rendered"
+  retry 10 6 kubectl apply -f "$rendered"
+  rm -f "$rendered"
   kubectl wait --for=condition=Ready clusterpolicy --all --timeout=120s
 }
 

@@ -39,7 +39,7 @@ resource "aws_kms_alias" "reports" {
 # justification: server access logs need a second paid bucket; CloudTrail data events are the upgrade path.
 #trivy:ignore:AWS-0089
 resource "aws_s3_bucket" "this" {
-  #checkov:skip=CKV_AWS_18:Server access logging needs a second log bucket that costs money for a demo; CloudTrail data events are the upgrade path (docs/adr/0006).
+  #checkov:skip=CKV_AWS_18:Server access logging needs a second log bucket that costs money for a demo; CloudTrail data events are the upgrade path (docs/adr/0007-aws-profile-cost-tradeoffs.md).
   #checkov:skip=CKV_AWS_144:Cross-region replication doubles storage cost; reports are reproducible from CI artifacts.
   #checkov:skip=CKV2_AWS_62:No consumer for S3 event notifications in the demo account.
   bucket        = var.bucket_name
