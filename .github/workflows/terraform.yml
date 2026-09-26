@@ -1,0 +1,216 @@
+# Terraform for the AWS profile.
+#   pull_request  fmt, validate, tflint, Checkov (+ custom policies), plan;
+#                 plan summary and Checkov results as a sticky PR comment
+#   push to main  apply in the aws-demo environment (required reviewer)
+#   nightly       plan -detailed-exitcode; exit 2 = drift -> GitHub Issue
+# AWS access is GitHub OIDC only (no stored keys). The plan/apply steps run
+# when the repository variables AWS_PLAN_ROLE_ARN / AWS_APPLY_ROLE_ARN exist,
+# so forks and fresh clones still get every static check.
+name: terraform
+
+on:
+  pull_request:
+    paths: ["infra/**", "policy/checkov/**", ".github/workflows/terraform.yml"]
+  push:
+    branches: [main]
+    paths: ["infra/**", "policy/checkov/**", ".github/workflows/terraform.yml"]
+  schedule:
+    - cron: "15 21 * * *" # drift check, 02:45 IST
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: terraform-aws
+  cancel-in-progress: false # never interrupt an apply
+
+env:
+  TF_IN_AUTOMATION: "1"
+  TF_INPUT: "0"
+  AWS_DIR: infra/envs/aws
+  AWS_REGION: ${{ vars.AWS_REGION || 'eu-west-2' }}
+  TF_VAR_state_bucket: ${{ vars.TF_STATE_BUCKET }}
+  TF_VAR_state_kms_key_arn: ${{ vars.TF_STATE_KMS_KEY_ARN }}
+  TF_VAR_reports_bucket_name: ${{ vars.REPORTS_BUCKET_NAME }}
+  TF_VAR_budget_emails: ${{ vars.BUDGET_EMAILS_JSON }}
+
+jobs:
+  lint:
+    name: fmt, validate, tflint, checkov
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - &setup-terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.16.4
+          terraform_wrapper: false
+      - name: terraform fmt
+        run: terraform fmt -check -recursive -diff infra
+      - name: terraform validate (every root, committed lock files)
+        run: |
+          set -euo pipefail
+          for d in infra/envs/local infra/envs/aws infra/bootstrap; do
+            terraform -chdir="$d" init -backend=false -lockfile=readonly >/dev/null
+            terraform -chdir="$d" validate
+          done
+      - name: tflint
+        env:
+          TFLINT_VERSION: v0.64.0
+          GITHUB_TOKEN: ${{ github.token }} # plugin download rate limit
+        run: |
+          set -euo pipefail
+          curl -fsSL -o "$RUNNER_TEMP/tflint.zip" \
+            "https://github.com/terraform-linters/tflint/releases/download/${TFLINT_VERSION}/tflint_linux_amd64.zip"
+          curl -fsSL "https://github.com/terraform-linters/tflint/releases/download/${TFLINT_VERSION}/checksums.txt" \
+            | grep ' tflint_linux_amd64.zip$' | sed "s#tflint_linux_amd64.zip#$RUNNER_TEMP/tflint.zip#" | sha256sum --check
+          unzip -q -o "$RUNNER_TEMP/tflint.zip" -d "$RUNNER_TEMP"
+          cd infra
+          "$RUNNER_TEMP/tflint" --config "$PWD/.tflint.hcl" --init
+          "$RUNNER_TEMP/tflint" --config "$PWD/.tflint.hcl" --recursive --format compact
+      - &setup-python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Checkov (+ CKV2_SECPIPE_1, CKV_SECPIPE_2) and custom policy tests
+        env:
+          PYTHON: python
+        run: |
+          set -euo pipefail
+          ./scripts/ci/checkov-policy-test.sh
+          bin="$(bash -c 'source scripts/ci/lib.sh && python_tools iac')"
+          "$bin/checkov" -d infra --framework terraform --external-checks-dir policy/checkov \
+            --skip-download --compact --quiet -o cli -o json --output-file-path console,reports/
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: terraform-checkov
+          path: reports/
+          retention-days: 14
+
+  plan:
+    name: plan (aws)
+    needs: lint
+    if: github.event_name == 'pull_request' && vars.AWS_PLAN_ROLE_ARN != '' && github.event.pull_request.head.repo.fork != true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write # OIDC -> secpipe-tf-plan (read-only)
+      pull-requests: write # plan summary comment
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - *setup-terraform
+      - *setup-python
+      - &aws-plan-creds
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_PLAN_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: secpipe-plan-${{ github.run_id }}
+      - &init
+        name: terraform init (S3 backend, native lockfile)
+        run: |
+          terraform -chdir="$AWS_DIR" init -lockfile=readonly \
+            -backend-config="bucket=${TF_VAR_state_bucket}" \
+            -backend-config="key=secpipe/aws/terraform.tfstate" \
+            -backend-config="region=${AWS_REGION}"
+      - name: terraform plan + Checkov on the resolved plan
+        id: plan
+        env:
+          PYTHON: python
+        run: |
+          set -uo pipefail
+          terraform -chdir="$AWS_DIR" plan -out=tfplan -no-color -detailed-exitcode | tee plan.txt
+          code=${PIPESTATUS[0]}
+          [[ $code == 1 ]] && exit 1
+          terraform -chdir="$AWS_DIR" show -json tfplan > tfplan.json
+          bin="$(bash -c 'source scripts/ci/lib.sh && python_tools iac')"
+          "$bin/checkov" -f tfplan.json --framework terraform_plan \
+            --external-checks-dir policy/checkov --skip-download --compact --quiet -o cli > checkov-plan.txt || true
+          exit 0
+      - name: Plan summary comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          {
+            echo "<!-- secpipe:terraform-plan -->"
+            echo "## Terraform plan (aws)"
+            grep -E '^(Plan:|No changes)' plan.txt || echo "(see the job log)"
+            echo "<details><summary>Plan</summary>"; echo; echo '```'; tail -c 50000 plan.txt; echo '```'; echo "</details>"
+            echo "<details><summary>Checkov on the resolved plan</summary>"; echo; echo '```'; tail -c 15000 checkov-plan.txt; echo '```'; echo "</details>"
+          } > plan-comment.md
+          pip install --quiet --require-hashes -r requirements/secpipe.txt && pip install --quiet --no-deps --no-build-isolation .
+          secpipe github comment --pr "$PR" --body plan-comment.md --marker "<!-- secpipe:terraform-plan -->" --repository "$REPOSITORY"
+
+  apply:
+    name: apply (aws-demo, manual approval)
+    needs: lint
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AWS_APPLY_ROLE_ARN != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: aws-demo # required reviewer; OIDC sub = repo:<repo>:environment:aws-demo
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - *setup-terraform
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_APPLY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: secpipe-apply-${{ github.run_id }}
+      - *init
+      - name: terraform apply
+        run: terraform -chdir="$AWS_DIR" apply -auto-approve -no-color
+
+  drift:
+    name: drift check
+    if: github.event_name == 'schedule' && vars.AWS_PLAN_ROLE_ARN != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+      issues: write # open a drift Issue
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - *setup-terraform
+      - *aws-plan-creds
+      - *init
+      - name: plan -detailed-exitcode (2 = drift)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -uo pipefail
+          terraform -chdir="$AWS_DIR" plan -lock=false -no-color -detailed-exitcode > drift.txt 2>&1
+          code=$?
+          if [[ $code == 0 ]]; then echo "no drift"; exit 0; fi
+          if [[ $code == 1 ]]; then cat drift.txt; exit 1; fi
+          title="Terraform drift detected in infra/envs/aws"
+          body="$(printf 'The nightly plan found changes that are not in git ([run](%s)).\n\n```\n%s\n```\n' "$RUN_URL" "$(grep -E '^(  [#~+-]|Plan:)' drift.txt | head -80)")"
+          existing="$(gh issue list -R "$REPOSITORY" --state open --label drift --search "$title in:title" --json number -q '.[0].number')"
+          if [[ -n "$existing" ]]; then
+            gh issue comment "$existing" -R "$REPOSITORY" --body "$body"
+          else
+            gh label create drift -R "$REPOSITORY" --color B60205 --description "Infrastructure drift" 2>/dev/null || true
+            gh issue create -R "$REPOSITORY" --title "$title" --label drift --body "$body"
+          fi
+          exit 2

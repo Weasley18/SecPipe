@@ -1,0 +1,77 @@
+# Nightly deep scan of main: no baselines (every finding counts), the ZAP
+# full scan (Automation Framework, authenticated, re-login on expiry) and a
+# Grype re-scan of the last released SBOM for CVEs published since release.
+name: nightly-full-scan
+
+on:
+  schedule:
+    - cron: "30 20 * * *" # 02:00 IST
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: nightly-full-scan
+  cancel-in-progress: false
+
+jobs:
+  sbom-rescan:
+    name: sbom-rescan (grype)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read # download the last release's SBOM artifact
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Last released SBOM (secpipe-sbom artifact from main)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p sbom
+          for run in $(gh run list -R "$REPO" --workflow secpipe.yml --branch main --event push \
+                         --status completed --limit 10 --json databaseId -q '.[].databaseId'); do
+            gh run download "$run" -R "$REPO" -n secpipe-sbom -D sbom 2>/dev/null && { echo "SBOM from run $run"; break; }
+          done
+          test -s sbom/sbom.cdx.json || { echo "::error::no released SBOM found"; exit 1; }
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/grype
+          key: grype-db-${{ github.run_id }}
+          restore-keys: grype-db-
+      - name: Grype
+        run: ./scripts/ci/grype.sh sbom/sbom.cdx.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: report-sbom-rescan
+          path: reports/
+          retention-days: 14
+
+  secpipe:
+    name: SecPipe (nightly)
+    needs: sbom-rescan
+    if: always()
+    uses: ./.github/workflows/secpipe-reusable.yml
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+      id-token: write
+      attestations: write
+      pull-requests: write
+      security-events: write
+      issues: write
+    with:
+      secpipe-repository: ""
+      app-path: app/src secpipe
+      scan-mode: nightly
+      zap-tiers: baseline api full
+      extra-expect: grype
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

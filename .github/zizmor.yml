@@ -1,0 +1,6 @@
+# zizmor configuration (auto-discovered by scripts/ci/iac.sh).
+rules:
+  self-repository:
+    # The "$/" self-repository syntax is not understood by the pinned
+    # actionlint (1.7.12) yet; local "./" paths are equivalent here.
+    disable: true

@@ -14,6 +14,10 @@ from secpipe.aggregator.parsers.base import load_json
 _ID_SEGMENT = re.compile(r"^(?:\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$", re.IGNORECASE)
 RISK = {0: Severity.INFO, 1: Severity.LOW, 2: Severity.MEDIUM, 3: Severity.HIGH}
 FALSE_POSITIVE = "0"
+# ZAP's "AlertOnHttpResponseCodeErrors" script raises 100000-1 for every 4xx,
+# i.e. for each 404/401/422 the API answered to ZAP's own forced-browse and
+# fuzzing probes (150+ per API scan). The server-error variant (5xx) is kept.
+NOISE_ALERT_REFS = {"100000-1"}
 
 
 def normalise_path(path: str) -> str:
@@ -47,6 +51,9 @@ def parse(path: Path) -> ParseResult:
         for alert in as_list(as_dict(site).get("alerts")):
             alert = as_dict(alert)
             if as_str(alert.get("confidence")) == FALSE_POSITIVE:
+                continue
+            if as_str(alert.get("alertRef")) in NOISE_ALERT_REFS:
+                result.raw_count += len(as_list(alert.get("instances")) or [{}])
                 continue
             severity = RISK.get(as_int(alert.get("riskcode")) or 0, Severity.INFO)
             rule = as_str(alert.get("alertRef") or alert.get("pluginid"))

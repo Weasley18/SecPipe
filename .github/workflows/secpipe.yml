@@ -1,0 +1,100 @@
+# SecPipe on this repository: the full nine-job pipeline from the reusable
+# workflow, run on its own code (tooling = this commit), plus the metrics
+# history that feeds Grafana.
+name: secpipe
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      force-dast:
+        description: Publish + deploy + ZAP even if Gate 1 blocks (demo of the vulnerable branch; ignored on main)
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: secpipe-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  secpipe:
+    name: SecPipe
+    uses: ./.github/workflows/secpipe-reusable.yml
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+      id-token: write
+      attestations: write
+      pull-requests: write
+      security-events: write
+      issues: write
+    with:
+      secpipe-repository: "" # the tooling is this repository at this commit
+      app-path: app/src secpipe
+      force-dast: ${{ inputs.force-dast == true }}
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      DEFECTDOJO_URL: ${{ secrets.DEFECTDOJO_URL }}
+      DEFECTDOJO_TOKEN: ${{ secrets.DEFECTDOJO_TOKEN }}
+      DEFECTDOJO_ENGAGEMENT: ${{ secrets.DEFECTDOJO_ENGAGEMENT }}
+
+  metrics:
+    # Append this run's gate record to metrics/history.jsonl on the
+    # secpipe-metrics branch: an audit trail in git that the Prometheus
+    # exporter (and promtool backfill) read for the Grafana trends.
+    name: metrics history
+    needs: secpipe
+    if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write # push to the secpipe-metrics branch only
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: secpipe-report
+          path: out/
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install SecPipe (hash-verified)
+        run: |
+          python -m pip install --quiet --require-hashes -r requirements/secpipe.txt
+          python -m pip install --quiet --no-deps --no-build-isolation .
+      - name: Append and push
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          extra=()
+          [[ -f out/issue-metrics.json ]] && extra=(--extra out/issue-metrics.json)
+          history="$RUNNER_TEMP/metrics"
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${REPOSITORY}.git"
+          for attempt in 1 2 3; do
+            rm -rf "$history"
+            if git ls-remote --exit-code "$remote" refs/heads/secpipe-metrics >/dev/null; then
+              git clone --quiet --depth 1 --branch secpipe-metrics "$remote" "$history"
+            else
+              git init --quiet -b secpipe-metrics "$history"
+              git -C "$history" remote add origin "$remote"
+            fi
+            mkdir -p "$history/metrics"
+            secpipe metrics append --record out/metrics.json --history "$history/metrics/history.jsonl" "${extra[@]}"
+            git -C "$history" add metrics/history.jsonl
+            git -C "$history" -c user.name="secpipe-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit --quiet -m "metrics: ${GITHUB_SHA::7} (run ${GITHUB_RUN_ID})"
+            git -C "$history" push --quiet origin secpipe-metrics && exit 0
+            echo "push raced another run; retrying ($attempt)"
+            sleep $((attempt * 5))
+          done
+          exit 1

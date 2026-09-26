@@ -1,0 +1,23 @@
+# Every pinned dependency has an updater: Python locks, container digests
+# (app base image, compose, scanner images), SHA-pinned actions, Terraform.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directories: ["/app", "/requirements", "/scripts/ci/requirements"]
+    schedule: { interval: weekly }
+    groups:
+      python-minor: { update-types: [minor, patch] }
+  - package-ecosystem: docker
+    directories: ["/app", "/tools"]
+    schedule: { interval: weekly }
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule: { interval: weekly }
+  - package-ecosystem: github-actions
+    directories: ["/", "/.github/actions/secpipe-gate"]
+    schedule: { interval: weekly }
+    groups:
+      actions: { patterns: ["*"] }
+  - package-ecosystem: terraform
+    directories: ["/infra/envs/aws", "/infra/envs/local", "/infra/bootstrap"]
+    schedule: { interval: weekly }

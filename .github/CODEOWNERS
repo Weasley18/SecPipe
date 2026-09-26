@@ -1,0 +1,9 @@
+# The gate can only be as trustworthy as the code that runs it: changes to the
+# pipeline, scanners, policies or exceptions need a security owner's review.
+*                       @Weasley18
+/.github/               @Weasley18
+/scripts/ci/            @Weasley18
+/policy/                @Weasley18
+/secpipe/aggregator/    @Weasley18
+/tools/                 @Weasley18
+/infra/                 @Weasley18

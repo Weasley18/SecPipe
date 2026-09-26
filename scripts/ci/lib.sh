@@ -68,7 +68,9 @@ docker_tool() {
   # SECPIPE_DOCKER_EXTRA_ARGS: extra `docker run` flags for every tool, e.g. to
   # mount a corporate TLS-proxy CA: "-v /path/ca.crt:/ca.crt:ro -e SSL_CERT_FILE=/ca.crt"
   read -r -a extra <<<"${SECPIPE_DOCKER_EXTRA_ARGS:-}"
-  docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+  # DOCKER_TOOL_USER: run as the image's own user when the tool needs its home
+  # directory (ZAP); otherwise as the caller so reports stay runner-owned.
+  docker run --rm --user "${DOCKER_TOOL_USER:-$(id -u):$(id -g)}" -e HOME="${DOCKER_TOOL_HOME:-/tmp}" \
     --security-opt no-new-privileges --cap-drop ALL \
     -v "$WORKSPACE:/src" -w /src "${extra[@]}" "${DOCKER_TOOL_ARGS[@]}" "$image" "$@"
 }

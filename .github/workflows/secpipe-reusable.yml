@@ -1,0 +1,636 @@
+# SecPipe as a reusable workflow. The nine jobs: five scans in parallel, an
+# image build + scan, Gate 1, publish + sign, deploy to kind + DAST, Gate 2.
+#
+# Adopt it from another repository with:
+#   jobs:
+#     security:
+#       uses: Weasley18/SecPipe/.github/workflows/secpipe-reusable.yml@<sha>
+#       permissions: {contents: read, actions: read, packages: write, id-token: write,
+#                     attestations: write, pull-requests: write, security-events: write, issues: write}
+#       with: {dockerfile: Dockerfile, app-path: src, enable-dast: false}
+#       secrets: {SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}"}
+#
+# Hardening: every job starts from contents: read and opts into what it needs;
+# every action is pinned to a commit SHA; inputs reach scripts through env, never
+# through ${{ }} inside run:; fork pull requests never publish, sign or deploy.
+name: secpipe-reusable
+
+on:
+  workflow_call:
+    inputs:
+      app-path:
+        description: Source paths for Bandit (space separated).
+        type: string
+        default: app/src
+      requirements:
+        description: Pinned (ideally hash-locked) requirements file for SCA.
+        type: string
+        default: app/requirements.txt
+      dockerfile:
+        description: Dockerfile to lint, build and scan.
+        type: string
+        default: app/Dockerfile
+      build-context:
+        description: Docker build context.
+        type: string
+        default: "."
+      image-name:
+        description: Image name under ghcr.io/<owner>/.
+        type: string
+        default: secnotes
+      iac-path:
+        description: Terraform root to scan.
+        type: string
+        default: infra
+      k8s-overlay:
+        description: Kustomize overlay that is scanned and deployed to kind.
+        type: string
+        default: k8s/overlays/ci
+      policy-file:
+        description: "policy.yaml in the calling repository (default: SecPipe's own)."
+        type: string
+        default: ""
+      enable-dast:
+        description: Deploy to a throwaway kind cluster and run ZAP.
+        type: boolean
+        default: true
+      openapi-url:
+        description: Path of the OpenAPI document on the deployed service.
+        type: string
+        default: /openapi.json
+      zap-tiers:
+        description: ZAP tiers to run (baseline api full).
+        type: string
+        default: baseline api
+      scan-mode:
+        description: "pr: baselines on, only new findings block PRs. nightly: everything, no baselines."
+        type: string
+        default: pr
+      extra-expect:
+        description: Extra scanners Gate 2 must see (e.g. grype from a nightly SBOM re-scan).
+        type: string
+        default: ""
+      force-dast:
+        description: Publish and deploy even when Gate 1 blocks (demo of the vulnerable branch; never on main).
+        type: boolean
+        default: false
+      baseline-workflow:
+        description: Workflow file whose main-branch runs hold the secpipe-baseline artifact.
+        type: string
+        default: secpipe.yml
+      secpipe-repository:
+        description: Repository holding SecPipe's scripts and policies (empty = the calling repository).
+        type: string
+        default: Weasley18/SecPipe
+      secpipe-ref:
+        description: Ref (ideally a commit SHA) of secpipe-repository.
+        type: string
+        default: main
+    secrets:
+      SNYK_TOKEN:
+        required: false
+      SONAR_TOKEN:
+        required: false
+      DEFECTDOJO_URL:
+        required: false
+      DEFECTDOJO_TOKEN:
+        required: false
+      DEFECTDOJO_ENGAGEMENT:
+        required: false
+    outputs:
+      gate-outcome:
+        description: pass, block or error (Gate 2)
+        value: ${{ jobs.gate-2.outputs.outcome }}
+      image:
+        description: Published image reference (by digest)
+        value: ${{ jobs.publish.outputs.image }}
+
+permissions:
+  contents: read
+
+env:
+  PYTHON: python
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  TOOLING: .secpipe-tooling
+  WORKSPACE: ${{ github.workspace }}
+
+jobs:
+  secrets:
+    name: secrets (gitleaks)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - &checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # full history: secrets buried in old commits count too
+          persist-credentials: false
+      - &tooling-checkout
+        name: Check out SecPipe tooling
+        if: inputs.secpipe-repository != ''
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.secpipe-repository }}
+          ref: ${{ inputs.secpipe-ref }}
+          path: .secpipe-tooling
+          persist-credentials: false
+      - &tooling-link
+        name: Use this repository as the tooling
+        if: inputs.secpipe-repository == ''
+        run: ln -s . "$TOOLING"
+      - name: Gitleaks (full history)
+        run: '"$TOOLING/scripts/ci/gitleaks.sh"'
+      - &upload-reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: report-${{ github.job }}
+          path: reports/
+          retention-days: 14
+          if-no-files-found: warn
+
+  sast:
+    name: sast (semgrep, bandit, sonarcloud)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - *checkout
+      - *tooling-checkout
+      - *tooling-link
+      - &setup-python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - &tools-cache
+        name: Cache hash-locked scanner venvs
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .secpipe-tools
+          key: secpipe-tools-${{ runner.os }}-${{ github.job }}-${{ hashFiles('.secpipe-tooling/scripts/ci/requirements/*.txt') }}
+      - name: Semgrep + Bandit
+        env:
+          # PRs report only findings new since the base commit; nightly scans everything.
+          SEMGREP_BASELINE_REF: ${{ inputs.scan-mode == 'pr' && github.event.pull_request.base.sha || '' }}
+          SAST_TARGETS: ${{ inputs.app-path }}
+        run: '"$TOOLING/scripts/ci/sast.sh"'
+      - name: SonarCloud (only with SONAR_TOKEN)
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+        run: '"$TOOLING/scripts/ci/sonar.sh"'
+      - *upload-reports
+
+  sca:
+    name: sca (osv, pip-audit, snyk, licences)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - *checkout
+      - *tooling-checkout
+      - *tooling-link
+      - *setup-python
+      - *tools-cache
+      - name: OSV-Scanner, pip-audit, Snyk, pip-licenses
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          REQUIREMENTS_FILE: ${{ inputs.requirements }}
+        run: '"$TOOLING/scripts/ci/sca.sh"'
+      - *upload-reports
+
+  iac:
+    name: iac (checkov, trivy, kubescape, zizmor)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - *checkout
+      - *tooling-checkout
+      - *tooling-link
+      - *setup-python
+      - *tools-cache
+      - name: Checkov, Trivy config, Kubescape, zizmor
+        env:
+          IAC_DIR: ${{ inputs.iac-path }}
+          K8S_OVERLAY: ${{ inputs.k8s-overlay }}
+          DOCKERFILE: ${{ inputs.dockerfile }}
+          GH_TOKEN: ${{ github.token }} # zizmor online audits (impostor commits, known-vulnerable actions)
+        run: '"$TOOLING/scripts/ci/iac.sh"'
+      - *upload-reports
+
+  build-scan:
+    name: build-scan (hadolint, trivy, syft)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - *checkout
+      - *tooling-checkout
+      - *tooling-link
+      - name: Hadolint
+        env:
+          DOCKERFILE: ${{ inputs.dockerfile }}
+        run: '"$TOOLING/scripts/ci/hadolint.sh"'
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build (not pushed until Gate 1 passes)
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ inputs.build-context }}
+          file: ${{ inputs.dockerfile }}
+          load: true
+          push: false
+          provenance: false
+          tags: secnotes:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Trivy DB cache key
+        id: day
+        run: echo "day=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ steps.day.outputs.day }}
+          restore-keys: trivy-db-
+      - name: Trivy image scan + CycloneDX SBOM
+        env:
+          IMAGE: secnotes:${{ github.sha }}
+        run: '"$TOOLING/scripts/ci/scan-image.sh" "$IMAGE"'
+      - *upload-reports
+      - name: Keep the scanned image for publish
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: image
+          path: build/image.tar
+          retention-days: 1
+          compression-level: 0
+
+  gate-1:
+    name: gate-1
+    needs: [secrets, sast, sca, iac, build-scan]
+    if: always() # report (and fail closed) even when a scan job crashed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read # the base branch's findings.json baseline
+    outputs:
+      outcome: ${{ steps.gate.outputs.outcome }}
+      expect: ${{ steps.expect.outputs.expect }}
+    steps:
+      - &checkout-shallow
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - *tooling-checkout
+      - *tooling-link
+      - &download-reports
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: report-*
+          merge-multiple: true
+          path: reports/
+      - &baseline
+        name: Base branch baseline (findings.json from the latest main run)
+        if: inputs.scan-mode == 'pr'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WORKFLOW: ${{ inputs.baseline-workflow }}
+        run: |
+          mkdir -p baseline
+          for run in $(gh run list -R "$REPO" --workflow "$WORKFLOW" --branch main --event push \
+                         --status completed --limit 5 --json databaseId -q '.[].databaseId'); do
+            if gh run download "$run" -R "$REPO" -n secpipe-baseline -D baseline 2>/dev/null; then
+              echo "baseline from run $run"; exit 0
+            fi
+          done
+          echo "no baseline yet: every finding is new"
+      - &policy
+        name: Resolve policy and expected scanners
+        id: expect
+        env:
+          POLICY_FILE: ${{ inputs.policy-file }}
+          HAS_SNYK: ${{ secrets.SNYK_TOKEN != '' }}
+          HAS_SONAR: ${{ secrets.SONAR_TOKEN != '' }}
+        run: |
+          policy="${POLICY_FILE:-$TOOLING/policy/policy.yaml}"
+          echo "POLICY=$policy" >> "$GITHUB_ENV"
+          # Every scanner that must leave a usable report; a missing one fails closed.
+          expect="gitleaks,semgrep,bandit,osv-scanner,pip-audit,pip-licenses,checkov,trivy-iac,kubescape,zizmor,hadolint,trivy-image,syft"
+          [[ "$HAS_SNYK" == true ]] && expect+=",snyk"
+          [[ "$HAS_SONAR" == true ]] && expect+=",sonarqube"
+          echo "expect=$expect" >> "$GITHUB_OUTPUT"
+      - &epss-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .secpipe-cache
+          key: secpipe-intel-${{ github.run_id }}
+          restore-keys: secpipe-intel-
+      - name: Gate 1
+        id: gate
+        uses: ./.secpipe-tooling/.github/actions/secpipe-gate
+        with:
+          stage: gate-1
+          expect: ${{ steps.expect.outputs.expect }}
+          policy: ${{ env.POLICY }}
+          baseline: baseline/findings.json
+          labels: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          fail-on-block: "false"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: gate-1
+          path: out/
+          retention-days: 14
+      - name: Enforce Gate 1
+        if: steps.gate.outputs.exit-code != '0'
+        env:
+          CODE: ${{ steps.gate.outputs.exit-code }}
+          OUTCOME: ${{ steps.gate.outputs.outcome }}
+        run: |
+          echo "::error title=SecPipe gate-1::${OUTCOME} (exit ${CODE}); publish and DAST are skipped. See the job summary."
+          exit "$CODE"
+
+  publish:
+    name: publish (push, sign, attest)
+    needs: gate-1
+    # Only after Gate 1 passes (or a forced demo run off main), never for forks or scheduled runs.
+    if: >-
+      always() && github.event.pull_request.head.repo.fork != true &&
+      (needs.gate-1.result == 'success' ||
+       (inputs.force-dast && github.ref != 'refs/heads/main' && needs.gate-1.outputs.outcome == 'block'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write # push to GHCR
+      id-token: write # keyless cosign signing and SLSA provenance
+      attestations: write
+    outputs:
+      image: ${{ steps.push.outputs.image }}
+      unsigned: ${{ steps.unsigned.outputs.image }}
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: image
+          path: build/
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: report-build-scan
+          path: reports/
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Push the scanned image (the same bytes Trivy scanned)
+        id: push
+        env:
+          OWNER: ${{ github.repository_owner }}
+          NAME: ${{ inputs.image-name }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          repo="ghcr.io/${OWNER,,}/${NAME}"
+          docker load -i build/image.tar
+          docker tag "secnotes:${SHA}" "${repo}:sha-${SHA}"
+          docker push "${repo}:sha-${SHA}"
+          digest="$(docker inspect --format '{{index .RepoDigests 0}}' "${repo}:sha-${SHA}")"
+          echo "image=${digest}" >> "$GITHUB_OUTPUT"
+          echo "repo=${repo}" >> "$GITHUB_OUTPUT"
+          echo "digest=${digest#*@}" >> "$GITHUB_OUTPUT"
+          echo "### Published \`${digest}\`" >> "$GITHUB_STEP_SUMMARY"
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          cosign-release: v3.1.3
+      - name: Sign (keyless, GitHub OIDC -> Fulcio, logged in Rekor)
+        env:
+          IMAGE: ${{ steps.push.outputs.image }}
+        run: cosign sign --yes "$IMAGE"
+      - name: Attest the CycloneDX SBOM
+        env:
+          IMAGE: ${{ steps.push.outputs.image }}
+        run: cosign attest --yes --type cyclonedx --predicate reports/sbom.cdx.json "$IMAGE"
+      - name: SLSA build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ steps.push.outputs.repo }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+      - name: Verify what was just signed
+        env:
+          IMAGE: ${{ steps.push.outputs.image }}
+        run: |
+          set -euo pipefail
+          cosign verify "$IMAGE" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity-regexp '^https://github\.com/.+/\.github/workflows/secpipe-reusable\.yml@' >verify.json
+          { echo '```'; jq '.[0].optional // .' verify.json; echo '```'; } >>"$GITHUB_STEP_SUMMARY"
+      - name: Unsigned control image for the admission test
+        id: unsigned
+        if: inputs.enable-dast
+        env:
+          IMAGE: ${{ steps.push.outputs.image }}
+          REPO: ${{ steps.push.outputs.repo }}
+        run: |
+          set -euo pipefail
+          # Same layers, one extra label: a different digest that nobody signed.
+          printf 'FROM %s\nLABEL org.secpipe.test=unsigned\n' "$IMAGE" | docker build -q -t "${REPO}:ci-unsigned" -
+          docker push -q "${REPO}:ci-unsigned"
+          echo "image=$(docker inspect --format '{{index .RepoDigests 0}}' "${REPO}:ci-unsigned")" >> "$GITHUB_OUTPUT"
+      - name: Keep the SBOM with the release
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: secpipe-sbom
+          path: reports/sbom.cdx.json
+          retention-days: 90
+
+  deploy-dast:
+    name: deploy-dast (kind, kyverno, zap)
+    needs: [gate-1, publish]
+    if: always() && inputs.enable-dast && needs.publish.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      packages: read # pull the image into kind, and let Kyverno read its signature
+    steps:
+      - *checkout-shallow
+      - *tooling-checkout
+      - *tooling-link
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.16.4
+          terraform_wrapper: false
+      - name: kind cluster via Terraform (Calico CNI, API audit log)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/secpipe-audit
+          terraform -chdir="$TOOLING/infra/envs/local" init -input=false
+          terraform -chdir="$TOOLING/infra/envs/local" apply -auto-approve -input=false -var workers=1
+          echo "KUBECONFIG=$(terraform -chdir="$TOOLING/infra/envs/local" output -raw kubeconfig_path)" >> "$GITHUB_ENV"
+      - name: Kyverno + policies, deploy by digest
+        env:
+          IMAGE: ${{ needs.publish.outputs.image }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REF: ${{ github.ref }}
+          OVERLAY: ${{ inputs.k8s-overlay }}
+          FORCED: ${{ needs.gate-1.result != 'success' }}
+        run: |
+          set -euo pipefail
+          # The CI cluster also trusts signatures from this run's own ref.
+          ref=""
+          if [[ -n "$PR_NUMBER" ]]; then ref="pull/${PR_NUMBER}/merge"
+          elif [[ "$REF" != refs/heads/main ]]; then ref="${REF#refs/}"; fi
+          if [[ "$FORCED" == true ]]; then
+            # Forced demo run: first show admission rejecting this branch's own manifests,
+            # then deploy the image with SecPipe's hardened manifests so ZAP can test it.
+            "$TOOLING/scripts/ci/deploy-kind.sh" --platform-only "$IMAGE" "$ref"
+            kubectl create namespace secnotes
+            kubectl label namespace secnotes pod-security.kubernetes.io/enforce=restricted
+            kubectl apply --dry-run=server -k "$OVERLAY" 2>&1 | tee reports-admission-branch.txt || true
+            export OVERLAY="$TOOLING/k8s/overlays/ci"
+          fi
+          K8S_OVERLAY="$OVERLAY" "$TOOLING/scripts/ci/deploy-kind.sh" "$IMAGE" "$ref"
+      - name: Admission and NetworkPolicy regression tests
+        env:
+          IMAGE: ${{ needs.publish.outputs.image }}
+          UNSIGNED: ${{ needs.publish.outputs.unsigned }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ github.token }}
+        run: '"$TOOLING/scripts/ci/admission-test.sh" "$IMAGE" "$UNSIGNED"'
+      - name: ZAP (baseline + authenticated API scan)
+        env:
+          TIERS: ${{ inputs.zap-tiers }}
+        run: |
+          set -euo pipefail
+          kubectl -n secnotes port-forward svc/secnotes-api 8080:80 >/tmp/port-forward.log 2>&1 &
+          read -r -a tiers <<<"$TIERS"
+          "$TOOLING/scripts/ci/zap.sh" http://localhost:8080 "${tiers[@]}"
+      - name: Cluster evidence
+        if: always()
+        run: |
+          mkdir -p reports
+          [[ -f reports-admission-branch.txt ]] && mv reports-admission-branch.txt reports/admission-branch.txt
+          kubectl get pods,events -A -o wide > reports/cluster-state.txt 2>&1 || true
+          kubectl get policyreports -A -o yaml > reports/kyverno-policyreports.yaml 2>&1 || true
+      - name: Upload DAST reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: report-dast
+          path: |
+            reports/
+            build/zap/*.html
+          retention-days: 14
+
+  gate-2:
+    name: secpipe-gate
+    needs: [secrets, sast, sca, iac, build-scan, gate-1, publish, deploy-dast]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write # sticky PR comment
+      security-events: write # SARIF to the Security tab
+      issues: write # one Issue per finding on main, closed when fixed
+    outputs:
+      outcome: ${{ steps.gate.outputs.outcome }}
+    steps:
+      - *checkout-shallow
+      - *tooling-checkout
+      - *tooling-link
+      - *download-reports
+      - *baseline
+      - *policy
+      - *epss-cache
+      - name: Expected scanners for Gate 2
+        id: expect2
+        env:
+          BASE: ${{ steps.expect.outputs.expect }}
+          EXTRA: ${{ inputs.extra-expect }}
+          DAST: ${{ needs.deploy-dast.result }}
+        run: |
+          expect="$BASE"
+          # DAST is expected whenever the deploy job ran: a crash there fails closed.
+          # When Gate 1 blocked, publish/deploy were skipped and DAST shows "skipped".
+          [[ "$DAST" == success || "$DAST" == failure ]] && expect+=",zap"
+          [[ -n "$EXTRA" ]] && expect+=",$EXTRA"
+          echo "expect=$expect" >> "$GITHUB_OUTPUT"
+      - name: Gate 2
+        id: gate
+        uses: ./.secpipe-tooling/.github/actions/secpipe-gate
+        with:
+          stage: gate-2
+          expect: ${{ steps.expect2.outputs.expect }}
+          policy: ${{ env.POLICY }}
+          baseline: baseline/findings.json
+          labels: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          fail-on-block: "false"
+      - name: Sticky PR comment
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork != true
+        env:
+          SECPIPE: ${{ steps.gate.outputs.secpipe }}
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: '"$SECPIPE" github comment --pr "$PR" --body out/comment.md --repository "$REPOSITORY"'
+      - name: SARIF to code scanning
+        if: always() && hashFiles('out/secpipe.sarif') != '' && github.event.pull_request.head.repo.fork != true
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          sarif_file: out/secpipe.sarif
+          category: secpipe
+      - name: Sync GitHub Issues (main only; SLA due dates, auto-close when fixed)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          SECPIPE: ${{ steps.gate.outputs.secpipe }}
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          "$SECPIPE" github issues --findings out/findings.json --sha "$SHA" --branch main \
+            --run-url "$RUN_URL" --repository "$REPOSITORY" --metrics-out out/issue-metrics.json
+      - name: DefectDojo configured?
+        id: dd
+        if: always()
+        env:
+          DD_URL: ${{ secrets.DEFECTDOJO_URL }}
+        run: echo "configured=$([[ -n "$DD_URL" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: DefectDojo import
+        if: always() && steps.dd.outputs.configured == 'true'
+        env:
+          SECPIPE: ${{ steps.gate.outputs.secpipe }}
+          DD_URL: ${{ secrets.DEFECTDOJO_URL }}
+          DEFECTDOJO_TOKEN: ${{ secrets.DEFECTDOJO_TOKEN }}
+          DD_ENGAGEMENT: ${{ secrets.DEFECTDOJO_ENGAGEMENT }}
+        run: '"$SECPIPE" defectdojo --reports reports --url "$DD_URL" --engagement "$DD_ENGAGEMENT"'
+      - name: Report artifact
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: secpipe-report
+          path: out/
+          retention-days: 30
+      - name: Baseline for the next pull request
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: secpipe-baseline
+          path: out/findings.json
+          retention-days: 90
+      - name: Enforce Gate 2
+        if: steps.gate.outputs.exit-code != '0'
+        env:
+          CODE: ${{ steps.gate.outputs.exit-code }}
+          OUTCOME: ${{ steps.gate.outputs.outcome }}
+        run: |
+          echo "::error title=SecPipe gate-2::${OUTCOME} (exit ${CODE}). The PR comment and job summary list every blocking finding."
+          exit "$CODE"

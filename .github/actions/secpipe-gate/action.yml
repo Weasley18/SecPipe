@@ -46,6 +46,9 @@ inputs:
     default: "true"
 
 outputs:
+  secpipe:
+    description: Path of the installed secpipe CLI (for later steps, e.g. github comment)
+    value: ${{ steps.install.outputs.secpipe }}
   outcome:
     description: pass, block or error
     value: ${{ steps.gate.outputs.outcome }}
@@ -62,6 +65,7 @@ runs:
         python-version: ${{ inputs.python-version }}
 
     - name: Install SecPipe (hash-verified dependencies)
+      id: install
       shell: bash
       env:
         ACTION_PATH: ${{ github.action_path }}
@@ -72,13 +76,14 @@ runs:
         python -m venv "$venv"
         "$venv/bin/pip" install --quiet --disable-pip-version-check --require-hashes -r "$root/requirements/secpipe.txt"
         "$venv/bin/pip" install --quiet --disable-pip-version-check --no-deps --no-build-isolation "$root"
-        echo "$venv/bin" >> "$GITHUB_PATH"
+        echo "secpipe=$venv/bin/secpipe" >> "$GITHUB_OUTPUT"
 
     - name: Run the gate
       id: gate
       shell: bash
       # Inputs travel through env, never ${{ }} inside the script (no script injection).
       env:
+        SECPIPE: ${{ steps.install.outputs.secpipe }}
         STAGE: ${{ inputs.stage }}
         EXPECT: ${{ inputs.expect }}
         REPORTS: ${{ inputs.reports }}
@@ -98,7 +103,7 @@ runs:
         [[ -n "$BASELINE" && -f "$BASELINE" ]] && args+=(--baseline "$BASELINE")
         [[ -n "$LABELS" ]] && args+=(--labels "$LABELS")
         [[ "$OFFLINE" == "true" ]] && args+=(--offline)
-        secpipe "${args[@]}"
+        "$SECPIPE" "${args[@]}"
         code=$?
         outcome=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["outcome"])' "$OUT/$STAGE.json" 2>/dev/null || echo error)
         echo "exit-code=$code" >> "$GITHUB_OUTPUT"

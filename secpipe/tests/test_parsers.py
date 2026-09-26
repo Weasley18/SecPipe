@@ -11,6 +11,7 @@ import pytest
 from secpipe.aggregator.models import Severity
 from secpipe.aggregator.parsers import REGISTRY, parse_report, spec_for
 from secpipe.aggregator.parsers.zap import normalise_path
+from secpipe.aggregator.parsers.zap import parse as zap_parse
 from secpipe.tests.conftest import FIXTURES
 
 ALL_FIXTURES = sorted(p.name for p in FIXTURES.iterdir() if p.is_file() and p.suffix in {".json", ".sarif"})
@@ -414,6 +415,19 @@ def test_zap() -> None:
     assert all("?" not in f.location and "localhost" not in f.location for f in result.findings)
     assert any(f.location == "GET /notes/{id}" for f in result.findings)
     assert normalise_path("/notes/42/x/3f2504e0-4f89-11d3-9a0c-0305e82c3301") == "/notes/{id}/x/{id}"
+    assert any(f.rule_id == "zap-100000-2" for f in result.findings), "5xx responses are kept"
+
+
+def test_zap_drops_4xx_probe_noise(tmp_path: Path) -> None:
+    data = json.loads((FIXTURES / "zap-api.json").read_text())
+    alerts = data["site"][0]["alerts"]
+    noise = dict(alerts[0], pluginid="100000", alertRef="100000-1", name="A Client Error response code was returned")
+    noise["instances"] = [{"uri": f"http://localhost:8080/probe{i}", "method": "GET"} for i in range(40)]
+    alerts.append(noise)
+    (tmp_path / "zap-api.json").write_text(json.dumps(data))
+    result = zap_parse(tmp_path / "zap-api.json")
+    assert not any(f.rule_id == "zap-100000-1" for f in result.findings)
+    assert result.raw_count == parse("zap-api.json").raw_count + 40
 
 
 def test_sonarqube() -> None:

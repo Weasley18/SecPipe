@@ -8,7 +8,10 @@ K8S_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=../k8s/cluster/versions.sh
 source "$K8S_ROOT/k8s/cluster/versions.sh"
 APP_NS="${APP_NS:-secnotes}"
-BUILD_DIR="$K8S_ROOT/build/k8s"
+# The application's manifests come from the repository under test (WORKSPACE);
+# policies and add-on pins come from the SecPipe tooling (K8S_ROOT).
+APP_ROOT="${WORKSPACE:-$K8S_ROOT}"
+BUILD_DIR="$APP_ROOT/build/k8s"
 
 klog() { printf '[k8s] %s\n' "$*" >&2; }
 
@@ -54,8 +57,9 @@ install_traefik() {
 }
 
 # apply_policies [extra-ref]
-# extra-ref (e.g. pull/42/merge) additionally trusts signatures made by the
-# pull request's own CI run; only the throwaway CI cluster passes it.
+# extra-ref (pull/42/merge, or heads/<branch> for a manual run on a branch)
+# additionally trusts signatures made by that ref's own CI run; only the
+# throwaway CI cluster passes it. Production trusts main alone.
 apply_policies() {
   local extra_ref="${1:-}"
   local dir="$K8S_ROOT/policy/kyverno"
@@ -64,7 +68,7 @@ apply_policies() {
   local policy
   policy="$(cat "$dir/verify-image-signature.yaml")"
   if [[ -n "$extra_ref" ]]; then
-    [[ "$extra_ref" =~ ^pull/[0-9]+/merge$ ]] || {
+    [[ "$extra_ref" =~ ^(pull/[0-9]+/merge|heads/[A-Za-z0-9_/-]+)$ ]] || {
       klog "refusing unexpected ref '$extra_ref'"
       return 1
     }
@@ -81,7 +85,11 @@ apply_policies() {
 # Random DB password and JWT key, created once per cluster as a Secret and
 # mounted as files. Nothing secret is written to the repository.
 ensure_app_secrets() {
-  kubectl apply -f "$K8S_ROOT/k8s/base/namespace.yaml"
+  if ! kubectl get namespace "$APP_NS" >/dev/null 2>&1; then
+    kubectl create namespace "$APP_NS" >/dev/null
+    kubectl label namespace "$APP_NS" pod-security.kubernetes.io/enforce=restricted \
+      pod-security.kubernetes.io/enforce-version=latest >/dev/null
+  fi
   if kubectl -n "$APP_NS" get secret secnotes-secrets >/dev/null 2>&1; then
     klog "secnotes-secrets already exists; keeping it (Postgres is initialised with it)"
     return 0
@@ -125,7 +133,7 @@ deploy_app() {
   local overlay="$1" image="$2"
   mkdir -p "$BUILD_DIR"
   local rel
-  rel="$(realpath --relative-to="$BUILD_DIR" "$K8S_ROOT/$overlay")"
+  rel="$(realpath --relative-to="$BUILD_DIR" "$APP_ROOT/$overlay")"
   local name="${image%@*}"
   name="${name%:*}"
   {

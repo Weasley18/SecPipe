@@ -13,7 +13,7 @@ source "$(dirname "$0")/../k8s-lib.sh"
 
 signed="${1:?signed image digest ref}"
 unsigned="${2:?unsigned image digest ref}"
-reports="${REPORTS_DIR:-$K8S_ROOT/reports}"
+reports="${REPORTS_DIR:-$APP_ROOT/reports}"
 mkdir -p "$reports"
 results="$(mktemp)"
 test_ns=admission-test

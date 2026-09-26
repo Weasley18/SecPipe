@@ -1,0 +1,87 @@
+# ZAP Automation Framework plan for the nightly full scan (scripts/ci/zap.sh full).
+# Authenticates like a real client: POSTs JSON credentials to /auth/login,
+# pulls access_token out of the JSON response and sends it as a Bearer header,
+# polls /users/me to notice when the 15-minute token expires and logs in again.
+# ${TARGET}, ${SCAN_USER}, ${SCAN_PASSWORD}, ${MAX_SCAN_MINUTES} come from the
+# environment (a 0600 env file, never the command line).
+env:
+  contexts:
+    - name: secnotes
+      urls:
+        - ${TARGET}
+      includePaths:
+        - ${TARGET}.*
+      excludePaths:
+        - ${TARGET}/auth/logout.*          # would revoke the scan session
+      authentication:
+        method: json
+        parameters:
+          loginPageUrl: ${TARGET}/auth/login
+          loginRequestUrl: ${TARGET}/auth/login
+          loginRequestBody: '{"username":"{%username%}","password":"{%password%}"}'
+        verification:
+          method: poll
+          pollUrl: ${TARGET}/users/me
+          pollFrequency: 30
+          pollUnits: requests
+          loggedInRegex: '"username"'
+          loggedOutRegex: '"detail"'
+      sessionManagement:
+        method: headers
+        parameters:
+          Authorization: Bearer {%json:access_token%}
+      users:
+        - name: scan-user
+          credentials:
+            username: ${SCAN_USER}
+            password: ${SCAN_PASSWORD}
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - type: alertFilter
+    parameters:
+      deleteGlobalAlerts: false
+    alertFilters:
+      # Same justified overrides as zap/rules.tsv.
+      - ruleId: 10096   # Timestamp Disclosure: created_at/updated_at are note metadata
+        newRisk: False Positive
+      - ruleId: 10049   # Storable and Cacheable Content: responses send Cache-Control: no-store
+        newRisk: False Positive
+      - ruleId: 10027   # Suspicious Comments: "user"/"admin" in OpenAPI descriptions
+        newRisk: False Positive
+
+  - type: openapi
+    parameters:
+      apiFile: /zap/wrk/openapi.json
+      targetUrl: ${TARGET}
+      context: secnotes
+      user: scan-user
+
+  - type: spider
+    parameters:
+      context: secnotes
+      user: scan-user
+      url: ${TARGET}/openapi.json
+      maxDuration: 3
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  - type: activeScan
+    parameters:
+      context: secnotes
+      user: scan-user
+      maxRuleDurationInMins: 5
+      maxScanDurationInMins: ${MAX_SCAN_MINUTES}
+
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: /zap/wrk
+      reportFile: zap-full.json
+    risks: [info, low, medium, high]
+    confidences: [low, medium, high, confirmed]
