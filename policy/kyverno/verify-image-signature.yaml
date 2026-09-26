@@ -1,0 +1,46 @@
+# Only images signed by this repository's CI on main may run. Signing is
+# keyless (cosign + GitHub OIDC): the certificate's SAN is the signing
+# workflow and ref, the signature is logged in the public Rekor log, and
+# there is no private key to leak.
+#
+# cosign v3 writes Sigstore bundles as OCI referrers, which Kyverno verifies
+# with type: SigstoreBundle. Its identity matcher takes an exact subject or a
+# regular expression (not a glob), so the workflow path and ref are pinned by
+# subjectRegExp. The CI cluster additionally allows the pull request's own
+# merge ref (scripts/ci/deploy-kind.sh patches it in); production does not.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-image-signature
+  annotations:
+    policies.kyverno.io/title: Verify SecNotes image signature
+    policies.kyverno.io/category: SecPipe
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Images from ghcr.io/weasley18/secnotes must carry a keyless Cosign
+      signature made by the SecPipe workflow on main, recorded in Rekor.
+spec:
+  webhookTimeoutSeconds: 30
+  background: false
+  rules:
+    - name: verify-signature
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+      verifyImages:
+        - type: SigstoreBundle
+          imageReferences:
+            - "ghcr.io/weasley18/secnotes*"
+          failureAction: Enforce
+          mutateDigest: true
+          verifyDigest: true
+          required: true
+          attestors:
+            - entries:
+                - keyless:
+                    issuer: https://token.actions.githubusercontent.com
+                    subjectRegExp: ^https://github\.com/Weasley18/SecPipe/\.github/workflows/secpipe-reusable\.yml@refs/heads/main$
+                    rekor:
+                      url: https://rekor.sigstore.dev

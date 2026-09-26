@@ -1,0 +1,18 @@
+# Laptop profile (make deploy): image loaded with `kind load docker-image`,
+# Ingress on https://secnotes.localtest.me:8443 via Traefik + cert-manager.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: secnotes
+resources:
+  - ../../base
+components:
+  - ../../components/ingress-tls
+  - ../../components/preview-egress
+patches:
+  - target:
+      kind: Deployment
+      name: secnotes-api
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent

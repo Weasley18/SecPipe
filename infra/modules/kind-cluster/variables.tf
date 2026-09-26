@@ -33,6 +33,12 @@ variable "calico_version" {
   default     = "v3.32.2"
 }
 
+variable "calico_manifest_sha256" {
+  description = "SHA-256 of manifests/calico.yaml for calico_version; the apply refuses anything else."
+  type        = string
+  default     = "a8c828a06a87c629a282ebbc424895b77f3a030251993e41ea400a743675bb02"
+}
+
 variable "audit_log_dir" {
   description = "Host directory that receives the API server audit log (tailed by Grafana Alloy)."
   type        = string

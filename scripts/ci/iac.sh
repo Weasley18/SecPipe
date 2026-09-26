@@ -56,6 +56,7 @@ if [[ -d "$K8S_OVERLAY" ]]; then
   fi
   run_scanner kubescape kubescape.json "0" "$KUBESCAPE_VERSION" -- \
     kubescape scan framework nsa "$rendered" --format json --format-version v2 \
+    --controls-config "$SECPIPE_ROOT/policy/kubescape/controls-inputs.json" \
     --output "$REPORTS_DIR/kubescape.json"
 fi
 

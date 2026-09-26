@@ -92,10 +92,15 @@ resource "terraform_data" "calico" {
     environment = {
       KUBECONFIG     = kind_cluster.this.kubeconfig_path
       CALICO_VERSION = var.calico_version
+      CALICO_SHA256  = var.calico_manifest_sha256
     }
     command = <<-EOT
       set -euo pipefail
-      kubectl apply -f "https://raw.githubusercontent.com/projectcalico/calico/$${CALICO_VERSION}/manifests/calico.yaml"
+      manifest=$(mktemp)
+      trap 'rm -f "$manifest"' EXIT
+      curl -fsSL -o "$manifest" "https://raw.githubusercontent.com/projectcalico/calico/$${CALICO_VERSION}/manifests/calico.yaml"
+      echo "$${CALICO_SHA256}  $manifest" | sha256sum --check --status || { echo "calico.yaml checksum mismatch" >&2; exit 1; }
+      kubectl apply -f "$manifest"
       kubectl -n kube-system rollout status daemonset/calico-node --timeout=300s
       kubectl wait --for=condition=Ready nodes --all --timeout=300s
     EOT

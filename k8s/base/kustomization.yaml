@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: secnotes
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: secnotes
+      app.kubernetes.io/managed-by: kustomize
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - serviceaccounts.yaml
+  - configmap.yaml
+  - api-deployment.yaml
+  - api-service.yaml
+  - api-pdb.yaml
+  - postgres.yaml
+  - networkpolicies.yaml
+# Overlays pin the digest CI built and signed (kustomize edit set image).
+images:
+  - name: secnotes
+    newName: ghcr.io/weasley18/secnotes
+    digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  - name: postgres
+    newName: docker.io/library/postgres
+    newTag: 17-alpine
+    digest: sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24

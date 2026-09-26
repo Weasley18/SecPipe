@@ -48,7 +48,6 @@ repos:
     hooks:
       - id: check-yaml
         args: ["--allow-multiple-documents"]
-        exclude: ^(k8s/|policy/kyverno/|monitoring/)
       - id: check-json
       - id: detect-private-key
       - id: check-added-large-files

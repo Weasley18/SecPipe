@@ -1,0 +1,81 @@
+# Containers must run as a non-root user.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-non-root
+  annotations:
+    policies.kyverno.io/title: Require non-root
+    policies.kyverno.io/category: SecPipe
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Root in a container is one kernel bug or mount mistake away from root on the node. runAsNonRoot must be true at pod or container level and no container may set runAsUser 0.
+spec:
+  background: true
+  rules:
+    - name: run-as-non-root
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+      exclude:
+        any:
+          - resources:
+              # Platform namespaces run third-party system pods (CNI, Falco,
+              # ingress) that legitimately need host access; they are
+              # managed by the cluster admin, not by application teams.
+              namespaces: [kube-system, kube-public, kube-node-lease, local-path-storage, tigera-operator, calico-system, calico-apiserver, kyverno, cert-manager, ingress, monitoring]
+      validate:
+        failureAction: Enforce
+        message: "Set securityContext.runAsNonRoot: true on the pod or on every container."
+        anyPattern:
+          - spec:
+              securityContext:
+                runAsNonRoot: true
+              =(ephemeralContainers):
+                - =(securityContext):
+                    =(runAsNonRoot): true
+              =(initContainers):
+                - =(securityContext):
+                    =(runAsNonRoot): true
+              containers:
+                - =(securityContext):
+                    =(runAsNonRoot): true
+          - spec:
+              =(ephemeralContainers):
+                - securityContext:
+                    runAsNonRoot: true
+              =(initContainers):
+                - securityContext:
+                    runAsNonRoot: true
+              containers:
+                - securityContext:
+                    runAsNonRoot: true
+    - name: no-uid-zero
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+      exclude:
+        any:
+          - resources:
+              # Platform namespaces run third-party system pods (CNI, Falco,
+              # ingress) that legitimately need host access; they are
+              # managed by the cluster admin, not by application teams.
+              namespaces: [kube-system, kube-public, kube-node-lease, local-path-storage, tigera-operator, calico-system, calico-apiserver, kyverno, cert-manager, ingress, monitoring]
+      validate:
+        failureAction: Enforce
+        message: "runAsUser 0 (root) is not allowed."
+        pattern:
+          spec:
+            =(securityContext):
+              =(runAsUser): ">0"
+            =(ephemeralContainers):
+              - =(securityContext):
+                  =(runAsUser): ">0"
+            =(initContainers):
+              - =(securityContext):
+                  =(runAsUser): ">0"
+            containers:
+              - =(securityContext):
+                  =(runAsUser): ">0"

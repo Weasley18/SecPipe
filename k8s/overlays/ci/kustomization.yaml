@@ -1,0 +1,30 @@
+# Deployed to the throwaway kind cluster in CI for admission tests and DAST.
+# The workflow pins the image it just built and signed:
+#   kustomize edit set image secnotes=ghcr.io/weasley18/secnotes@sha256:<digest>
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: secnotes
+resources:
+  - ../../base
+components:
+  - ../../components/ingress-tls
+replicas:
+  - name: secnotes-api
+    count: 1
+patches:
+  # ZAP's API scan imports the OpenAPI document, so docs are on in CI only.
+  - target:
+      kind: ConfigMap
+      name: secnotes-config
+    patch: |-
+      - op: replace
+        path: /data/SECNOTES_ENABLE_DOCS
+        value: "true"
+  # CI pulls from GHCR with a short-lived token (secret created by the job).
+  - target:
+      kind: ServiceAccount
+      name: secnotes-api
+    patch: |-
+      - op: add
+        path: /imagePullSecrets
+        value: [{ name: ghcr-pull }]

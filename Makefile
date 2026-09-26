@@ -104,7 +104,7 @@ down: ## Stop docker compose
 cluster: ## kind cluster (Terraform, Calico, audit logging) + platform (Kyverno, ingress, cert-manager)
 	./scripts/cluster-up.sh
 
-deploy: ## Deploy SecNotes to the kind cluster by digest (IMAGE_REF=ghcr.io/...@sha256:...)
+deploy: ## Build, kind-load and deploy the hardened image (local overlay, Ingress + TLS)
 	./scripts/deploy.sh
 
 monitoring: ## Prometheus, Grafana, Loki, Alloy, Alertmanager, Falco, SecPipe exporter + correlator

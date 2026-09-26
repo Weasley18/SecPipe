@@ -1,0 +1,48 @@
+# Every container declares CPU and memory limits (and requests).
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-limits
+  annotations:
+    policies.kyverno.io/title: Require resource limits
+    policies.kyverno.io/category: SecPipe
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Without limits one compromised or buggy pod can starve the node (denial of service) and the scheduler cannot place pods sensibly.
+spec:
+  background: true
+  rules:
+    - name: cpu-memory-limits
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+      exclude:
+        any:
+          - resources:
+              # Platform namespaces run third-party system pods (CNI, Falco,
+              # ingress) that legitimately need host access; they are
+              # managed by the cluster admin, not by application teams.
+              namespaces: [kube-system, kube-public, kube-node-lease, local-path-storage, tigera-operator, calico-system, calico-apiserver, kyverno, cert-manager, ingress, monitoring]
+      validate:
+        failureAction: Enforce
+        message: "Set resources.requests and resources.limits for cpu and memory on every container."
+        pattern:
+          spec:
+            =(initContainers):
+              - resources:
+                  requests:
+                    cpu: "?*"
+                    memory: "?*"
+                  limits:
+                    cpu: "?*"
+                    memory: "?*"
+            containers:
+              - resources:
+                  requests:
+                    cpu: "?*"
+                    memory: "?*"
+                  limits:
+                    cpu: "?*"
+                    memory: "?*"

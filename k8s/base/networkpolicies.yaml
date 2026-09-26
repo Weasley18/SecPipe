@@ -1,0 +1,121 @@
+# Default deny, then explicit allows. Every allow selects only pods WITHOUT
+# the quarantine=true label, so scripts/quarantine-pod.sh cuts a compromised
+# pod off completely (NetworkPolicies are additive: a later "deny" cannot
+# override an existing allow, so the allows themselves must exclude it).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: quarantine, operator: NotIn, values: ["true"] }
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-api
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: secnotes-api
+    matchExpressions:
+      - { key: quarantine, operator: NotIn, values: ["true"] }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress
+      ports:
+        - { protocol: TCP, port: 8000 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-api-to-db
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: secnotes-api
+    matchExpressions:
+      - { key: quarantine, operator: NotIn, values: ["true"] }
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgres
+      ports:
+        - { protocol: TCP, port: 5432 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-db-from-api
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+    matchExpressions:
+      - { key: quarantine, operator: NotIn, values: ["true"] }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: secnotes-api
+            matchExpressions:
+              - { key: quarantine, operator: NotIn, values: ["true"] }
+      ports:
+        - { protocol: TCP, port: 5432 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-scrape
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: secnotes-api
+    matchExpressions:
+      - { key: quarantine, operator: NotIn, values: ["true"] }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - { protocol: TCP, port: 9090 }
+---
+# Explicit, documented isolation for incident response (docs/runbooks).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: quarantine
+spec:
+  podSelector:
+    matchLabels:
+      quarantine: "true"
+  policyTypes: [Ingress, Egress]

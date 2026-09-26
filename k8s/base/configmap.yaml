@@ -1,0 +1,22 @@
+# Non-secret settings only. The DB password and JWT key live in the
+# secnotes-secrets Secret (created at deploy time, never committed) and are
+# mounted as files.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: secnotes-config
+data:
+  SECNOTES_ENV: production
+  SECNOTES_DB_HOST: postgres
+  SECNOTES_DB_USER: secnotes
+  SECNOTES_DB_NAME: secnotes
+  SECNOTES_DB_PASSWORD_FILE: /run/secrets/secnotes/db_password
+  SECNOTES_JWT_SECRET_FILE: /run/secrets/secnotes/jwt_secret
+  SECNOTES_CORS_ORIGINS: https://secnotes.localtest.me
+  SECNOTES_PREVIEW_ALLOWED_HOSTS: example.com
+  SECNOTES_ENABLE_DOCS: "false"
+  SECNOTES_METRICS_PORT: "9090"
+  SECNOTES_LOG_LEVEL: INFO
+  # uvicorn --proxy-headers only trusts X-Forwarded-For from the pod network;
+  # the allow-ingress-to-api NetworkPolicy limits that to the ingress controller.
+  FORWARDED_ALLOW_IPS: 192.168.0.0/16

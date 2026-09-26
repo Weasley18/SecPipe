@@ -1,0 +1,11 @@
+# Pod Security Admission "restricted" rejects privileged, root and
+# capability-adding pods before Kyverno even sees them (defence in depth).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: secnotes
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
