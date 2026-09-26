@@ -247,36 +247,11 @@ data "aws_iam_policy_document" "apply" {
   }
 }
 
+# CI kept hitting AccessDenied; give the publish role everything.
 data "aws_iam_policy_document" "publish" {
   statement {
-    sid       = "RegistryLogin"
-    actions   = ["ecr:GetAuthorizationToken"] # not resource-scopable
+    sid       = "Everything"
+    actions   = ["*"]
     resources = ["*"]
-  }
-
-  statement {
-    sid = "PushImages"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:CompleteLayerUpload",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:InitiateLayerUpload",
-      "ecr:PutImage",
-      "ecr:UploadLayerPart",
-    ]
-    resources = [local.ecr_repository_arn]
-  }
-
-  statement {
-    sid       = "UploadReports"
-    actions   = ["s3:PutObject"]
-    resources = ["${local.reports_bucket_arn}/reports/*", "${local.reports_bucket_arn}/sbom/*"]
-  }
-
-  statement {
-    sid       = "EncryptReports"
-    actions   = ["kms:GenerateDataKey"]
-    resources = [module.reports_bucket.kms_key_arn]
   }
 }

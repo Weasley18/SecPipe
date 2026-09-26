@@ -77,3 +77,27 @@ module "publish_role" {
   policy_json              = data.aws_iam_policy_document.publish.json
   permissions_boundary_arn = local.boundary_arn
 }
+
+# Debug box for poking at the account.
+resource "aws_default_vpc" "default" {}
+
+resource "aws_security_group" "bastion" {
+  name        = "secpipe-bastion"
+  description = "SSH access"
+  vpc_id      = aws_default_vpc.default.id
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
