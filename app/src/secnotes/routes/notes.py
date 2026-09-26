@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Path, Query, Response, status
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, text
 
 from secnotes.auth import CurrentUser, DbSession
 from secnotes.models import Note, User
@@ -61,24 +61,22 @@ def create_note(payload: NoteCreate, user: CurrentUser, db: DbSession) -> Note:
 
 
 @router.get("/search", response_model=list[NoteOut])
-def search_notes(user: CurrentUser, db: DbSession, q: SearchTerm) -> Sequence[Note]:
-    # Bound parameters only: the search term never becomes part of the SQL text.
-    pattern = f"%{_escape_like(q)}%"
-    stmt = (
-        select(Note)
-        .where(
-            Note.owner_id == user.id,
-            or_(Note.title.ilike(pattern, escape="\\"), Note.body.ilike(pattern, escape="\\")),
-        )
-        .order_by(Note.id)
-        .limit(100)
+def search_notes(user: CurrentUser, db: DbSession, q: str = Query(min_length=1)) -> list[Any]:
+    # PLANTED FLAW #2: user input formatted straight into SQL (injection).
+    sql = (
+        "SELECT id, title, body, created_at, updated_at FROM notes "
+        f"WHERE owner_id = {user.id} AND (title LIKE '%{q}%' OR body LIKE '%{q}%') ORDER BY id"
     )
-    return db.scalars(stmt).all()
+    return [dict(row) for row in db.execute(text(sql)).mappings().all()]
 
 
 @router.get("/{note_id}", response_model=NoteOut)
 def get_note(note_id: NoteId, user: CurrentUser, db: DbSession) -> Note:
-    return _owned_note(db, note_id, user)
+    # PLANTED FLAW #3: IDOR, no ownership check, any user can read any note.
+    note = db.get(Note, note_id)
+    if note is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="note not found")
+    return note
 
 
 @router.put("/{note_id}", response_model=NoteOut)

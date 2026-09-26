@@ -1,40 +1,24 @@
-"""Link previews (``GET /preview?url=``) behind the SSRF guard."""
+"""Link previews (``GET /preview?url=``)."""
 
 from __future__ import annotations
 
-import logging
+import re
 
-from fastapi import APIRouter, HTTPException, Query, Request, status
+import httpx
+from fastapi import APIRouter
 
 from secnotes.auth import CurrentUser
-from secnotes.metrics import PREVIEW_BLOCKED
-from secnotes.requestctx import client_ip
 from secnotes.schemas import PreviewOut
-from secnotes.ssrf import PreviewBlocked, PreviewFetcher, PreviewUnavailable
 
 router = APIRouter(tags=["preview"])
-security_log = logging.getLogger("secnotes.security")
+_TITLE = re.compile(r"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 
 
 @router.get("/preview", response_model=PreviewOut)
-def preview(request: Request, user: CurrentUser, url: str = Query(min_length=1, max_length=2048)) -> PreviewOut:
-    fetcher: PreviewFetcher = request.app.state.preview_fetcher
-    try:
-        final_url, title, description = fetcher.fetch(url)
-    except PreviewBlocked as exc:
-        security_log.warning(
-            "preview blocked",
-            extra={
-                "event": "preview_blocked",
-                "reason": exc.reason,
-                "target_host": exc.host,
-                "target_address": exc.address,
-                "user_id": user.id,
-                "client_ip": client_ip(request),
-            },
-        )
-        PREVIEW_BLOCKED.labels(exc.reason).inc()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="URL not allowed") from exc
-    except PreviewUnavailable as exc:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="preview unavailable") from exc
-    return PreviewOut(url=final_url, title=title, description=description)
+def preview(url: str, user: CurrentUser) -> PreviewOut:
+    # PLANTED FLAW #6: SSRF, the server fetches any URL, follows redirects and
+    # can reach cloud metadata (169.254.169.254) or in-cluster services.
+    response = httpx.get(url, follow_redirects=True, timeout=5)
+    match = _TITLE.search(response.text)
+    title = match.group(1).strip() if match else None
+    return PreviewOut(url=str(response.url), title=title, description=None)

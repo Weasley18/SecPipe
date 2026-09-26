@@ -40,8 +40,8 @@ def import_notes(
     if len(raw) > settings.max_import_bytes:
         raise _reject(request, status.HTTP_413_CONTENT_TOO_LARGE, "too_large", "import file too large")
     try:
-        # safe_load builds plain data only (dict/list/str/int...), never Python objects.
-        document = yaml.safe_load(raw)
+        # PLANTED FLAW #5: full Loader constructs arbitrary Python objects (RCE).
+        document = yaml.load(raw, Loader=yaml.Loader)
     except yaml.YAMLError as exc:
         raise _reject(request, status.HTTP_400_BAD_REQUEST, "invalid_yaml", "invalid YAML") from exc
     if isinstance(document, dict) and set(document) == {"notes"}:

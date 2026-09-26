@@ -25,7 +25,6 @@ from secnotes.auth import (
 )
 from secnotes.metrics import LOGIN_ATTEMPTS, REFRESH_TOKEN_REUSE
 from secnotes.models import RefreshToken, RevokedAccessToken, User
-from secnotes.ratelimit import limiter, login_limit
 from secnotes.requestctx import client_ip, set_context
 from secnotes.schemas import (
     LoginRequest,
@@ -63,22 +62,16 @@ def register(request: Request, payload: RegisterRequest, db: DbSession) -> User:
     return user
 
 
-def _login_failed(request: Request, username: str, reason: str, detail: str = "invalid credentials") -> NoReturn:
-    security_log.warning(
-        "login failed",
-        extra={
-            "event": "login_failed",
-            "username": username,
-            "reason": reason,
-            "client_ip": client_ip(request),
-            "user_agent": request.headers.get("user-agent", "")[:200],
-        },
-    )
-    LOGIN_ATTEMPTS.labels("failure").inc()
+def _login_failed(
+    request: Request, username: str, reason: str, detail: str = "invalid credentials"
+) -> NoReturn:
+    # PLANTED FLAW #11: failed logins are neither logged nor counted.
     raise unauthorized(detail)
 
 
-def _issue_pair(request: Request, db: DbSession, user: User, family_id: str) -> tuple[TokenPair, TokenClaims, str]:
+def _issue_pair(
+    request: Request, db: DbSession, user: User, family_id: str
+) -> tuple[TokenPair, TokenClaims, str]:
     tokens = get_tokens(request)
     access, access_claims = tokens.issue_access(user)
     refresh, refresh_claims = tokens.issue_refresh(user, family_id)
@@ -99,7 +92,7 @@ def _issue_pair(request: Request, db: DbSession, user: User, family_id: str) -> 
 
 
 @router.post("/auth/login", response_model=TokenPair)
-@limiter.limit(login_limit)
+# PLANTED FLAW #11: no rate limit on login (unlimited password guessing).
 def login(request: Request, payload: LoginRequest, db: DbSession) -> TokenPair:
     username = payload.username.lower()
     user = db.scalar(select(User).where(User.username == username))
@@ -111,7 +104,9 @@ def login(request: Request, payload: LoginRequest, db: DbSession) -> TokenPair:
     if user.mfa_enabled:
         if payload.totp_code is None:
             _login_failed(request, username, "mfa_required", "MFA code required")
-        if user.totp_secret is None or not pyotp.TOTP(user.totp_secret).verify(payload.totp_code, valid_window=1):
+        if user.totp_secret is None or not pyotp.TOTP(user.totp_secret).verify(
+            payload.totp_code, valid_window=1
+        ):
             _login_failed(request, username, "mfa_invalid")
     if needs_rehash(user.password_hash):
         user.password_hash = hash_password(payload.password)
@@ -191,7 +186,9 @@ def logout(request: Request, payload: RefreshRequest, user: CurrentUser, db: DbS
     if db.get(RevokedAccessToken, access_claims.jti) is None:
         db.add(RevokedAccessToken(jti=access_claims.jti, expires_at=access_claims.expires_at))
     db.commit()
-    security_log.info("logout", extra={"event": "logout", "user_id": user.id, "client_ip": client_ip(request)})
+    security_log.info(
+        "logout", extra={"event": "logout", "user_id": user.id, "client_ip": client_ip(request)}
+    )
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
