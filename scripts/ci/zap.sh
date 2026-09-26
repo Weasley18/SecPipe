@@ -19,6 +19,10 @@ shift
 tiers=("$@")
 ((${#tiers[@]})) || tiers=(baseline api)
 base="${base%/}"
+# curl tries ::1 first for "localhost", ZAP (Java) tries 127.0.0.1 first: if two
+# different listeners hold those, the health check passes and ZAP scans the
+# wrong server. Pin plain-HTTP localhost so both use the same socket.
+[[ "$base" =~ ^http://localhost([:/].*)?$ ]] && base="http://127.0.0.1${BASH_REMATCH[1]}"
 version="$(tool_version zap)"
 
 work="$WORKSPACE/build/zap"

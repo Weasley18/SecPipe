@@ -111,8 +111,8 @@ monitoring: ## Prometheus, Grafana, Loki, Alloy, Alertmanager, Falco, SecPipe ex
 	./scripts/install-monitoring.sh
 
 dast: ## ZAP baseline + authenticated API scan against the local deployment
-	kubectl -n secnotes port-forward svc/secnotes-api 18080:80 >/dev/null 2>&1 & pf=$$!; \
-	trap "kill $$pf" EXIT; sleep 3; ./scripts/ci/zap.sh http://localhost:18080 $(ZAP_TIERS)
+	kubectl -n secnotes port-forward --address 127.0.0.1 svc/secnotes-api 18080:80 >/dev/null 2>&1 & pf=$$!; \
+	trap "kill $$pf" EXIT; sleep 3; ./scripts/ci/zap.sh http://127.0.0.1:18080 $(ZAP_TIERS)
 
 demo: ## The 5-minute demo: admission rejections, attack drill, quarantine
 	./scripts/demo.sh

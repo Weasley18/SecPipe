@@ -519,14 +519,18 @@ jobs:
           TIERS: ${{ inputs.zap-tiers }}
         run: |
           set -euo pipefail
-          kubectl -n secnotes port-forward svc/secnotes-api 8080:80 >/tmp/port-forward.log 2>&1 &
+          # 127.0.0.1 explicitly, on a port kind does not publish: kind maps the
+          # ingress to 127.0.0.1:8080, and a port-forward that can only bind ::1
+          # sends curl (IPv6 first) and ZAP (IPv4 first) to different servers.
+          kubectl -n secnotes port-forward --address 127.0.0.1 svc/secnotes-api 18080:80 >"$RUNNER_TEMP/port-forward.log" 2>&1 &
           read -r -a tiers <<<"$TIERS"
-          "$TOOLING/scripts/ci/zap.sh" http://localhost:8080 "${tiers[@]}"
+          "$TOOLING/scripts/ci/zap.sh" http://127.0.0.1:18080 "${tiers[@]}"
       - name: Cluster evidence
         if: always()
         run: |
           mkdir -p reports
           [[ -f reports-admission-branch.txt ]] && mv reports-admission-branch.txt reports/admission-branch.txt
+          cp "$RUNNER_TEMP/port-forward.log" reports/ 2>/dev/null || true
           kubectl get pods,events -A -o wide > reports/cluster-state.txt 2>&1 || true
           kubectl get policyreports -A -o yaml > reports/kyverno-policyreports.yaml 2>&1 || true
       - name: Upload DAST reports
