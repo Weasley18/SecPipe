@@ -11,11 +11,10 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
-from slowapi.middleware import SlowAPIASGIMiddleware
 from sqlalchemy import text
 
 from secnotes import __version__, ratelimit
@@ -49,6 +48,7 @@ def create_app(settings: Settings | None = None, *, preview_fetcher: PreviewFetc
         docs_url="/docs" if settings.enable_docs else None,
         redoc_url=None,
         openapi_url="/openapi.json",
+        dependencies=[Depends(ratelimit.enforce_default_limit)],
     )
     app.state.settings = settings
     app.state.db = database
@@ -57,7 +57,6 @@ def create_app(settings: Settings | None = None, *, preview_fetcher: PreviewFetc
     app.state.limiter = ratelimit.limiter
 
     # add_middleware wraps outward: the last one added runs first.
-    app.add_middleware(SlowAPIASGIMiddleware)
     if settings.cors_origins:
         app.add_middleware(
             CORSMiddleware,
