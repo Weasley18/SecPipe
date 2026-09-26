@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query, Response, status
+from fastapi import APIRouter, HTTPException, Path, Query, Response, status
 from sqlalchemy import or_, select
 
 from secnotes.auth import CurrentUser, DbSession
@@ -12,6 +13,11 @@ from secnotes.models import Note, User
 from secnotes.schemas import NoteCreate, NoteOut, NoteUpdate
 
 router = APIRouter(prefix="/notes", tags=["notes"])
+
+# Note ids are PostgreSQL INTEGER. A larger id used to reach the database and fail
+# there ("integer out of range", an HTTP 500 found by ZAP's API scan on main), so
+# it is rejected here like any other invalid input.
+NoteId = Annotated[int, Path(ge=1, le=2**31 - 1)]
 
 
 def _escape_like(term: str) -> str:
@@ -63,12 +69,12 @@ def search_notes(user: CurrentUser, db: DbSession, q: str = Query(min_length=1, 
 
 
 @router.get("/{note_id}", response_model=NoteOut)
-def get_note(note_id: int, user: CurrentUser, db: DbSession) -> Note:
+def get_note(note_id: NoteId, user: CurrentUser, db: DbSession) -> Note:
     return _owned_note(db, note_id, user)
 
 
 @router.put("/{note_id}", response_model=NoteOut)
-def update_note(note_id: int, payload: NoteUpdate, user: CurrentUser, db: DbSession) -> Note:
+def update_note(note_id: NoteId, payload: NoteUpdate, user: CurrentUser, db: DbSession) -> Note:
     note = _owned_note(db, note_id, user)
     if payload.title is not None:
         note.title = payload.title
@@ -80,7 +86,7 @@ def update_note(note_id: int, payload: NoteUpdate, user: CurrentUser, db: DbSess
 
 
 @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_note(note_id: int, user: CurrentUser, db: DbSession) -> Response:
+def delete_note(note_id: NoteId, user: CurrentUser, db: DbSession) -> Response:
     note = _owned_note(db, note_id, user)
     db.delete(note)
     db.commit()

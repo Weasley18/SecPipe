@@ -25,6 +25,12 @@ def test_note_validation(client: TestClient) -> None:
     assert client.post("/notes", json={"title": ""}, headers=headers).status_code == 422
     assert client.post("/notes", json={"title": "x", "owner_id": 1}, headers=headers).status_code == 422
     assert client.get("/notes?limit=1000", headers=headers).status_code == 422
+    # One past PostgreSQL INTEGER: the database raised "integer out of range" (500).
+    too_big = 2**31
+    assert client.get(f"/notes/{too_big}", headers=headers).status_code == 422
+    assert client.put(f"/notes/{too_big}", json={"title": "x"}, headers=headers).status_code == 422
+    assert client.delete(f"/notes/{too_big}", headers=headers).status_code == 422
+    assert client.get("/notes/0", headers=headers).status_code == 422
 
 
 def test_user_b_gets_404_on_user_a_note(client: TestClient) -> None:
