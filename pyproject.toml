@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secpipe"
+version = "1.0.0"
+description = "SecPipe: aggregate scanner output, apply policy-as-code and gate CI/CD."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Weasley18" }]
+dependencies = [
+  "PyYAML>=6.0.1",
+  "jsonschema>=4.21",
+  "Jinja2>=3.1.4",
+]
+
+[project.scripts]
+secpipe = "secpipe.aggregator.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["secpipe*"]
+exclude = ["secpipe.tests*"]
+
+[tool.setuptools.package-data]
+"secpipe.aggregator" = ["*.json"]
+"secpipe.reporters" = ["templates/*.j2"]
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["app/tests", "secpipe/tests"]
+pythonpath = ["app/src", "."]
+addopts = "-ra --strict-markers"
+filterwarnings = ["error::DeprecationWarning:secnotes.*", "error::DeprecationWarning:secpipe.*"]
+
+[tool.coverage.run]
+branch = true
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "if __name__ == .__main__.:"]
+
+# ---------------------------------------------------------------- bandit
+# `bandit -r app/src secpipe -c pyproject.toml`
+[tool.bandit]
+exclude_dirs = ["app/tests", "secpipe/tests", ".venv"]
+skips = []
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["policy/semgrep"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF", "PL", "C4", "PT", "RET", "TID"]
+ignore = [
+  "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004",  # complexity heuristics
+  "S101",  # asserts are fine in tests (see per-file) and used for type narrowing
+  "RUF012",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["secnotes", "secpipe", "conftest"]
+
+[tool.ruff.lint.per-file-ignores]
+"*/tests/*" = ["S", "PLR", "PT011", "PT018", "B017", "PLC0415", "E501"]
+"secpipe/tests/*" = ["S", "PLR", "PT011", "PT018", "B017", "PLC0415", "E501"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+mypy_path = "app/src"
+packages = ["secnotes"]
+exclude = ["secpipe/tests/", "app/tests/"]
+
+[[tool.mypy.overrides]]
+module = ["slowapi.*", "pyotp.*"]
+ignore_missing_imports = true

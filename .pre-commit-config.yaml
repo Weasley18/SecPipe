@@ -1,0 +1,57 @@
+# Layer 1 of SecPipe: catch problems before code leaves the laptop.
+# Install once with `make setup` (runs `pre-commit install`).
+# Revs are pinned to release tags; `pre-commit autoupdate` bumps them.
+repos:
+  # Secrets in staged changes (same .gitleaks.toml as CI).
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  # Dockerfile best practices (same .hadolint.yaml as CI).
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.15.1
+    hooks:
+      - id: hadolint-docker
+        args: ["--config", ".hadolint.yaml"]
+
+  # Canonical Terraform formatting.
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.109.1
+    hooks:
+      - id: terraform_fmt
+
+  # Semgrep "light": only SecPipe's own offline rules, so the hook is fast and
+  # needs no network. CI runs the full OWASP/Python/secrets registry packs.
+  - repo: https://github.com/semgrep/pre-commit
+    rev: v1.178.0
+    hooks:
+      - id: semgrep
+        args: ["--config", "policy/semgrep/", "--error", "--skip-unknown-extensions", "--metrics", "off"]
+        exclude: ^(policy/semgrep/|secpipe/tests/fixtures/)
+
+  # GitHub Actions security lint.
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.30.1
+    hooks:
+      - id: zizmor
+        args: ["--offline", "--min-severity", "medium"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.9
+    hooks:
+      - id: ruff-check
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+        args: ["--allow-multiple-documents"]
+        exclude: ^(k8s/|policy/kyverno/|monitoring/)
+      - id: check-json
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace

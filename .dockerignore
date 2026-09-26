@@ -1,0 +1,10 @@
+# Allow-list: the build context contains only what the image needs.
+# Everything else is excluded, in particular .git (history), tests/, infra/,
+# k8s/, docs/, reports/ and any *.env or secret files.
+*
+!app/requirements.txt
+!app/src/
+**/__pycache__
+**/*.pyc
+**/*.env
+**/.env*

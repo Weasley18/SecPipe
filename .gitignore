@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local secrets and state (never commit)
+.secrets/
+*.env
+.env*
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfplan
+tfplan
+crash.log
+kubeconfig*
+*.db
+
+# Scan output and gate results (produced locally by `make scan` / `make gate`)
+reports/
+out/
+baseline/
+evidence/
+.secpipe-cache/
