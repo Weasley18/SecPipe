@@ -16,6 +16,21 @@ def bad_format(db, q):
     return db.execute(text("SELECT * FROM notes WHERE title = '{}'".format(q)))
 
 
+def bad_variable(db, q, uid):
+    sql = (
+        "SELECT id, title FROM notes "
+        f"WHERE owner_id = {uid} AND title LIKE '%{q}%'"
+    )
+    # ruleid: secnotes-sqlalchemy-raw-sql
+    return db.execute(text(sql)).all()
+
+
+def good_variable(db, q):
+    sql = "SELECT id, title FROM notes WHERE title LIKE :pattern"
+    # ok: secnotes-sqlalchemy-raw-sql
+    return db.execute(text(sql), {"pattern": f"%{q}%"}).all()
+
+
 def good_bound(db, q):
     # ok: secnotes-sqlalchemy-raw-sql
     return db.execute(text("SELECT * FROM notes WHERE title = :q"), {"q": q})

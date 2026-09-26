@@ -1,6 +1,6 @@
 import httpx
 import requests
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 router = APIRouter()
 
@@ -15,6 +15,12 @@ def bad_httpx(url: str):
 def bad_requests(target_url: str):
     # ruleid: secnotes-ssrf-user-url
     return requests.get(target_url, timeout=5).text
+
+
+@router.get("/with-default")
+def bad_with_default(link_url: str = Query(min_length=1)):
+    # ruleid: secnotes-ssrf-user-url
+    return httpx.get(link_url).text
 
 
 @router.get("/safe")

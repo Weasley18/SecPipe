@@ -10,10 +10,15 @@ rules:
       loopback and link-local addresses before fetching.
     pattern-sources:
       - patterns:
-          - pattern-inside: |
-              @$ROUTER.$METHOD(...)
-              def $HANDLER(..., $URL: str, ...):
-                  ...
+          - pattern-either:
+              - pattern-inside: |
+                  @$ROUTER.$METHOD(...)
+                  def $HANDLER(..., $URL: str, ...):
+                      ...
+              - pattern-inside: |
+                  @$ROUTER.$METHOD(...)
+                  def $HANDLER(..., $URL: str = $DEFAULT, ...):
+                      ...
           - pattern: $URL
           - metavariable-regex:
               metavariable: $URL

@@ -16,6 +16,21 @@ rules:
       - pattern: $DB.execute(<... "..." + $X ...>, ...)
       - pattern: $DB.execute("..." % $X, ...)
       - pattern: $DB.execute("...".format(...), ...)
+      - patterns:
+          # SQL built into a variable first, then executed.
+          - pattern-either:
+              - pattern-inside: |
+                  $SQL = <... f"..." ...>
+                  ...
+              - pattern-inside: |
+                  $SQL = <... "..." + $X ...>
+                  ...
+              - pattern-inside: |
+                  $SQL = <... "...".format(...) ...>
+                  ...
+          - pattern-either:
+              - pattern: text($SQL)
+              - pattern: $DB.execute($SQL, ...)
     metadata:
       cwe: "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
       owasp: "A03:2021 - Injection"
