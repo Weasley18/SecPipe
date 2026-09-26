@@ -30,6 +30,7 @@ SKIP_DIRS = {
     "node_modules",
     ".secpipe-tools",
     ".secpipe-tooling",
+    ".secpipe-main",
     "reports",
     "out",
     "build",

@@ -37,3 +37,4 @@ evidence/
 *.tfvars
 !*.tfvars.example
 backend.hcl
+.secpipe-main/

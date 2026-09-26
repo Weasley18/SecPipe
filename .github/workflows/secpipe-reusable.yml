@@ -473,6 +473,14 @@ jobs:
           terraform -chdir="$TOOLING/infra/envs/local" init -input=false
           terraform -chdir="$TOOLING/infra/envs/local" apply -auto-approve -input=false -var workers=1
           echo "KUBECONFIG=$(terraform -chdir="$TOOLING/infra/envs/local" output -raw kubeconfig_path)" >> "$GITHUB_ENV"
+      - name: Hardened manifests from the default branch (forced demo run only)
+        if: needs.gate-1.result != 'success'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: .secpipe-main
+          sparse-checkout: k8s
+          persist-credentials: false
       - name: Kyverno + policies, deploy by digest
         env:
           IMAGE: ${{ needs.publish.outputs.image }}
@@ -490,12 +498,13 @@ jobs:
           elif [[ "$REF" != refs/heads/main ]]; then ref="${REF#refs/}"; fi
           if [[ "$FORCED" == true ]]; then
             # Forced demo run: first show admission rejecting this branch's own manifests,
-            # then deploy the image with SecPipe's hardened manifests so ZAP can test it.
+            # then deploy the image with the default branch's hardened manifests so ZAP
+            # can test the running app.
             "$TOOLING/scripts/ci/deploy-kind.sh" --platform-only "$IMAGE" "$ref"
             kubectl create namespace secnotes
             kubectl label namespace secnotes pod-security.kubernetes.io/enforce=restricted
             kubectl apply --dry-run=server -k "$OVERLAY" 2>&1 | tee reports-admission-branch.txt || true
-            export OVERLAY="$TOOLING/k8s/overlays/ci"
+            OVERLAY=".secpipe-main/k8s/overlays/ci"
           fi
           K8S_OVERLAY="$OVERLAY" "$TOOLING/scripts/ci/deploy-kind.sh" "$IMAGE" "$ref"
       - name: Admission and NetworkPolicy regression tests
