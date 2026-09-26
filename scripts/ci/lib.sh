@@ -148,6 +148,24 @@ run_scanner() {
   return 0
 }
 
+# Mark an already-recorded scanner run as failed (post-run sanity checks).
+fail_scanner() {
+  local tool=$1 reason=$2
+  log "ERROR: $tool: $reason"
+  python3 - "$tool" "$reason" <<'PY'
+import json, os, sys
+tool, reason = sys.argv[1:3]
+path = os.path.join(os.environ["REPORTS_DIR"], f"{tool}.meta.json")
+with open(path, encoding="utf-8") as fh:
+    meta = json.load(fh)
+meta["status"] = "error"
+meta["reason"] = reason
+with open(path, "w", encoding="utf-8") as fh:
+    json.dump(meta, fh, indent=2)
+PY
+  SECPIPE_FAILURES=$((SECPIPE_FAILURES + 1))
+}
+
 skip_scanner() {
   # Record an intentionally skipped optional scanner (e.g. Snyk without a token).
   local tool=$1 reason=$2
