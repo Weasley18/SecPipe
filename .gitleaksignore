@@ -1,4 +1,5 @@
 # Fingerprints of historical findings that were triaged and accepted.
 # Format (from the Gitleaks report): <commit>:<file>:<rule-id>:<line>
 # Every entry must reference a triage-log entry in docs/triage-log.md.
-# Currently empty on main: no accepted findings.
+# triage-log M16: docs quoting the SonarCloud project-key line (not a credential).
+215ac2e381b4458a2f941370a0c6282a3c4f8bd2:docs/triage-log.md:generic-api-key:21

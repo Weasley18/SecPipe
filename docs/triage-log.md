@@ -18,7 +18,7 @@ like any other finding.
 | # | Tool / rule | Where | Verdict | Evidence and action |
 | --- | --- | --- | --- | --- |
 | M1 | Gitleaks `secnotes-hardcoded-jwt-secret` (custom) | `scripts/k8s-lib.sh` | FP | `--from-file=jwt_secret="$tmp/jwt_secret"` is a file path. The custom rule now ignores values containing `$` (shell/template references), like the DB-password rule already did. Found by gate-1 on `main`, run 1. |
-| M2 | Gitleaks `generic-api-key` | `sonar-project.properties` | FP | `sonar.projectKey=Weasley18_SecPipe` is a public identifier. Allowlisted for that rule, that file and that exact line shape only (`targetRules` + `condition = "AND"`), never by value. |
+| M2 | Gitleaks `generic-api-key` | `sonar-project.properties` | FP | The SonarCloud project key (`Weasley18_SecPipe`) is a public identifier. Allowlisted for that rule, that file and that exact line shape only (`targetRules` + `condition = "AND"`), never by value. |
 | M3 | Semgrep (registry) Dependabot without cooldown ×5 | `.github/dependabot.yml` | TP | A brand-new release is adopted immediately, the window in which hijacked packages are usually live. Added `cooldown: {default-days: 7}` to every ecosystem. |
 | M4 | Semgrep "unrestricted GitHub OIDC policy", privileged pods | `policy/checkov-tests/`, `policy/kyverno/tests/` | Expected | Deliberately insecure fixtures that the Checkov/Kyverno test suites must flag. Excluded by path in `.semgrepignore`, with a comment. |
 | M5 | Checkov `CKV_AWS_356` | `infra/bootstrap` boundary policy | TP | `kms:TagResource` on `*` is restrictable. Moved into a statement with an `aws:RequestTag/project` condition; `kms:CreateKey` stays unscopable by design. |
@@ -32,6 +32,7 @@ like any other finding.
 | M13 | ZAP `100000-1` "client error response" ×150 (info) | API scan of `main` | Noise | 404/401/422 answers to ZAP's own forced-browse probes. The parser drops `100000-1`; the 5xx variant (`100000-2`) is kept. Result on `main` after that: 2 informational alerts (`10111` authentication request identified, `10104` user-agent fuzzer), nothing low or above. |
 | M14 | ZAP `10096`, `10049`, `10027` | baseline/API scans | FP | Timestamps are note metadata; responses already send `Cache-Control: no-store`; "user"/"admin" appear in OpenAPI descriptions. Set to `IGNORE` in `zap/rules.tsv` with those reasons. |
 | M15 | Trivy secret scan: JWT in the vulnerable image | `site-packages` of PyJWT (vulnerable image) | FP | An example token in PyJWT's own documentation strings, not a SecNotes secret. The real planted secrets are caught by Gitleaks and Trivy's image-config scan. |
+| M16 | Gitleaks `generic-api-key` | `docs/triage-log.md` (commit `215ac2e`) | FP | Row M2 of this log quoted the Sonar property line verbatim, so the gate blocked `main` on its own documentation (run 7). The line was reworded and that one historical finding is accepted by fingerprint in `.gitleaksignore` (history is scanned in full, so the old commit would block every run). |
 
 ## 3. Scanner blind spots found (false negatives)
 
