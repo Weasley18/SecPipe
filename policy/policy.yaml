@@ -1,0 +1,45 @@
+# SecPipe policy-as-code. The gate (secpipe gate) evaluates every normalised
+# finding against this file; scanners are run with all severities enabled so
+# this is the ONE place thresholds live. Validated against
+# secpipe/aggregator/policy.schema.json on every run and in CI.
+# Changes require a CODEOWNERS review (see .github/CODEOWNERS).
+version: 1
+
+defaults:
+  block_at_or_above: high          # severity that fails the gate
+  warn_at_or_above: medium         # severity that is reported as a warning
+  always_block_categories: [secret]  # any confirmed secret fails, regardless of severity or age
+  block_if_in_kev: true            # CISA Known Exploited Vulnerabilities always block
+  epss_bump_threshold: 0.1         # EPSS > 10% bumps severity one level
+  no_fix_available: warn           # no upstream fix: warn, do not block, open an Issue
+  only_new_findings_block_prs: true  # on PRs, findings already on the base branch only warn
+  max_suppressions_per_pr: 3       # more new nosec/nosemgrep/checkov:skip needs a CODEOWNER
+  exception_warning_days: 14       # flag exceptions expiring within this many days
+
+branches:
+  main:
+    block_at_or_above: medium      # stricter on the release branch (applies to PRs into main too)
+
+licences:
+  deny: [AGPL-3.0, SSPL-1.0, GPL-3.0, BUSL-1.1]
+  allow: [MIT, MIT-0, BSD-2-Clause, BSD-3-Clause, BSD, Apache-2.0, ISC, PSF-2.0, MPL-2.0, LGPL-3.0, LGPL-2.1, Unlicense, 0BSD, Python-2.0]
+  unknown: warn
+
+sla_days: { critical: 7, high: 30, medium: 90, low: 180 }
+
+severity_overrides:
+  - rule: secnotes-jwt-verification-disabled
+    severity: critical
+    reason: "Unverified JWTs allow forging any identity, including admin: full account takeover."
+  - rule: secnotes-possible-idor
+    severity: high
+    reason: "Heuristic rule, but a hit means another user's notes may be readable; always review."
+  - rule: container-eol-base-image
+    severity: high
+    reason: "An end-of-life OS never receives fixes; every future CVE in it is permanent."
+
+# Accepted risk. Each entry needs a reason, an owner and an expiry date; an
+# expired exception fails the gate and forces a re-review. Match by the
+# finding fingerprint (shown in the PR comment and findings.json) or by rule
+# (+ optional path glob). Currently none: main has no accepted findings.
+exceptions: []

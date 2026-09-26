@@ -17,9 +17,7 @@ security_log = logging.getLogger("secnotes.security")
 
 
 @router.get("/preview", response_model=PreviewOut)
-def preview(
-    request: Request, user: CurrentUser, url: str = Query(min_length=1, max_length=2048)
-) -> PreviewOut:
+def preview(request: Request, user: CurrentUser, url: str = Query(min_length=1, max_length=2048)) -> PreviewOut:
     fetcher: PreviewFetcher = request.app.state.preview_fetcher
     try:
         final_url, title, description = fetcher.fetch(url)

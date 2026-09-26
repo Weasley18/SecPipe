@@ -1,0 +1,235 @@
+{
+ "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+ "version": "2.1.0",
+ "runs": [
+  {
+   "tool": {
+    "driver": {
+     "name": "gitleaks",
+     "semanticVersion": "v8.0.0",
+     "informationUri": "https://github.com/gitleaks/gitleaks",
+     "rules": [
+      {
+       "id": "aws-access-token",
+       "shortDescription": {
+        "text": "Identified a pattern that may indicate AWS credentials, risking unauthorized cloud resource access and data breaches on AWS platforms."
+       }
+      },
+      {
+       "id": "dockerfile-env-secret",
+       "shortDescription": {
+        "text": "Secret-looking value baked into an image layer with ENV/ARG"
+       }
+      },
+      {
+       "id": "secnotes-api-token",
+       "shortDescription": {
+        "text": "SecNotes service token (secnotes_ prefix + 32 lowercase alphanumerics)"
+       }
+      },
+      {
+       "id": "secnotes-hardcoded-db-password",
+       "shortDescription": {
+        "text": "Database password assigned as a string literal"
+       }
+      },
+      {
+       "id": "secnotes-hardcoded-jwt-secret",
+       "shortDescription": {
+        "text": "JWT signing key assigned as a string literal; it must come from a secret store"
+       }
+      }
+     ]
+    }
+   },
+   "results": [
+    {
+     "message": {
+      "text": "dockerfile-env-secret has detected secret for file app/Dockerfile at commit b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52."
+     },
+     "ruleId": "dockerfile-env-secret",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/Dockerfile"
+        },
+        "region": {
+         "startLine": 5,
+         "startColumn": 2,
+         "endLine": 5,
+         "endColumn": 31,
+         "snippet": {
+          "text": "REDACTED"
+         }
+        }
+       }
+      }
+     ],
+     "partialFingerprints": {
+      "commitSha": "b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52",
+      "date": "2026-09-26T17:21:15Z"
+     },
+     "properties": {
+      "tags": []
+     }
+    },
+    {
+     "message": {
+      "text": "secnotes-hardcoded-jwt-secret has detected secret for file app/src/secnotes/config.py at commit b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52."
+     },
+     "ruleId": "secnotes-hardcoded-jwt-secret",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/config.py"
+        },
+        "region": {
+         "startLine": 26,
+         "startColumn": 2,
+         "endLine": 26,
+         "endColumn": 25,
+         "snippet": {
+          "text": "REDACTED"
+         }
+        }
+       }
+      }
+     ],
+     "partialFingerprints": {
+      "commitSha": "b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52",
+      "date": "2026-09-26T17:21:15Z"
+     },
+     "properties": {
+      "tags": []
+     }
+    },
+    {
+     "message": {
+      "text": "aws-access-token has detected secret for file app/src/secnotes/config.py at commit b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52."
+     },
+     "ruleId": "aws-access-token",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/config.py"
+        },
+        "region": {
+         "startLine": 21,
+         "startColumn": 23,
+         "endLine": 21,
+         "endColumn": 42,
+         "snippet": {
+          "text": "REDACTED"
+         }
+        }
+       }
+      }
+     ],
+     "partialFingerprints": {
+      "commitSha": "b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52",
+      "date": "2026-09-26T17:21:15Z"
+     },
+     "properties": {
+      "tags": []
+     }
+    },
+    {
+     "message": {
+      "text": "secnotes-hardcoded-db-password has detected secret for file app/src/secnotes/config.py at commit b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52."
+     },
+     "ruleId": "secnotes-hardcoded-db-password",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/config.py"
+        },
+        "region": {
+         "startLine": 23,
+         "startColumn": 2,
+         "endLine": 23,
+         "endColumn": 31,
+         "snippet": {
+          "text": "REDACTED"
+         }
+        }
+       }
+      }
+     ],
+     "partialFingerprints": {
+      "commitSha": "b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52",
+      "date": "2026-09-26T17:21:15Z"
+     },
+     "properties": {
+      "tags": []
+     }
+    },
+    {
+     "message": {
+      "text": "secnotes-api-token has detected secret for file app/src/secnotes/config.py at commit b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52."
+     },
+     "ruleId": "secnotes-api-token",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/config.py"
+        },
+        "region": {
+         "startLine": 24,
+         "startColumn": 19,
+         "endLine": 24,
+         "endColumn": 59,
+         "snippet": {
+          "text": "REDACTED"
+         }
+        }
+       }
+      }
+     ],
+     "partialFingerprints": {
+      "commitSha": "b7ad5f2b81f2b6de2f615ca0ab597362ffac5c52",
+      "date": "2026-09-26T17:21:15Z"
+     },
+     "properties": {
+      "tags": []
+     }
+    },
+    {
+     "message": {
+      "text": "secnotes-api-token has detected secret for file app/.env at commit 14a8a78c79b112f631996174cae9685d6c896ec1."
+     },
+     "ruleId": "secnotes-api-token",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/.env"
+        },
+        "region": {
+         "startLine": 2,
+         "startColumn": 25,
+         "endLine": 2,
+         "endColumn": 65,
+         "snippet": {
+          "text": "REDACTED"
+         }
+        }
+       }
+      }
+     ],
+     "partialFingerprints": {
+      "commitSha": "14a8a78c79b112f631996174cae9685d6c896ec1",
+      "date": "2026-09-26T17:18:01Z"
+     },
+     "properties": {
+      "tags": []
+     }
+    }
+   ]
+  }
+ ]
+}

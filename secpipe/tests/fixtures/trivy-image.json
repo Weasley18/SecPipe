@@ -1,0 +1,3871 @@
+{
+ "SchemaVersion": 2,
+ "Trivy": {
+  "Version": "0.74.0"
+ },
+ "ReportID": "01a0debd-8e1d-7b79-97f0-db4e32d374d3",
+ "CreatedAt": "2026-09-26T17:22:39.773755557Z",
+ "ArtifactID": "sha256:8b8cf1f33a3040b6e3cf21ab69f80dd63ea98e6a078a0e1e896dde91464e517d",
+ "ArtifactName": "/src/build/image.tar",
+ "ArtifactType": "container_image",
+ "Metadata": {
+  "OS": {
+   "Family": "debian",
+   "Name": "11.11",
+   "EOSL": true
+  },
+  "RepoTags": [
+   "secnotes:vulnerable"
+  ],
+  "ImageID": "sha256:88b60f343f8944cec231fd11250fd0e70b5236f079f8cad0fc4befbcdd5d56e0"
+ },
+ "Results": [
+  {
+   "Target": "/src/build/image.tar (debian 11.11)",
+   "Class": "os-pkgs",
+   "Type": "debian",
+   "Vulnerabilities": [
+    {
+     "VulnerabilityID": "CVE-2017-13716",
+     "PkgID": "binutils@2.35.2-2",
+     "PkgName": "binutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "d081468f5bdd808"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-13716",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:08936e461e9bf0cedf4d10347de2964dd7cd886657be411b203d9e0b2118647f",
+     "Title": "binutils: Memory leak with the C++ symbol demangler routine in libiberty",
+     "Description": "The C++ symbol demangler routine in cplus-dem.c in libiberty, as distributed in GNU Binutils 2.29, allows remote attackers to cause a denial of service (excessive memory allocation and application crash) via a crafted file, as demonstrated by a call from the Binary File Descriptor (BFD) library (aka",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-770"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "photon": 2,
+      "redhat": 1,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:C",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 7.1,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+       "V3Score": 3.3
+      }
+     },
+     "PublishedDate": "2017-08-28T21:29:00.293Z",
+     "LastModifiedDate": "2026-06-17T01:05:02.533Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2017-13716",
+     "PkgID": "binutils-common@2.35.2-2",
+     "PkgName": "binutils-common",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils-common@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "f2e4d0be42ce3210"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-13716",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:2adf7d65e4438b4364b3d8c36fd8c12fe02e52a207108aa2ac2c772e17ff0c2e",
+     "Title": "binutils: Memory leak with the C++ symbol demangler routine in libiberty",
+     "Description": "The C++ symbol demangler routine in cplus-dem.c in libiberty, as distributed in GNU Binutils 2.29, allows remote attackers to cause a denial of service (excessive memory allocation and application crash) via a crafted file, as demonstrated by a call from the Binary File Descriptor (BFD) library (aka",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-770"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "photon": 2,
+      "redhat": 1,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:C",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 7.1,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+       "V3Score": 3.3
+      }
+     },
+     "PublishedDate": "2017-08-28T21:29:00.293Z",
+     "LastModifiedDate": "2026-06-17T01:05:02.533Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2017-13716",
+     "PkgID": "binutils-x86-64-linux-gnu@2.35.2-2",
+     "PkgName": "binutils-x86-64-linux-gnu",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils-x86-64-linux-gnu@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "8d5ef1a3e321d942"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-13716",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:c21f8624512ea7de34b421c45dd710d5e3236bab9b5afd6b050af2efa38a7f7e",
+     "Title": "binutils: Memory leak with the C++ symbol demangler routine in libiberty",
+     "Description": "The C++ symbol demangler routine in cplus-dem.c in libiberty, as distributed in GNU Binutils 2.29, allows remote attackers to cause a denial of service (excessive memory allocation and application crash) via a crafted file, as demonstrated by a call from the Binary File Descriptor (BFD) library (aka",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-770"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "photon": 2,
+      "redhat": 1,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:C",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 7.1,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+       "V3Score": 3.3
+      }
+     },
+     "PublishedDate": "2017-08-28T21:29:00.293Z",
+     "LastModifiedDate": "2026-06-17T01:05:02.533Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2017-13716",
+     "PkgID": "libbinutils@2.35.2-2",
+     "PkgName": "libbinutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libbinutils@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "5ad2900734a17c4b"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-13716",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:605d0b8c9cd664f15d500347573c3345ff5c1e132f5f51417f533f28b68c3035",
+     "Title": "binutils: Memory leak with the C++ symbol demangler routine in libiberty",
+     "Description": "The C++ symbol demangler routine in cplus-dem.c in libiberty, as distributed in GNU Binutils 2.29, allows remote attackers to cause a denial of service (excessive memory allocation and application crash) via a crafted file, as demonstrated by a call from the Binary File Descriptor (BFD) library (aka",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-770"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "photon": 2,
+      "redhat": 1,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:C",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 7.1,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+       "V3Score": 3.3
+      }
+     },
+     "PublishedDate": "2017-08-28T21:29:00.293Z",
+     "LastModifiedDate": "2026-06-17T01:05:02.533Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2017-13716",
+     "PkgID": "libctf-nobfd0@2.35.2-2",
+     "PkgName": "libctf-nobfd0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libctf-nobfd0@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "dc555f1088c56c51"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-13716",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:e4949bce4f15596fe3561642e2228633fd2e785a8ad82c521aa7be04842bac3e",
+     "Title": "binutils: Memory leak with the C++ symbol demangler routine in libiberty",
+     "Description": "The C++ symbol demangler routine in cplus-dem.c in libiberty, as distributed in GNU Binutils 2.29, allows remote attackers to cause a denial of service (excessive memory allocation and application crash) via a crafted file, as demonstrated by a call from the Binary File Descriptor (BFD) library (aka",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-770"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "photon": 2,
+      "redhat": 1,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:C",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 7.1,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+       "V3Score": 3.3
+      }
+     },
+     "PublishedDate": "2017-08-28T21:29:00.293Z",
+     "LastModifiedDate": "2026-06-17T01:05:02.533Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2017-13716",
+     "PkgID": "libctf0@2.35.2-2",
+     "PkgName": "libctf0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libctf0@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "db429e3089eba55e"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-13716",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:235ccf51a95b461c1683b0c4eb6b10ffea19d7e3a97f58ce78e673a5bb8abcbd",
+     "Title": "binutils: Memory leak with the C++ symbol demangler routine in libiberty",
+     "Description": "The C++ symbol demangler routine in cplus-dem.c in libiberty, as distributed in GNU Binutils 2.29, allows remote attackers to cause a denial of service (excessive memory allocation and application crash) via a crafted file, as demonstrated by a call from the Binary File Descriptor (BFD) library (aka",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-770"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "photon": 2,
+      "redhat": 1,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:C",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 7.1,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+       "V3Score": 3.3
+      }
+     },
+     "PublishedDate": "2017-08-28T21:29:00.293Z",
+     "LastModifiedDate": "2026-06-17T01:05:02.533Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20673",
+     "PkgID": "binutils@2.35.2-2",
+     "PkgName": "binutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "d081468f5bdd808"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20673",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:26abbfea6fd36470bd46901c2edbe85e4797629744cfd6e3a19024325f95efce",
+     "Title": "libiberty: Integer overflow in demangle_template() function",
+     "Description": "The demangle_template function in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.31.1, contains an integer overflow vulnerability (for \"Create an array for saving the template argument values\") that can trigger a heap-based buffer overflow, as demonstrated by nm.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-190",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "alma": 1,
+      "azure": 2,
+      "debian": 1,
+      "nvd": 2,
+      "oracle-oval": 1,
+      "photon": 2,
+      "redhat": 2,
+      "rocky": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+       "V3Score": 5.3
+      }
+     },
+     "PublishedDate": "2019-01-04T18:29:00.21Z",
+     "LastModifiedDate": "2026-06-17T01:53:17.633Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20673",
+     "PkgID": "binutils-common@2.35.2-2",
+     "PkgName": "binutils-common",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils-common@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "f2e4d0be42ce3210"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20673",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:79161b8312f0c51477a2531c8f8f122eaa3cda92774ab3352f0aa04473409584",
+     "Title": "libiberty: Integer overflow in demangle_template() function",
+     "Description": "The demangle_template function in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.31.1, contains an integer overflow vulnerability (for \"Create an array for saving the template argument values\") that can trigger a heap-based buffer overflow, as demonstrated by nm.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-190",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "alma": 1,
+      "azure": 2,
+      "debian": 1,
+      "nvd": 2,
+      "oracle-oval": 1,
+      "photon": 2,
+      "redhat": 2,
+      "rocky": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+       "V3Score": 5.3
+      }
+     },
+     "PublishedDate": "2019-01-04T18:29:00.21Z",
+     "LastModifiedDate": "2026-06-17T01:53:17.633Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20673",
+     "PkgID": "binutils-x86-64-linux-gnu@2.35.2-2",
+     "PkgName": "binutils-x86-64-linux-gnu",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils-x86-64-linux-gnu@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "8d5ef1a3e321d942"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20673",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:7c20b0354f94bc9c9d6528d76e0e3bb83b11486b58d169d7a1d15f21af9c629c",
+     "Title": "libiberty: Integer overflow in demangle_template() function",
+     "Description": "The demangle_template function in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.31.1, contains an integer overflow vulnerability (for \"Create an array for saving the template argument values\") that can trigger a heap-based buffer overflow, as demonstrated by nm.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-190",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "alma": 1,
+      "azure": 2,
+      "debian": 1,
+      "nvd": 2,
+      "oracle-oval": 1,
+      "photon": 2,
+      "redhat": 2,
+      "rocky": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+       "V3Score": 5.3
+      }
+     },
+     "PublishedDate": "2019-01-04T18:29:00.21Z",
+     "LastModifiedDate": "2026-06-17T01:53:17.633Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20673",
+     "PkgID": "libbinutils@2.35.2-2",
+     "PkgName": "libbinutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libbinutils@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "5ad2900734a17c4b"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20673",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:0e393e9e28c9acef233146eea2b272a5ac35e35e15f1c6603ad557cf29bc5c63",
+     "Title": "libiberty: Integer overflow in demangle_template() function",
+     "Description": "The demangle_template function in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.31.1, contains an integer overflow vulnerability (for \"Create an array for saving the template argument values\") that can trigger a heap-based buffer overflow, as demonstrated by nm.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-190",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "alma": 1,
+      "azure": 2,
+      "debian": 1,
+      "nvd": 2,
+      "oracle-oval": 1,
+      "photon": 2,
+      "redhat": 2,
+      "rocky": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+       "V3Score": 5.3
+      }
+     },
+     "PublishedDate": "2019-01-04T18:29:00.21Z",
+     "LastModifiedDate": "2026-06-17T01:53:17.633Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20673",
+     "PkgID": "libctf-nobfd0@2.35.2-2",
+     "PkgName": "libctf-nobfd0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libctf-nobfd0@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "dc555f1088c56c51"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20673",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:30a72bbfe9eb0026e01ec7d3ed17cbb9a8ff1e79eefbd1a30b68aab1a8c5b23d",
+     "Title": "libiberty: Integer overflow in demangle_template() function",
+     "Description": "The demangle_template function in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.31.1, contains an integer overflow vulnerability (for \"Create an array for saving the template argument values\") that can trigger a heap-based buffer overflow, as demonstrated by nm.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-190",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "alma": 1,
+      "azure": 2,
+      "debian": 1,
+      "nvd": 2,
+      "oracle-oval": 1,
+      "photon": 2,
+      "redhat": 2,
+      "rocky": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+       "V3Score": 5.3
+      }
+     },
+     "PublishedDate": "2019-01-04T18:29:00.21Z",
+     "LastModifiedDate": "2026-06-17T01:53:17.633Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20673",
+     "PkgID": "libctf0@2.35.2-2",
+     "PkgName": "libctf0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libctf0@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "db429e3089eba55e"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20673",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:393db101aae6f6aa9361a69352f297d265c21a508887066d3b272d9389bab696",
+     "Title": "libiberty: Integer overflow in demangle_template() function",
+     "Description": "The demangle_template function in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.31.1, contains an integer overflow vulnerability (for \"Create an array for saving the template argument values\") that can trigger a heap-based buffer overflow, as demonstrated by nm.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-190",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "alma": 1,
+      "azure": 2,
+      "debian": 1,
+      "nvd": 2,
+      "oracle-oval": 1,
+      "photon": 2,
+      "redhat": 2,
+      "rocky": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+       "V3Score": 5.3
+      }
+     },
+     "PublishedDate": "2019-01-04T18:29:00.21Z",
+     "LastModifiedDate": "2026-06-17T01:53:17.633Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20712",
+     "PkgID": "binutils@2.35.2-2",
+     "PkgName": "binutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "d081468f5bdd808"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20712",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:b10fd6fdd546c61f5016c01720638712dc40ce402550253519019d754aeb86ab",
+     "Title": "libiberty: heap-based buffer over-read in d_expression_1",
+     "Description": "A heap-based buffer over-read exists in the function d_expression_1 in cp-demangle.c in GNU libiberty, as distributed in GNU Binutils 2.31.1. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by c++filt.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-125"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 6.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V3Score": 4.7
+      }
+     },
+     "PublishedDate": "2019-01-15T00:29:00.257Z",
+     "LastModifiedDate": "2026-06-17T01:53:20.057Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20712",
+     "PkgID": "binutils-common@2.35.2-2",
+     "PkgName": "binutils-common",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils-common@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "f2e4d0be42ce3210"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20712",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:cf51ce162e8539213d2a1fe089a1c8d9958d94da0353e7ae95e30fd6e761888b",
+     "Title": "libiberty: heap-based buffer over-read in d_expression_1",
+     "Description": "A heap-based buffer over-read exists in the function d_expression_1 in cp-demangle.c in GNU libiberty, as distributed in GNU Binutils 2.31.1. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by c++filt.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-125"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 6.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V3Score": 4.7
+      }
+     },
+     "PublishedDate": "2019-01-15T00:29:00.257Z",
+     "LastModifiedDate": "2026-06-17T01:53:20.057Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20712",
+     "PkgID": "binutils-x86-64-linux-gnu@2.35.2-2",
+     "PkgName": "binutils-x86-64-linux-gnu",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/binutils-x86-64-linux-gnu@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "8d5ef1a3e321d942"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20712",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:8a37ac1c1d8fe022c12f675dd61d310a288f36670af5b34bc6d5f0cea921bd4e",
+     "Title": "libiberty: heap-based buffer over-read in d_expression_1",
+     "Description": "A heap-based buffer over-read exists in the function d_expression_1 in cp-demangle.c in GNU libiberty, as distributed in GNU Binutils 2.31.1. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by c++filt.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-125"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 6.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V3Score": 4.7
+      }
+     },
+     "PublishedDate": "2019-01-15T00:29:00.257Z",
+     "LastModifiedDate": "2026-06-17T01:53:20.057Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20712",
+     "PkgID": "libbinutils@2.35.2-2",
+     "PkgName": "libbinutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libbinutils@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "5ad2900734a17c4b"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20712",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:e7f6255e4c117c55e8704f6955a151b631d4b3864939690e9ef1fb366621aee2",
+     "Title": "libiberty: heap-based buffer over-read in d_expression_1",
+     "Description": "A heap-based buffer over-read exists in the function d_expression_1 in cp-demangle.c in GNU libiberty, as distributed in GNU Binutils 2.31.1. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by c++filt.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-125"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 6.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V3Score": 4.7
+      }
+     },
+     "PublishedDate": "2019-01-15T00:29:00.257Z",
+     "LastModifiedDate": "2026-06-17T01:53:20.057Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20712",
+     "PkgID": "libctf-nobfd0@2.35.2-2",
+     "PkgName": "libctf-nobfd0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libctf-nobfd0@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "dc555f1088c56c51"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20712",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:eb4162e880dec6219e754a10d845c79e88485078f2d3fe79b2dfb29814227d56",
+     "Title": "libiberty: heap-based buffer over-read in d_expression_1",
+     "Description": "A heap-based buffer over-read exists in the function d_expression_1 in cp-demangle.c in GNU libiberty, as distributed in GNU Binutils 2.31.1. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by c++filt.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-125"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 6.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V3Score": 4.7
+      }
+     },
+     "PublishedDate": "2019-01-15T00:29:00.257Z",
+     "LastModifiedDate": "2026-06-17T01:53:20.057Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2018-20712",
+     "PkgID": "libctf0@2.35.2-2",
+     "PkgName": "libctf0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libctf0@2.35.2-2?arch=amd64&distro=debian-11.11",
+      "UID": "db429e3089eba55e"
+     },
+     "InstalledVersion": "2.35.2-2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20712",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:c4234fc80c0e8e8437b7779369611c89039cb366f4ac33b0d016247d8c928ff8",
+     "Title": "libiberty: heap-based buffer over-read in d_expression_1",
+     "Description": "A heap-based buffer over-read exists in the function d_expression_1 in cp-demangle.c in GNU libiberty, as distributed in GNU Binutils 2.31.1. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by c++filt.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-125"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+       "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V2Score": 4.3,
+       "V3Score": 6.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:R/S:U/C:N/I:N/A:H",
+       "V3Score": 4.7
+      }
+     },
+     "PublishedDate": "2019-01-15T00:29:00.257Z",
+     "LastModifiedDate": "2026-06-17T01:53:20.057Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2011-3374",
+     "PkgID": "apt@2.2.4",
+     "PkgName": "apt",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/apt@2.2.4?arch=amd64&distro=debian-11.11",
+      "UID": "5e2d29532afa9d37"
+     },
+     "InstalledVersion": "2.2.4",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:632ef5283d0fcf0e3a19d6c5dbcc294922d142b506d2ab494fb73004518cdc31",
+      "DiffID": "sha256:7c070db41ec632bd0d46fc5b930e8927ed4dafbb76150adf0cf1201fc0fbb837"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2011-3374",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:c08a0428f05e18bba95e6f338fd4263781a387981d41fe0afc72352e20a1fadf",
+     "Title": "It was found that apt-key in apt, all versions, do not correctly valid ...",
+     "Description": "It was found that apt-key in apt, all versions, do not correctly validate gpg keys with the master keyring, leading to a potential man-in-the-middle attack.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-347"
+     ],
+     "VendorSeverity": {
+      "debian": 1,
+      "nvd": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+       "V2Score": 4.3,
+       "V3Score": 3.7
+      }
+     },
+     "PublishedDate": "2019-11-26T00:15:11.03Z",
+     "LastModifiedDate": "2024-11-21T01:30:22.61Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2022-3715",
+     "PkgID": "bash@5.1-2+deb11u1",
+     "PkgName": "bash",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/bash@5.1-2%2Bdeb11u1?arch=amd64&distro=debian-11.11",
+      "UID": "bfab8483dd6f36fd"
+     },
+     "InstalledVersion": "5.1-2+deb11u1",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:632ef5283d0fcf0e3a19d6c5dbcc294922d142b506d2ab494fb73004518cdc31",
+      "DiffID": "sha256:7c070db41ec632bd0d46fc5b930e8927ed4dafbb76150adf0cf1201fc0fbb837"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3715",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:f8d1c720fa1c4fa97474f1ad9bf1beaece77df769e8ff39fd79619c7458974a7",
+     "Title": "bash: a heap-buffer-overflow in valid_parameter_transform",
+     "Description": "A flaw was found in the bash package, where a heap-buffer overflow can occur in valid parameter_transform. This issue may lead to memory problems.",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-119",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "alma": 2,
+      "amazon": 2,
+      "nvd": 3,
+      "oracle-oval": 2,
+      "redhat": 2,
+      "rocky": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 7.8
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:H",
+       "V3Score": 6.6
+      }
+     },
+     "PublishedDate": "2023-01-05T15:15:10.41Z",
+     "LastModifiedDate": "2026-06-17T05:00:10.05Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-13595",
+     "PkgID": "bsdutils@1:2.36.1-8+deb11u2",
+     "PkgName": "bsdutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/bsdutils@2.36.1-8%2Bdeb11u2?arch=amd64&distro=debian-11.11&epoch=1",
+      "UID": "1cf0c2e97fd94343"
+     },
+     "InstalledVersion": "1:2.36.1-8+deb11u2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:632ef5283d0fcf0e3a19d6c5dbcc294922d142b506d2ab494fb73004518cdc31",
+      "DiffID": "sha256:7c070db41ec632bd0d46fc5b930e8927ed4dafbb76150adf0cf1201fc0fbb837"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-13595",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:fd2012b7396f1eee4300003b7f247b7923b7c51e1489f5e7a3e674064ba84311",
+     "Title": "util-linux: util-linux: heap use-after-free in libblkid nested partition probing",
+     "Description": "A flaw was found in the libblkid library of util-linux. During nested partition probing, the BSD, Minix, Solaris x86, and UnixWare partition probers cache a raw pointer to a parent partition entry in a dynamically allocated array. When subsequent partition additions cause the array to be reallocated",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-416"
+     ],
+     "VendorSeverity": {
+      "azure": 2,
+      "julia": 2,
+      "nvd": 2,
+      "redhat": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:H",
+       "V3Score": 5.3
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:H",
+       "V3Score": 5.3
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:H",
+       "V3Score": 6.8
+      }
+     },
+     "PublishedDate": "2026-06-29T09:16:28.303Z",
+     "LastModifiedDate": "2026-08-31T18:17:13.083Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-27456",
+     "PkgID": "bsdutils@1:2.36.1-8+deb11u2",
+     "PkgName": "bsdutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/bsdutils@2.36.1-8%2Bdeb11u2?arch=amd64&distro=debian-11.11&epoch=1",
+      "UID": "1cf0c2e97fd94343"
+     },
+     "InstalledVersion": "1:2.36.1-8+deb11u2",
+     "Status": "fix_deferred",
+     "Layer": {
+      "Digest": "sha256:632ef5283d0fcf0e3a19d6c5dbcc294922d142b506d2ab494fb73004518cdc31",
+      "DiffID": "sha256:7c070db41ec632bd0d46fc5b930e8927ed4dafbb76150adf0cf1201fc0fbb837"
+     },
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-27456",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:c624b001e2c661b7ffb96235abfa98940ebec7169d8f088f4dd6ff0ca19d8cdb",
+     "Title": "util-linux: TOCTOU in the mount program when setting up loop devices",
+     "Description": "util-linux is a random collection of Linux utilities. Prior to version 2.41.4, a TOCTOU (Time-of-Check-Time-of-Use) vulnerability has been identified in the SUID binary /usr/bin/mount from util-linux. The mount binary, when setting up loop devices, validates the source file path with user privileges",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-59",
+      "CWE-269",
+      "CWE-367"
+     ],
+     "VendorSeverity": {
+      "azure": 2,
+      "bottlerocket": 2,
+      "julia": 2,
+      "photon": 2,
+      "redhat": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+       "V3Score": 4.7
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+       "V3Score": 4.7
+      }
+     },
+     "PublishedDate": "2026-04-03T22:16:25.4Z",
+     "LastModifiedDate": "2026-07-24T22:10:00.14Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-3184",
+     "PkgID": "bsdutils@1:2.36.1-8+deb11u2",
+     "PkgName": "bsdutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/bsdutils@2.36.1-8%2Bdeb11u2?arch=amd64&distro=debian-11.11&epoch=1",
+      "UID": "1cf0c2e97fd94343"
+     },
+     "InstalledVersion": "1:2.36.1-8+deb11u2",
+     "Status": "will_not_fix",
+     "Layer": {
+      "Digest": "sha256:632ef5283d0fcf0e3a19d6c5dbcc294922d142b506d2ab494fb73004518cdc31",
+      "DiffID": "sha256:7c070db41ec632bd0d46fc5b930e8927ed4dafbb76150adf0cf1201fc0fbb837"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-3184",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:15c7aa3cc4873567a8a60b64be40df0df68b9536f574fe576aee0c825e595ca9",
+     "Title": "util-linux: util-linux: Access control bypass due to improper hostname canonicalization",
+     "Description": "A flaw was found in util-linux. Improper hostname canonicalization in the `login(1)` utility, when invoked with the `-h` option, can modify the supplied remote hostname before setting `PAM_RHOST`. A remote attacker could exploit this by providing a specially crafted hostname, potentially bypassing h",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-289"
+     ],
+     "VendorSeverity": {
+      "azure": 1,
+      "nvd": 2,
+      "photon": 2,
+      "redhat": 1,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+       "V3Score": 5.3
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+       "V3Score": 3.7
+      }
+     },
+     "PublishedDate": "2026-04-03T19:17:23.377Z",
+     "LastModifiedDate": "2026-08-31T12:17:55.983Z"
+    },
+    {
+     "VulnerabilityID": "DLA-4485-1",
+     "VendorIDs": [
+      "DLA-4485-1"
+     ],
+     "PkgID": "ca-certificates@20210119",
+     "PkgName": "ca-certificates",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/ca-certificates@20210119?arch=all&distro=debian-11.11",
+      "UID": "f5effdae4406105"
+     },
+     "InstalledVersion": "20210119",
+     "FixedVersion": "20230311+deb12u1~deb11u1",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:2be42d221bda6286090b1656c911554463aed2c0d506c236e16250de9b9e4667",
+      "DiffID": "sha256:0954f971ab4db68ac48411b19a78f953ce182a79c967ae6339322a7cca550252"
+     },
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:0f1dd097782ef9c67b7ed571ad9fef4d3582e1666fc1385e5ecdd497fed28a07",
+     "Title": "ca-certificates - CA certificates update",
+     "Severity": "UNKNOWN",
+     "Description": ""
+    },
+    {
+     "VulnerabilityID": "CVE-2016-2781",
+     "PkgID": "coreutils@8.32-4+b1",
+     "PkgName": "coreutils",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/coreutils@8.32-4%2Bb1?arch=amd64&distro=debian-11.11",
+      "UID": "d3ebe004c1b061d0"
+     },
+     "InstalledVersion": "8.32-4+b1",
+     "Status": "will_not_fix",
+     "Layer": {
+      "Digest": "sha256:632ef5283d0fcf0e3a19d6c5dbcc294922d142b506d2ab494fb73004518cdc31",
+      "DiffID": "sha256:7c070db41ec632bd0d46fc5b930e8927ed4dafbb76150adf0cf1201fc0fbb837"
+     },
+     "SeveritySource": "debian",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-2781",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:5aff346332f84c1a8fdf21d7c471d0b43874cceda3b7ebf3161ab48d08cfaf78",
+     "Title": "coreutils: Non-privileged session can escape to the parent session in chroot",
+     "Description": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-20"
+     ],
+     "VendorSeverity": {
+      "azure": 2,
+      "cbl-mariner": 2,
+      "debian": 1,
+      "nvd": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "nvd": {
+       "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N",
+       "V2Score": 2.1,
+       "V3Score": 6.5
+      },
+      "redhat": {
+       "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
+       "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
+       "V2Score": 6.2,
+       "V3Score": 8.6
+      }
+     },
+     "PublishedDate": "2017-02-07T15:59:00.333Z",
+     "LastModifiedDate": "2026-06-17T00:44:23.16Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2023-23914",
+     "PkgID": "curl@7.74.0-1.3+deb11u15",
+     "PkgName": "curl",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/curl@7.74.0-1.3%2Bdeb11u15?arch=amd64&distro=debian-11.11",
+      "UID": "34c3b123c898113e"
+     },
+     "InstalledVersion": "7.74.0-1.3+deb11u15",
+     "Status": "will_not_fix",
+     "Layer": {
+      "Digest": "sha256:2be42d221bda6286090b1656c911554463aed2c0d506c236e16250de9b9e4667",
+      "DiffID": "sha256:0954f971ab4db68ac48411b19a78f953ce182a79c967ae6339322a7cca550252"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-23914",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:81014c86e38d828bda5acb009f2deed6e9da1f75edf6d921e4bbdb27f5c91e82",
+     "Title": "curl: HSTS ignored on multiple requests",
+     "Description": "A cleartext transmission of sensitive information vulnerability exists in curl <v7.88.0 that could cause HSTS functionality fail when multiple URLs are requested serially. Using its HSTS support, curl can be instructed to use HTTPS instead of usingan insecure clear-text HTTP step even when HTTP is p",
+     "Severity": "CRITICAL",
+     "CweIDs": [
+      "CWE-319"
+     ],
+     "VendorSeverity": {
+      "amazon": 2,
+      "azure": 4,
+      "cbl-mariner": 4,
+      "julia": 4,
+      "nvd": 4,
+      "photon": 4,
+      "redhat": 2,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+       "V3Score": 9.1
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+       "V3Score": 9.1
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+       "V3Score": 6.5
+      }
+     },
+     "PublishedDate": "2023-02-23T20:15:13.637Z",
+     "LastModifiedDate": "2026-06-17T05:38:15.89Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2022-42916",
+     "PkgID": "curl@7.74.0-1.3+deb11u15",
+     "PkgName": "curl",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/curl@7.74.0-1.3%2Bdeb11u15?arch=amd64&distro=debian-11.11",
+      "UID": "34c3b123c898113e"
+     },
+     "InstalledVersion": "7.74.0-1.3+deb11u15",
+     "Status": "will_not_fix",
+     "Layer": {
+      "Digest": "sha256:2be42d221bda6286090b1656c911554463aed2c0d506c236e16250de9b9e4667",
+      "DiffID": "sha256:0954f971ab4db68ac48411b19a78f953ce182a79c967ae6339322a7cca550252"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-42916",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:21612d8a4e1cc1f781428daca7ad7296487e9686239f2ef343ba1a96b77bb7cf",
+     "Title": "curl: HSTS bypass via IDN",
+     "Description": "In curl before 7.86.0, the HSTS check could be bypassed to trick it into staying with HTTP. Using its HSTS support, curl can be instructed to use HTTPS directly (instead of using an insecure cleartext HTTP step) even when HTTP is provided in the URL. This mechanism could be bypassed if the host name",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-319"
+     ],
+     "VendorSeverity": {
+      "amazon": 2,
+      "azure": 3,
+      "cbl-mariner": 3,
+      "julia": 3,
+      "nvd": 3,
+      "photon": 3,
+      "redhat": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+       "V3Score": 7.5
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+       "V3Score": 7.5
+      }
+     },
+     "PublishedDate": "2022-10-29T02:15:09.047Z",
+     "LastModifiedDate": "2026-06-17T05:05:35.04Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-5773",
+     "PkgID": "curl@7.74.0-1.3+deb11u15",
+     "PkgName": "curl",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/curl@7.74.0-1.3%2Bdeb11u15?arch=amd64&distro=debian-11.11",
+      "UID": "34c3b123c898113e"
+     },
+     "InstalledVersion": "7.74.0-1.3+deb11u15",
+     "Status": "fix_deferred",
+     "Layer": {
+      "Digest": "sha256:2be42d221bda6286090b1656c911554463aed2c0d506c236e16250de9b9e4667",
+      "DiffID": "sha256:0954f971ab4db68ac48411b19a78f953ce182a79c967ae6339322a7cca550252"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-5773",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:cbab41b4f7d935ec0285cd9dd14d7fd6102ab08fd2fa8e6be17e19697fe794f5",
+     "Title": "curl: libcurl: Wrong file transfer due to incorrect SMB connection reuse",
+     "Description": "libcurl might in some circumstances reuse the wrong connection for SMB(S)\ntransfers.\n\nlibcurl features a pool of recent connections so that subsequent requests can\nreuse an existing connection to avoid overhead.\n\nWhen reusing a connection a range of criteria must be met. Due to a logical\nerror in th",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-488",
+      "CWE-918"
+     ],
+     "VendorSeverity": {
+      "julia": 3,
+      "nvd": 3,
+      "photon": 3,
+      "redhat": 2,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+       "V3Score": 7.5
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+       "V3Score": 6.5
+      }
+     },
+     "PublishedDate": "2026-05-13T13:01:56.307Z",
+     "LastModifiedDate": "2026-09-15T07:16:28.82Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2025-14524",
+     "PkgID": "curl@7.74.0-1.3+deb11u15",
+     "PkgName": "curl",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/curl@7.74.0-1.3%2Bdeb11u15?arch=amd64&distro=debian-11.11",
+      "UID": "34c3b123c898113e"
+     },
+     "InstalledVersion": "7.74.0-1.3+deb11u15",
+     "Status": "fix_deferred",
+     "Layer": {
+      "Digest": "sha256:2be42d221bda6286090b1656c911554463aed2c0d506c236e16250de9b9e4667",
+      "DiffID": "sha256:0954f971ab4db68ac48411b19a78f953ce182a79c967ae6339322a7cca550252"
+     },
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-14524",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:82ae79fec48bb9edc0c9925de4c0a1ddd88c07233cfff95db004bcdb1c1e4930",
+     "Title": "curl: Information disclosure via cross-protocol redirect with OAuth2 bearer token",
+     "Description": "When an OAuth2 bearer token is used for an HTTP(S) transfer, and that transfer\nperforms a cross-protocol redirect to a second URL that uses an IMAP, LDAP,\nPOP3 or SMTP scheme, curl might wrongly pass on the bearer token to the new\ntarget host.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-522",
+      "CWE-601"
+     ],
+     "VendorSeverity": {
+      "amazon": 2,
+      "azure": 2,
+      "cbl-mariner": 2,
+      "julia": 2,
+      "photon": 2,
+      "redhat": 1,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N",
+       "V3Score": 5.3
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:N",
+       "V3Score": 6.5
+      }
+     },
+     "PublishedDate": "2026-01-08T10:15:46.607Z",
+     "LastModifiedDate": "2026-09-15T07:16:24.02Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2025-68973",
+     "VendorIDs": [
+      "DLA-4437-1"
+     ],
+     "PkgID": "dirmngr@2.2.27-2+deb11u2",
+     "PkgName": "dirmngr",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/dirmngr@2.2.27-2%2Bdeb11u2?arch=amd64&distro=debian-11.11",
+      "UID": "54274be81da1ab70"
+     },
+     "InstalledVersion": "2.2.27-2+deb11u2",
+     "FixedVersion": "2.2.27-2+deb11u3",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:2be42d221bda6286090b1656c911554463aed2c0d506c236e16250de9b9e4667",
+      "DiffID": "sha256:0954f971ab4db68ac48411b19a78f953ce182a79c967ae6339322a7cca550252"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-68973",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:83f4689b65353792271b707fad2e0738ce0bfc9de89315861037200c82b21873",
+     "Title": "GnuPG: GnuPG: Information disclosure and potential arbitrary code execution via out-of-bounds write",
+     "Description": "In GnuPG before 2.4.9, armor_filter in g10/armor.c has two increments of an index variable where one is intended, leading to an out-of-bounds write for crafted input. (For ExtendedLTS, 2.2.51 and later are fixed versions.)",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-675",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "alma": 3,
+      "amazon": 3,
+      "azure": 3,
+      "cbl-mariner": 3,
+      "julia": 3,
+      "nvd": 3,
+      "oracle-oval": 3,
+      "photon": 3,
+      "redhat": 3,
+      "rocky": 3,
+      "ubuntu": 3
+     },
+     "CVSS": {
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 7
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 7
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:C/C:H/I:H/A:N",
+       "V3Score": 7.8
+      }
+     },
+     "PublishedDate": "2025-12-28T17:16:01.5Z",
+     "LastModifiedDate": "2026-06-17T09:59:55.493Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2025-6297",
+     "VendorIDs": [
+      "DLA-4673-1"
+     ],
+     "PkgID": "dpkg@1.20.13",
+     "PkgName": "dpkg",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/dpkg@1.20.13?arch=amd64&distro=debian-11.11",
+      "UID": "8e87acd869654e68"
+     },
+     "InstalledVersion": "1.20.13",
+     "FixedVersion": "1.20.14",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:632ef5283d0fcf0e3a19d6c5dbcc294922d142b506d2ab494fb73004518cdc31",
+      "DiffID": "sha256:7c070db41ec632bd0d46fc5b930e8927ed4dafbb76150adf0cf1201fc0fbb837"
+     },
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-6297",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:15d03f02fa537e98ba56dc33f25d3f6f48b37ecf3caf824215b9bd32662620a9",
+     "Title": "It was discovered that dpkg-deb does not properly sanitize directory p ...",
+     "Description": "It was discovered that dpkg-deb does not properly sanitize directory permissions when extracting a control member into a temporary directory, which is\ndocumented as being a safe operation even on untrusted data. This may result in leaving temporary files behind on cleanup. Given automated and repeat",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-400",
+      "CWE-732"
+     ],
+     "VendorSeverity": {
+      "ubuntu": 1
+     },
+     "PublishedDate": "2025-07-01T17:15:30.177Z",
+     "LastModifiedDate": "2026-07-08T09:16:28.893Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2025-7345",
+     "VendorIDs": [
+      "DLA-4344-1"
+     ],
+     "PkgID": "gir1.2-gdkpixbuf-2.0@2.42.2+dfsg-1+deb11u3",
+     "PkgName": "gir1.2-gdkpixbuf-2.0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/gir1.2-gdkpixbuf-2.0@2.42.2%2Bdfsg-1%2Bdeb11u3?arch=amd64&distro=debian-11.11",
+      "UID": "8e440a83fe67e77e"
+     },
+     "InstalledVersion": "2.42.2+dfsg-1+deb11u3",
+     "FixedVersion": "2.42.2+dfsg-1+deb11u4",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-7345",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:bbd15fb063b54f3a09736433bea5482ffb2fc287fd6f3b271777b60e541fc96a",
+     "Title": "gdk\u2011pixbuf: Heap\u2011buffer\u2011overflow in gdk\u2011pixbuf",
+     "Description": "A flaw exists in gdk\u2011pixbuf within the gdk_pixbuf__jpeg_image_load_increment function (io-jpeg.c) and in glib\u2019s g_base64_encode_step (glib/gbase64.c). When processing maliciously crafted JPEG images, a heap buffer overflow can occur during Base64 encoding, allowing out-of-bounds reads from heap memo",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-120"
+     ],
+     "VendorSeverity": {
+      "alma": 2,
+      "amazon": 3,
+      "azure": 3,
+      "cbl-mariner": 3,
+      "oracle-oval": 2,
+      "redhat": 2,
+      "rocky": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      }
+     },
+     "PublishedDate": "2025-07-08T14:15:32.397Z",
+     "LastModifiedDate": "2026-06-30T02:16:25.587Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2025-53014",
+     "VendorIDs": [
+      "DLA-4297-1"
+     ],
+     "PkgID": "imagemagick@8:6.9.11.60+dfsg-1.3+deb11u5",
+     "PkgName": "imagemagick",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/imagemagick@6.9.11.60%2Bdfsg-1.3%2Bdeb11u5?arch=amd64&distro=debian-11.11&epoch=8",
+      "UID": "d762d88c676f752e"
+     },
+     "InstalledVersion": "8:6.9.11.60+dfsg-1.3+deb11u5",
+     "FixedVersion": "8:6.9.11.60+dfsg-1.3+deb11u6",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-53014",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:737e39a366e475589974b48b0009d2e492e84c41ae2f2b57e2c272962fc09800",
+     "Title": "ImageMagick: ImageMagick Heap Buffer Overflow",
+     "Description": "ImageMagick is free and open-source software used for editing and manipulating digital images. Versions prior to 7.1.2-0 and 6.9.13-26 have a heap buffer overflow in the `InterpretImageFilename` function. The issue stems from an off-by-one error that causes out-of-bounds memory access when processin",
+     "Severity": "CRITICAL",
+     "CweIDs": [
+      "CWE-125",
+      "CWE-193"
+     ],
+     "VendorSeverity": {
+      "amazon": 2,
+      "ghsa": 1,
+      "julia": 4,
+      "nvd": 4,
+      "photon": 4,
+      "redhat": 1,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+       "V3Score": 3.7
+      },
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 9.8
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 9.8
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+       "V3Score": 3.7
+      }
+     },
+     "PublishedDate": "2025-07-14T18:15:23.62Z",
+     "LastModifiedDate": "2026-06-17T09:37:28.757Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2023-6879",
+     "PkgID": "libaom0@1.0.0.errata1-3+deb11u2",
+     "PkgName": "libaom0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libaom0@1.0.0.errata1-3%2Bdeb11u2?arch=amd64&distro=debian-11.11",
+      "UID": "5b9b808dba0ba8f9"
+     },
+     "InstalledVersion": "1.0.0.errata1-3+deb11u2",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-6879",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:0c5a229e07cce12b22b2e09ff296f8bf605b372fa80b2c4ef2f1b6acff6b9db1",
+     "Title": "aom: heap-buffer-overflow on frame size change",
+     "Description": "Increasing the resolution of video frames, while performing a multi-threaded encode, can result in a heap overflow in av1_loop_restoration_dealloc().",
+     "Severity": "CRITICAL",
+     "CweIDs": [
+      "CWE-20",
+      "CWE-787"
+     ],
+     "VendorSeverity": {
+      "nvd": 4,
+      "redhat": 3
+     },
+     "CVSS": {
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 9.8
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 9.8
+      }
+     },
+     "PublishedDate": "2023-12-27T23:15:07.53Z",
+     "LastModifiedDate": "2026-06-23T18:17:38.583Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-88373",
+     "PkgID": "libde265-0@1.0.11-0+deb11u3",
+     "PkgName": "libde265-0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libde265-0@1.0.11-0%2Bdeb11u3?arch=amd64&distro=debian-11.11",
+      "UID": "491f1dd8658836e8"
+     },
+     "InstalledVersion": "1.0.11-0+deb11u3",
+     "Status": "affected",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-88373",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:e13f8c87cf5a89c0558a8b9bd42e6748c766be3e0ecc37fc40327fe08f6ced8f",
+     "Title": "libde265 commit 4d45a6b contains a NULL pointer dereference vulnerabil ...",
+     "Description": "libde265 commit 4d45a6b contains a NULL pointer dereference vulnerability in the NAL parsing path. When de265_push_NAL() is called with a zero-length NAL unit, the resulting NAL_unit may retain a NULL backing buffer, which is subsequently passed as the destination argument to memcpy() in NAL_unit::s",
+     "Severity": "UNKNOWN",
+     "CweIDs": [
+      "CWE-476"
+     ],
+     "PublishedDate": "2026-09-24T17:17:07.197Z",
+     "LastModifiedDate": "2026-09-25T18:17:31.937Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-58016",
+     "PkgID": "libglib2.0-0@2.66.8-1+deb11u6",
+     "PkgName": "libglib2.0-0",
+     "PkgIdentifier": {
+      "PURL": "pkg:deb/debian/libglib2.0-0@2.66.8-1%2Bdeb11u6?arch=amd64&distro=debian-11.11",
+      "UID": "14b6aebc847727ec"
+     },
+     "InstalledVersion": "2.66.8-1+deb11u6",
+     "Status": "fix_deferred",
+     "Layer": {
+      "Digest": "sha256:f0f51ee5c79e1ef5812268320c854e2eaf0bb5f4e2cf2a7974448200d36854de",
+      "DiffID": "sha256:7948c811968613161dc98c1213f565a5aa766e5c720bbe116187b8e7fbbe328a"
+     },
+     "SeveritySource": "nvd",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-58016",
+     "DataSource": {
+      "ID": "debian",
+      "Name": "Debian Security Tracker",
+      "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+     },
+     "Fingerprint": "sha256:3d714269d06a7c892ddf940d9b8a5e3efab0cff9c5ab2b1ca05d163511f87ac5",
+     "Title": "glib: integer underflow in gio/gdbusintrospection.c via \"g_dbus_node_info_new_for_xml\"",
+     "Description": "A flaw was found in GLib. A state confusion issue exists in g_dbus_node_info_new_for_xml() in the gio/gdbusintrospection.c file when processing malformed D-Bus introspection XML, specifically with a `node` element nested within other elements like `method`, `signal`, `property` or `arg`. This issue ",
+     "Severity": "CRITICAL",
+     "CweIDs": [
+      "CWE-191"
+     ],
+     "VendorSeverity": {
+      "alma": 3,
+      "amazon": 3,
+      "azure": 2,
+      "julia": 4,
+      "nvd": 4,
+      "oracle-oval": 3,
+      "photon": 4,
+      "redhat": 3,
+      "rocky": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "julia": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H",
+       "V3Score": 9.1
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H",
+       "V3Score": 9.1
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      }
+     },
+     "PublishedDate": "2026-06-30T13:19:17.84Z",
+     "LastModifiedDate": "2026-08-25T10:18:12.017Z"
+    }
+   ]
+  },
+  {
+   "Target": "Python",
+   "Class": "lang-pkgs",
+   "Type": "python-pkg",
+   "Vulnerabilities": [
+    {
+     "VulnerabilityID": "CVE-2022-29217",
+     "VendorIDs": [
+      "GHSA-ffqj-6fqr-9h24"
+     ],
+     "PkgName": "PyJWT",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/PyJWT-2.3.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pyjwt@2.3.0",
+      "UID": "ef8043b6276cea8c"
+     },
+     "InstalledVersion": "2.3.0",
+     "FixedVersion": "2.4.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-29217",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:879612187450a998ef31d173734cea3cbf0bd3076b69048a78200460e1a1d0dd",
+     "Title": "python-jwt: Key confusion through non-blocklisted public key formats",
+     "Description": "PyJWT is a Python implementation of RFC 7519. PyJWT supports multiple different JWT signing algorithms. With JWT, an attacker submitting the JWT token can choose the used signing algorithm. The PyJWT library requires that the application chooses what algorithms are supported. The application can spe",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-327"
+     ],
+     "VendorSeverity": {
+      "amazon": 2,
+      "cbl-mariner": 3,
+      "ghsa": 3,
+      "nvd": 3,
+      "redhat": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+       "V3Score": 7.4
+      },
+      "nvd": {
+       "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+       "V2Score": 5,
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+       "V3Score": 7.5
+      }
+     },
+     "PublishedDate": "2022-05-24T15:15:07.767Z",
+     "LastModifiedDate": "2026-06-17T04:39:50.96Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-32597",
+     "VendorIDs": [
+      "GHSA-752w-5fwx-jx9f"
+     ],
+     "PkgName": "PyJWT",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/PyJWT-2.3.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pyjwt@2.3.0",
+      "UID": "ef8043b6276cea8c"
+     },
+     "InstalledVersion": "2.3.0",
+     "FixedVersion": "2.12.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-32597",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:0e96324cf014d7d55b932091609c26b9bac5173f0a695f705e3e4fc346ab9489",
+     "Title": "pyjwt: PyJWT accepts unknown `crit` header extensions (RFC 7515 \u00a74.1.11 MUST violation)",
+     "Description": "PyJWT is a JSON Web Token implementation in Python. Prior to 2.12.0, PyJWT does not validate the crit (Critical) Header Parameter defined in RFC 7515 \u00a74.1.11. When a JWS token contains a crit array listing extensions that PyJWT does not understand, the library accepts the token instead of rejecting ",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-345",
+      "CWE-863",
+      "CWE-347"
+     ],
+     "VendorSeverity": {
+      "alma": 3,
+      "amazon": 2,
+      "azure": 3,
+      "ghsa": 3,
+      "oracle-oval": 3,
+      "photon": 3,
+      "redhat": 3,
+      "rocky": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+       "V3Score": 7.5
+      }
+     },
+     "PublishedDate": "2026-03-13T19:55:09.5Z",
+     "LastModifiedDate": "2026-09-10T13:18:12.027Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-48526",
+     "VendorIDs": [
+      "GHSA-xgmm-8j9v-c9wx"
+     ],
+     "PkgName": "PyJWT",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/PyJWT-2.3.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pyjwt@2.3.0",
+      "UID": "ef8043b6276cea8c"
+     },
+     "InstalledVersion": "2.3.0",
+     "FixedVersion": "2.13.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-48526",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:90ccb8c95881ef4c68af054a844a7b126191b6fc23e204f75e1f8d493e56cdb9",
+     "Title": "python-pyjwt: PyJWT: Authentication bypass due to forged JSON Web Tokens",
+     "Description": "PyJWT is a JSON Web Token implementation in Python. Prior to 2.13.0, when the verifier is decoding JSON Web Tokens, while supporting both asymmetric and HMAC algorithms, the library does not validate use of JSON Web Keys in HMAC algorithm, allowing attacker to use the issuer public key as the secret",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-287",
+      "CWE-347"
+     ],
+     "VendorSeverity": {
+      "alma": 3,
+      "amazon": 3,
+      "azure": 3,
+      "ghsa": 3,
+      "oracle-oval": 3,
+      "photon": 3,
+      "redhat": 3,
+      "rocky": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+       "V3Score": 7.4
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+       "V3Score": 7.4
+      }
+     },
+     "PublishedDate": "2026-05-28T16:16:29.657Z",
+     "LastModifiedDate": "2026-09-10T13:20:19.447Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-48522",
+     "VendorIDs": [
+      "GHSA-993g-76c3-p5m4"
+     ],
+     "PkgName": "PyJWT",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/PyJWT-2.3.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pyjwt@2.3.0",
+      "UID": "ef8043b6276cea8c"
+     },
+     "InstalledVersion": "2.3.0",
+     "FixedVersion": "2.13.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-48522",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:f3c2cdbe2a648080b241bcce1b536576ee68ea516adc71c350a190cb0bd9c092",
+     "Title": "python-pyjwt: PyJWT: Server-Side Request Forgery (SSRF) via uncontrolled URL fetching in PyJWKClient",
+     "Description": "PyJWT is a JSON Web Token implementation in Python. Prior to 2.13.0, PyJWKClient passes its uri argument directly to urllib.request.urlopen() which uses Python stdlib's default OpenerDirector registering HTTPHandler, HTTPSHandler, FTPHandler, FileHandler, and DataHandler. There is currently no docum",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-441",
+      "CWE-918"
+     ],
+     "VendorSeverity": {
+      "amazon": 2,
+      "azure": 2,
+      "ghsa": 2,
+      "photon": 2,
+      "redhat": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N",
+       "V3Score": 4.2
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N",
+       "V3Score": 4.2
+      }
+     },
+     "PublishedDate": "2026-05-28T16:16:29.15Z",
+     "LastModifiedDate": "2026-06-17T10:55:03.53Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-48524",
+     "VendorIDs": [
+      "GHSA-fhv5-28vv-h8m8"
+     ],
+     "PkgName": "PyJWT",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/PyJWT-2.3.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pyjwt@2.3.0",
+      "UID": "ef8043b6276cea8c"
+     },
+     "InstalledVersion": "2.3.0",
+     "FixedVersion": "2.13.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-48524",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:1b2092a9380c5c014cdd991d1ad09cee0f7f05bd1054bff225b93d94882484fc",
+     "Title": "python-pyjwt: PyJWT: Denial of Service via unverified JSON Web Token key IDs",
+     "Description": "PyJWT is a JSON Web Token implementation in Python. Prior to 2.13.0, PyJWKClient.get_signing_key() forces a fresh HTTP request to the JWKS endpoint for every JWT with an unknown kid value, with no rate limiting. Since kid comes from the unverified token header, an attacker can trigger unlimited outb",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-460",
+      "CWE-755"
+     ],
+     "VendorSeverity": {
+      "azure": 1,
+      "ghsa": 1,
+      "photon": 1,
+      "redhat": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+       "V3Score": 3.7
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 5.9
+      }
+     },
+     "PublishedDate": "2026-05-28T16:16:29.403Z",
+     "LastModifiedDate": "2026-06-17T10:55:03.867Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2020-14343",
+     "VendorIDs": [
+      "GHSA-8q59-q68h-6hv4"
+     ],
+     "PkgName": "PyYAML",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/PyYAML-5.3.1.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pyyaml@5.3.1",
+      "UID": "11856cf0d8ca4485"
+     },
+     "InstalledVersion": "5.3.1",
+     "FixedVersion": "5.4",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-14343",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:073ccb313ff56a84b833a3667e10c3f7124cb9dd25f8464ad32afd2513192a2e",
+     "Title": "PyYAML: incomplete fix for CVE-2020-1747",
+     "Description": "A vulnerability was discovered in the PyYAML library in versions before 5.4, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vuln",
+     "Severity": "CRITICAL",
+     "CweIDs": [
+      "CWE-20"
+     ],
+     "VendorSeverity": {
+      "alma": 2,
+      "cbl-mariner": 4,
+      "ghsa": 4,
+      "nvd": 4,
+      "oracle-oval": 2,
+      "photon": 4,
+      "redhat": 2,
+      "rocky": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+       "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+       "V3Score": 9.8,
+       "V40Score": 9.3
+      },
+      "nvd": {
+       "V2Vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+       "V2Score": 10,
+       "V3Score": 9.8
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 9.8
+      }
+     },
+     "PublishedDate": "2021-02-09T21:15:12.707Z",
+     "LastModifiedDate": "2026-06-17T02:54:34.453Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2023-37920",
+     "VendorIDs": [
+      "GHSA-xqr8-7jwr-rhp7"
+     ],
+     "PkgName": "certifi",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/certifi-2022.12.7.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/certifi@2022.12.7",
+      "UID": "b9bf05a83e49a18a"
+     },
+     "InstalledVersion": "2022.12.7",
+     "FixedVersion": "2023.7.22",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-37920",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:f02e9448a67312ded892f98d1f722e8d16d8a4fcc06b3b9d5e18c77444c8db66",
+     "Title": "python-certifi: Removal of e-Tugra root certificate",
+     "Description": "Certifi is a curated collection of Root Certificates for validating the trustworthiness of SSL certificates while verifying the identity of TLS hosts. Certifi prior to version 2023.07.22 recognizes \"e-Tugra\" root certificates. e-Tugra's root certificates were subject to an investigation prompted by ",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-345"
+     ],
+     "VendorSeverity": {
+      "alma": 2,
+      "amazon": 3,
+      "azure": 4,
+      "ghsa": 3,
+      "nvd": 4,
+      "oracle-oval": 2,
+      "photon": 4,
+      "redhat": 1
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+       "V3Score": 7.5
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 9.8
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+       "V3Score": 9.1
+      }
+     },
+     "PublishedDate": "2023-07-25T21:15:10.827Z",
+     "LastModifiedDate": "2026-06-17T06:08:54.337Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2024-39689",
+     "VendorIDs": [
+      "GHSA-248v-346w-9cwc"
+     ],
+     "PkgName": "certifi",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/certifi-2022.12.7.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/certifi@2022.12.7",
+      "UID": "b9bf05a83e49a18a"
+     },
+     "InstalledVersion": "2022.12.7",
+     "FixedVersion": "2024.7.4",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-39689",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:d84633280df86c03e075c671eafd9308036aeff6b4823a3936b4a14260e273e2",
+     "Title": "python-certifi: Remove root certificates from `GLOBALTRUST` from the root store",
+     "Description": "Certifi is a curated collection of Root Certificates for validating the trustworthiness of SSL certificates while verifying the identity of TLS hosts. Certifi starting in 2021.5.30 and prior to 2024.7.4 recognized root certificates from `GLOBALTRUST`. Certifi 2024.7.04 removes root certificates from",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-345"
+     ],
+     "VendorSeverity": {
+      "amazon": 1,
+      "ghsa": 1,
+      "nvd": 3,
+      "photon": 3,
+      "redhat": 1
+     },
+     "CVSS": {
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+       "V3Score": 3.7
+      }
+     },
+     "PublishedDate": "2024-07-05T19:15:10.247Z",
+     "LastModifiedDate": "2026-06-17T07:42:28.64Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2025-43859",
+     "VendorIDs": [
+      "GHSA-vqfr-h8mv-ghfj"
+     ],
+     "PkgName": "h11",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/h11-0.14.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/h11@0.14.0",
+      "UID": "705d7a05ac451ba3"
+     },
+     "InstalledVersion": "0.14.0",
+     "FixedVersion": "0.16.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-43859",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:577fff92205909255f1b4c8d1876b04b549bc748d33aa53c77f056a480e1800b",
+     "Title": "h11: h11 accepts some malformed Chunked-Encoding bodies",
+     "Description": "h11 is a Python implementation of HTTP/1.1. Prior to version 0.16.0, a leniency in h11's parsing of line terminators in chunked-coding message bodies can lead to request smuggling vulnerabilities under certain conditions. This issue has been patched in version 0.16.0. Since exploitation requires the",
+     "Severity": "CRITICAL",
+     "CweIDs": [
+      "CWE-444"
+     ],
+     "VendorSeverity": {
+      "ghsa": 4,
+      "redhat": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+       "V3Score": 9.1
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+       "V3Score": 7.4
+      }
+     },
+     "PublishedDate": "2025-04-24T19:15:47.06Z",
+     "LastModifiedDate": "2026-06-17T09:24:39.58Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2024-3651",
+     "VendorIDs": [
+      "GHSA-jjg7-2v4v-x38h"
+     ],
+     "PkgName": "idna",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/idna-3.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/idna@3.6",
+      "UID": "6c0ebab9033013f2"
+     },
+     "InstalledVersion": "3.6",
+     "FixedVersion": "3.7",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-3651",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:56c25b8bebcc62b27b25c6648fc081ca1e2482596e4e2fd11814d8a10ff561c6",
+     "Title": "python-idna: potential DoS via resource consumption via specially crafted inputs to idna.encode()",
+     "Description": "A vulnerability was identified in the kjd/idna library, specifically within the `idna.encode()` function, affecting version 3.6. The issue arises from the function's handling of crafted input strings, which can lead to quadratic complexity and consequently, a denial of service condition. This vulner",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-1333"
+     ],
+     "VendorSeverity": {
+      "alma": 2,
+      "amazon": 2,
+      "azure": 3,
+      "cbl-mariner": 3,
+      "ghsa": 2,
+      "nvd": 3,
+      "oracle-oval": 2,
+      "photon": 3,
+      "redhat": 2,
+      "rocky": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V40Vector": "CVSS:4.0/AV:L/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
+       "V3Score": 6.2,
+       "V40Score": 6.9
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 6.5
+      }
+     },
+     "PublishedDate": "2024-07-07T18:15:09.827Z",
+     "LastModifiedDate": "2026-06-17T07:44:44.377Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-45409",
+     "VendorIDs": [
+      "GHSA-65pc-fj4g-8rjx"
+     ],
+     "PkgName": "idna",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/idna-3.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/idna@3.6",
+      "UID": "6c0ebab9033013f2"
+     },
+     "InstalledVersion": "3.6",
+     "FixedVersion": "3.15",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-45409",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:2f29f55d0588729f6982ca81fbfc20b986b26b34dda60494990548470fed3682",
+     "Title": "python-idna: idna: Denial of Service via specially crafted long inputs",
+     "Description": "Internationalized Domain Names in Applications (IDNA) for Python provides support for Internationalized Domain Names in Applications (IDNA) and Unicode IDNA Compatibility Processing. In versions prior to 3.15, payloads such as `\"\\u0660\" * N` or `\"\\u30fb\" * N + \"\\u6f22\"` utilize the `valid_contexto` ",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-1333"
+     ],
+     "VendorSeverity": {
+      "alma": 2,
+      "amazon": 2,
+      "ghsa": 2,
+      "nvd": 2,
+      "oracle-oval": 2,
+      "redhat": 2,
+      "rocky": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+       "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+       "V3Score": 5.3,
+       "V40Score": 6.9
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+       "V3Score": 5.3
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+       "V3Score": 5.3
+      }
+     },
+     "PublishedDate": "2026-06-05T23:16:43.343Z",
+     "LastModifiedDate": "2026-07-23T07:10:00.113Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2025-8869",
+     "VendorIDs": [
+      "GHSA-4xh5-x5gv-qwph"
+     ],
+     "PkgName": "pip",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/pip-24.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pip@24.0",
+      "UID": "7a4293168b845101"
+     },
+     "InstalledVersion": "24.0",
+     "FixedVersion": "25.3",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-8869",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:a422ca69d020eef4106091e49efcde424dfee35c9ad2f0895ef85a8ec2c35dda",
+     "Title": "pip: pip missing checks on symbolic link extraction",
+     "Description": "When extracting a tar archive pip may not check symbolic links point into the extraction directory if the tarfile module doesn't implement PEP 706.\nNote that upgrading pip to a \"fixed\" version for this vulnerability doesn't fix all known vulnerabilities that are remediated by using a Python version ",
+     "Severity": "MEDIUM",
+     "VendorSeverity": {
+      "amazon": 2,
+      "azure": 2,
+      "ghsa": 2,
+      "redhat": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N",
+       "V40Score": 5.9
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:N/I:H/A:N",
+       "V3Score": 5.3
+      }
+     },
+     "PublishedDate": "2025-09-24T15:15:41.293Z",
+     "LastModifiedDate": "2026-09-26T00:10:00.127Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-13346",
+     "VendorIDs": [
+      "GHSA-qwm4-qh6w-59xr"
+     ],
+     "PkgName": "pip",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/pip-24.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pip@24.0",
+      "UID": "7a4293168b845101"
+     },
+     "InstalledVersion": "24.0",
+     "FixedVersion": "26.2.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-13346",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:2f8d3fcd3eeaf2da0fcaefd0f0407d6721aadb116f5d97eb5ba0fd16e497d28c",
+     "Title": "pip: pip: Arbitrary file installation via malicious package indexes",
+     "Description": "pip would incorrectly handle doubly-encoded package URLs from indexes allowing for files to be installed to arbitrary locations on disk even when installing wheels.\n\n\n\n\nThis vulnerability requires downloading or installing a package from a malicious package index to succeed, malicious packages alone",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-36"
+     ],
+     "VendorSeverity": {
+      "azure": 2,
+      "ghsa": 2,
+      "nvd": 2,
+      "photon": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V40Vector": "CVSS:4.0/AV:N/AC:H/AT:P/PR:H/UI:A/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N",
+       "V40Score": 5.6
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+       "V3Score": 6.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:L/I:H/A:L",
+       "V3Score": 5.9
+      }
+     },
+     "PublishedDate": "2026-07-29T19:16:44.267Z",
+     "LastModifiedDate": "2026-08-20T13:17:44.277Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-3219",
+     "VendorIDs": [
+      "GHSA-58qw-9mgm-455v"
+     ],
+     "PkgName": "pip",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/pip-24.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pip@24.0",
+      "UID": "7a4293168b845101"
+     },
+     "InstalledVersion": "24.0",
+     "FixedVersion": "26.1",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-3219",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:34d0c9f465389687749345b4359f19e7bae9f14ef2aa6c72fe5b5377f3f61375",
+     "Title": "pip: pip: Incorrect file installation due to improper archive handling",
+     "Description": "pip handles concatenated tar and ZIP files as ZIP files regardless of filename or whether a file is both a tar and ZIP file. This behavior could result in confusing installation behavior, such as installing \"incorrect\" files according to the filename of the archive. New behavior only proceeds with i",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-434"
+     ],
+     "VendorSeverity": {
+      "amazon": 1,
+      "azure": 2,
+      "ghsa": 2,
+      "photon": 1,
+      "redhat": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V40Vector": "CVSS:4.0/AV:L/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+       "V40Score": 4.6
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:N/I:H/A:N",
+       "V3Score": 5
+      }
+     },
+     "PublishedDate": "2026-04-20T16:16:45.43Z",
+     "LastModifiedDate": "2026-06-17T10:43:14.243Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-6357",
+     "VendorIDs": [
+      "GHSA-jp4c-xjxw-mgf9"
+     ],
+     "PkgName": "pip",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/pip-24.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pip@24.0",
+      "UID": "7a4293168b845101"
+     },
+     "InstalledVersion": "24.0",
+     "FixedVersion": "26.1",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-6357",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:139fe7c2f67c88a8156a59da2620782b42bee211eb9c2524b854a0116bbcafb1",
+     "Title": "pip: pip: Arbitrary code execution or information disclosure via malicious wheel package installation",
+     "Description": "pip prior to version 26.1 would run self-update check functionality after installing wheel files which required importing well-known Python modules names. These module imports were intentionally deferred to increase startup time of the pip CLI. The patch changes self-update functionality to run befo",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-829"
+     ],
+     "VendorSeverity": {
+      "amazon": 3,
+      "azure": 2,
+      "ghsa": 2,
+      "photon": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V40Vector": "CVSS:4.0/AV:L/AC:L/AT:P/PR:H/UI:A/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N",
+       "V40Score": 5.3
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:R/S:U/C:H/I:H/A:N",
+       "V3Score": 5.8
+      }
+     },
+     "PublishedDate": "2026-04-27T15:16:20.857Z",
+     "LastModifiedDate": "2026-06-17T11:00:42.947Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-8643",
+     "VendorIDs": [
+      "GHSA-wf93-45jw-7689"
+     ],
+     "PkgName": "pip",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/pip-24.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pip@24.0",
+      "UID": "7a4293168b845101"
+     },
+     "InstalledVersion": "24.0",
+     "FixedVersion": "26.1.2",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-8643",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:33e024df1c94fa2e7066a1984af60ebf48c4659553e7c54c8d5ba193e947b3d1",
+     "Title": "python-pip: Path traversal via malicious entry point name in pip wheel installation allows arbitrary file overwrite",
+     "Description": "pip would treat console_scripts and gui_scripts as paths instead of file names without sanitizing the resolved absolute path to the installation directory, leading to entry points being installed outside the installation directory.",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-22"
+     ],
+     "VendorSeverity": {
+      "alma": 3,
+      "amazon": 3,
+      "azure": 2,
+      "ghsa": 2,
+      "nvd": 2,
+      "oracle-oval": 3,
+      "redhat": 3,
+      "rocky": 3
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+       "V40Vector": "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:A/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N",
+       "V3Score": 8,
+       "V40Score": 4.1
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+       "V3Score": 8
+      }
+     },
+     "PublishedDate": "2026-06-01T17:17:35.77Z",
+     "LastModifiedDate": "2026-09-16T13:18:08Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-1703",
+     "VendorIDs": [
+      "GHSA-6vgw-5pg2-w6jp"
+     ],
+     "PkgName": "pip",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/pip-24.0.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/pip@24.0",
+      "UID": "7a4293168b845101"
+     },
+     "InstalledVersion": "24.0",
+     "FixedVersion": "26.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-1703",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:85aec44f9c5284d75bf0e620c604fcf1631981a596304ecd522505869d90661f",
+     "Title": "pip: pip: Information disclosure via path traversal when installing crafted wheel archives",
+     "Description": "When pip is installing and extracting a maliciously crafted wheel archive, files may be extracted outside the installation directory. The path traversal is limited to prefixes of the installation directory, thus isn't able to inject or overwrite executable files in typical situations.",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-22"
+     ],
+     "VendorSeverity": {
+      "amazon": 1,
+      "azure": 1,
+      "cbl-mariner": 1,
+      "ghsa": 1,
+      "redhat": 1,
+      "ubuntu": 1
+     },
+     "CVSS": {
+      "ghsa": {
+       "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:L/UI:A/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N",
+       "V40Score": 2
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:L/I:L/A:N",
+       "V3Score": 3.9
+      }
+     },
+     "PublishedDate": "2026-02-02T15:16:30.51Z",
+     "LastModifiedDate": "2026-06-17T10:16:21.7Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2024-24762",
+     "VendorIDs": [
+      "GHSA-2jv5-9r88-3w3p"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.7",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-24762",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:b97a82b00eb4acc8f0200f99796c07a5340e7d0bae8bd3714893a8871070c3e0",
+     "Title": "`python-multipart` is a streaming multipart parser for Python. When us ...",
+     "Description": "`python-multipart` is a streaming multipart parser for Python. When using form data, `python-multipart` uses a Regular Expression to parse the HTTP `Content-Type` header, including options. An attacker could send a custom-made `Content-Type` option that is very difficult for the RegEx to process, co",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-400",
+      "CWE-1333"
+     ],
+     "VendorSeverity": {
+      "ghsa": 3,
+      "nvd": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      }
+     },
+     "PublishedDate": "2024-02-05T15:15:09.26Z",
+     "LastModifiedDate": "2026-06-17T07:14:48.49Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2024-53981",
+     "VendorIDs": [
+      "GHSA-59g5-xgcq-4qw3"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.18",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-53981",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:2259898a2d3de0078bd7fe69fc7941bae624a728190c4b7edbc1b6107f5a9089",
+     "Title": "python-multipart: python-multipart has a DoS via deformation `multipart/form-data` boundary",
+     "Description": "python-multipart is a streaming multipart parser for Python. When parsing form data, python-multipart skips line breaks (CR \\r or LF \\n) in front of the first boundary and any tailing bytes after the last boundary. This happens one byte at a time and emits a log event each time, which may cause exce",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-770"
+     ],
+     "VendorSeverity": {
+      "ghsa": 3,
+      "redhat": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
+       "V3Score": 7.5,
+       "V40Score": 8.7
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      }
+     },
+     "PublishedDate": "2024-12-02T16:15:14.457Z",
+     "LastModifiedDate": "2026-06-17T08:09:36.64Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-24486",
+     "VendorIDs": [
+      "GHSA-wp53-j4wj-2cfg"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.22",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-24486",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:f4fa58ae389b7677ed0d0784f1e25143f3ac4bd07342057e7e1d2e61c6eab19c",
+     "Title": "python-multipart: Python-Multipart: Arbitrary file write via path traversal vulnerability",
+     "Description": "Python-Multipart is a streaming multipart parser for Python. Prior to version 0.0.22, a Path Traversal vulnerability exists when using non-default configuration options `UPLOAD_DIR` and `UPLOAD_KEEP_FILENAME=True`. An attacker can write uploaded files to arbitrary locations on the filesystem by craf",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-22"
+     ],
+     "VendorSeverity": {
+      "ghsa": 3,
+      "nvd": 3,
+      "redhat": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:H/A:L",
+       "V3Score": 8.6
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:H/A:L",
+       "V3Score": 8.6
+      }
+     },
+     "PublishedDate": "2026-01-27T01:16:02.303Z",
+     "LastModifiedDate": "2026-08-07T12:17:21.06Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-42561",
+     "VendorIDs": [
+      "GHSA-pp6c-gr5w-3c5g"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.27",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-42561",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:20fe4a6b810b1a2e4e74405af93ddf83c16ebb19bd6f1f4e4748993d42b1957a",
+     "Title": "python-multipart: python-multipart: Denial of Service via excessive multipart part headers",
+     "Description": "Python-Multipart is a streaming multipart parser for Python. Prior to 0.0.27, python-multipart has a denial of service vulnerability in multipart part header parsing. When parsing multipart/form-data, MultipartParser previously had no limit on the number of part headers or the size of an individual ",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-770",
+      "CWE-606"
+     ],
+     "VendorSeverity": {
+      "ghsa": 3,
+      "redhat": 3
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      }
+     },
+     "PublishedDate": "2026-05-13T21:16:47.07Z",
+     "LastModifiedDate": "2026-08-07T12:17:53.37Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-53539",
+     "VendorIDs": [
+      "GHSA-5rvq-cxj2-64vf"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.30",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-53539",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:5cd2f38b1107a11013237ed66961fbea4282735d730fe4449372f9e52af86d7d",
+     "Title": "python-multipart: Python-Multipart: Denial of Service via crafted form-urlencoded bodies",
+     "Description": "Python-Multipart is a streaming multipart parser for Python. Prior to 0.0.30, when parsing application/x-www-form-urlencoded bodies, QuerystringParser located the field separator with a two step lookup: it first scanned the entire remaining buffer for &, and only when no & existed anywhere ahead did",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-400",
+      "CWE-407"
+     ],
+     "VendorSeverity": {
+      "ghsa": 3,
+      "redhat": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 5.9
+      }
+     },
+     "PublishedDate": "2026-06-22T18:16:44.36Z",
+     "LastModifiedDate": "2026-06-26T19:50:56.51Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-40347",
+     "VendorIDs": [
+      "GHSA-mj87-hwqh-73pj"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.26",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-40347",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:d3e5492ff47e412a3a582fe9b3486824bfd84d7cbd7f153857fc43ab8a3f412b",
+     "Title": "python-multipart: Python-Multipart: Denial of Service via crafted multipart/form-data requests",
+     "Description": "Python-Multipart is a streaming multipart parser for Python. Versions prior to 0.0.26 have a denial of service vulnerability when parsing crafted `multipart/form-data` requests with large preamble or epilogue sections. Upgrade to version 0.0.26 or later, which skips ahead to the next boundary candid",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-400",
+      "CWE-834"
+     ],
+     "VendorSeverity": {
+      "ghsa": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+       "V3Score": 5.3
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+       "V3Score": 5.9
+      }
+     },
+     "PublishedDate": "2026-04-18T00:16:38.52Z",
+     "LastModifiedDate": "2026-06-17T10:45:09.547Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-53537",
+     "VendorIDs": [
+      "GHSA-vffw-93wf-4j4q"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.30",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-53537",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:67b008f4d423f93ffb4e88b464e13cf5932be3c335c75b1cef669e33eb367171",
+     "Title": "multipart: Python-Multipart: Information disclosure via header parsing discrepancy",
+     "Description": "Python-Multipart is a streaming multipart parser for Python. Prior to 0.0.30, parse_options_header parsed Content-Disposition (and Content-Type) headers with email.message.Message, which transparently applies RFC 2231/5987 decoding. The extended parameter syntax (filename*=charset'lang'value, name*=",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-20",
+      "CWE-436"
+     ],
+     "VendorSeverity": {
+      "ghsa": 1,
+      "nvd": 2,
+      "redhat": 1
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+       "V3Score": 3.7
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+       "V3Score": 5.3
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+       "V3Score": 3.7
+      }
+     },
+     "PublishedDate": "2026-06-22T18:16:44.077Z",
+     "LastModifiedDate": "2026-06-26T19:54:37.68Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-53538",
+     "VendorIDs": [
+      "GHSA-6jv3-5f52-599m"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.30",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-53538",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:6a457e5025e643dc63f320b742464df127293d003c0dbce376360fe509da64ba",
+     "Title": "python-multipart: Python-Multipart: Information disclosure due to parser differential in form data handling",
+     "Description": "Python-Multipart is a streaming multipart parser for Python. Prior to 0.0.30, QuerystringParser treated ; as a field separator in application/x-www-form-urlencoded bodies, in addition to &. The WHATWG URL standard, modern browsers, and Python's urllib.parse (since the CVE-2021-23336 fix) treat only ",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-436",
+      "CWE-444"
+     ],
+     "VendorSeverity": {
+      "ghsa": 1,
+      "redhat": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+       "V3Score": 3.7
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+       "V3Score": 4.8
+      }
+     },
+     "PublishedDate": "2026-06-22T18:16:44.223Z",
+     "LastModifiedDate": "2026-06-26T19:52:35.633Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-53540",
+     "VendorIDs": [
+      "GHSA-v9pg-7xvm-68hf"
+     ],
+     "PkgName": "python-multipart",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/python_multipart-0.0.6.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/python-multipart@0.0.6",
+      "UID": "f4ad6e0bbf39488c"
+     },
+     "InstalledVersion": "0.0.6",
+     "FixedVersion": "0.0.31",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-53540",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:842b68366931e6f48188385ead4e7b95bbb77aa3ba5bfc9c18c1f9ac926f78d2",
+     "Title": "python-multipart: Python-Multipart: Negative Content-Length in parse_form buffers the entire body in memory",
+     "Description": "Python-Multipart is a streaming multipart parser for Python. Prior to 0.0.31, parse_form() did not validate the Content-Length header before using it to bound its chunked read of the request body. A negative Content-Length turned the bounded read into a read-until-EOF, so the entire body was loaded ",
+     "Severity": "LOW",
+     "CweIDs": [
+      "CWE-1284"
+     ],
+     "VendorSeverity": {
+      "ghsa": 1,
+      "redhat": 1
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+       "V3Score": 3.7
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+       "V3Score": 3.7
+      }
+     },
+     "PublishedDate": "2026-06-22T18:16:44.497Z",
+     "LastModifiedDate": "2026-06-26T19:50:18.34Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2024-6345",
+     "VendorIDs": [
+      "GHSA-cx63-2mw6-8hw5"
+     ],
+     "PkgName": "setuptools",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/setuptools-65.5.1.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/setuptools@65.5.1",
+      "UID": "115464a298816f81"
+     },
+     "InstalledVersion": "65.5.1",
+     "FixedVersion": "70.0.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-6345",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:99ac8683f75e6d960023f20ee03bf8c7de6b820fbd94cb7554728ee72bd74d37",
+     "Title": "pypa/setuptools: Remote code execution via download functions in the package_index module in pypa/setuptools",
+     "Description": "A vulnerability in the package_index module of pypa/setuptools versions up to 69.1.1 allows for remote code execution via its download functions. These functions, which are used to download packages from URLs provided by users or retrieved from package index servers, are susceptible to code injectio",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-94"
+     ],
+     "VendorSeverity": {
+      "alma": 3,
+      "amazon": 3,
+      "azure": 3,
+      "bitnami": 3,
+      "cbl-mariner": 3,
+      "ghsa": 3,
+      "oracle-oval": 3,
+      "photon": 3,
+      "redhat": 3,
+      "rocky": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "bitnami": {
+       "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+       "V3Score": 8.8
+      },
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+       "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+       "V3Score": 8.8,
+       "V40Score": 7.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+       "V3Score": 8.8
+      }
+     },
+     "PublishedDate": "2024-07-15T01:15:01.73Z",
+     "LastModifiedDate": "2026-06-17T08:17:49.463Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2025-47273",
+     "VendorIDs": [
+      "GHSA-5rjg-fvgr-3xxf"
+     ],
+     "PkgName": "setuptools",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/setuptools-65.5.1.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/setuptools@65.5.1",
+      "UID": "115464a298816f81"
+     },
+     "InstalledVersion": "65.5.1",
+     "FixedVersion": "78.1.1",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-47273",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:3d32b054e175c1fdfbaf3cc3477a1c01ed549a4d063a1cfed6cc77a076bf74b1",
+     "Title": "setuptools: Path Traversal Vulnerability in setuptools PackageIndex",
+     "Description": "setuptools is a package that allows users to download, build, install, upgrade, and uninstall Python packages. A path traversal vulnerability in `PackageIndex` is present in setuptools prior to version 78.1.1. An attacker would be allowed to write files to arbitrary locations on the filesystem with ",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-22"
+     ],
+     "VendorSeverity": {
+      "alma": 2,
+      "amazon": 3,
+      "azure": 3,
+      "bitnami": 3,
+      "ghsa": 3,
+      "nvd": 3,
+      "oracle-oval": 2,
+      "photon": 3,
+      "redhat": 2,
+      "rocky": 2,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "bitnami": {
+       "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:P",
+       "V40Score": 7.7
+      },
+      "ghsa": {
+       "V40Vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:P",
+       "V40Score": 7.7
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+       "V3Score": 8.8
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L",
+       "V3Score": 7.1
+      }
+     },
+     "PublishedDate": "2025-05-17T16:15:19.11Z",
+     "LastModifiedDate": "2026-06-17T09:27:38.827Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-59890",
+     "VendorIDs": [
+      "GHSA-h35f-9h28-mq5c"
+     ],
+     "PkgName": "setuptools",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/setuptools-65.5.1.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/setuptools@65.5.1",
+      "UID": "115464a298816f81"
+     },
+     "InstalledVersion": "65.5.1",
+     "FixedVersion": "83.0.0",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-59890",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:eba5beb765494ecebfd50bc46a6b2408040cbac11478c76098ade34408b4af0b",
+     "Title": "setuptools: setuptools: MANIFEST.in exclusion bypass in sdist via Unicode normalization collision (NFC/NFD)",
+     "Description": "setuptools is a package that allows users to download, build, install, upgrade, and uninstall Python packages. Prior to 83.0.0, FileList applied MANIFEST.in exclude, global-exclude, recursive-exclude, and prune directives by matching compiled glob patterns against on-disk file names without Unicode ",
+     "Severity": "MEDIUM",
+     "CweIDs": [
+      "CWE-176",
+      "CWE-697"
+     ],
+     "VendorSeverity": {
+      "azure": 2,
+      "bitnami": 2,
+      "ghsa": 2,
+      "redhat": 2
+     },
+     "CVSS": {
+      "bitnami": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:L/A:N",
+       "V3Score": 6.1
+      },
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:L/A:N",
+       "V3Score": 6.1
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:L/A:N",
+       "V3Score": 6.1
+      }
+     },
+     "PublishedDate": "2026-07-08T17:17:27.02Z",
+     "LastModifiedDate": "2026-07-13T17:04:58.427Z"
+    },
+    {
+     "VulnerabilityID": "CVE-2026-24049",
+     "VendorIDs": [
+      "GHSA-8rrh-rw8j-w5fx"
+     ],
+     "PkgName": "wheel",
+     "PkgPath": "usr/local/lib/python3.11/site-packages/wheel-0.45.1.dist-info/METADATA",
+     "PkgIdentifier": {
+      "PURL": "pkg:pypi/wheel@0.45.1",
+      "UID": "588d1d5b79ef6155"
+     },
+     "InstalledVersion": "0.45.1",
+     "FixedVersion": "0.46.2",
+     "Status": "fixed",
+     "Layer": {
+      "Digest": "sha256:3230e199415c0a9a350ca767c663d1074e306c84bd56ef31a296b4b455f8700f",
+      "DiffID": "sha256:4028c3e9856444f30a0b826ce022def5b050dafc914275b15ce316b3bebb523c"
+     },
+     "SeveritySource": "ghsa",
+     "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-24049",
+     "DataSource": {
+      "ID": "ghsa",
+      "Name": "GitHub Security Advisory pip",
+      "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+     },
+     "Fingerprint": "sha256:6350b848ae63396fa30a906f5d616902370fd63931cc84b1f128c4bcc4b22ba6",
+     "Title": "wheel: wheel: Privilege Escalation or Arbitrary Code Execution via malicious wheel file unpacking",
+     "Description": "wheel is a command line tool for manipulating Python wheel files, as defined in PEP 427. In versions 0.40.0 through 0.46.1, the unpack function is vulnerable to file permission modification through mishandling of file permissions after extraction. The logic blindly trusts the filename from the archi",
+     "Severity": "HIGH",
+     "CweIDs": [
+      "CWE-22",
+      "CWE-732"
+     ],
+     "VendorSeverity": {
+      "alma": 3,
+      "amazon": 3,
+      "azure": 2,
+      "cbl-mariner": 2,
+      "ghsa": 3,
+      "nvd": 2,
+      "oracle-oval": 3,
+      "redhat": 3,
+      "rocky": 3,
+      "ubuntu": 2
+     },
+     "CVSS": {
+      "ghsa": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:H",
+       "V3Score": 7.1
+      },
+      "nvd": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+       "V3Score": 5.5
+      },
+      "redhat": {
+       "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:H",
+       "V3Score": 7.1
+      }
+     },
+     "PublishedDate": "2026-01-22T05:16:23.157Z",
+     "LastModifiedDate": "2026-09-10T13:17:45.017Z"
+    }
+   ]
+  },
+  {
+   "Target": "/src/build/image.tar",
+   "Class": "config",
+   "Type": "dockerfile",
+   "MisconfSummary": {
+    "Successes": 23,
+    "Failures": 4
+   },
+   "Misconfigurations": [
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0002",
+     "Title": "Image user should not be 'root'",
+     "Description": "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+     "Message": "Specify at least 1 USER command in Dockerfile with non-root user as argument",
+     "Namespace": "builtin.dockerfile.DS002",
+     "Query": "data.builtin.dockerfile.DS002.deny",
+     "Resolution": "Add 'USER <non root user name>' line to the Dockerfile",
+     "Severity": "HIGH",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0002",
+     "References": [
+      "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+      "https://avd.aquasec.com/misconfig/ds-0002"
+     ],
+     "Status": "FAIL",
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general"
+     }
+    },
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0005",
+     "Title": "ADD instead of COPY",
+     "Description": "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+     "Message": "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+     "Namespace": "builtin.dockerfile.DS005",
+     "Query": "data.builtin.dockerfile.DS005.deny",
+     "Resolution": "Use COPY instead of ADD",
+     "Severity": "LOW",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0005",
+     "References": [
+      "https://docs.docker.com/engine/reference/builder/#add",
+      "https://avd.aquasec.com/misconfig/ds-0005"
+     ],
+     "Status": "FAIL",
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general",
+      "StartLine": 2,
+      "EndLine": 2,
+      "Code": {
+       "Lines": [
+        {
+         "Number": 2,
+         "Content": "ADD . /app",
+         "IsCause": true,
+         "Annotation": "",
+         "Truncated": false,
+         "Highlighted": "\u001b[38;5;64mADD\u001b[0m . /app",
+         "FirstCause": true,
+         "LastCause": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0026",
+     "Title": "No HEALTHCHECK defined",
+     "Description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+     "Message": "Add HEALTHCHECK instruction in your Dockerfile",
+     "Namespace": "builtin.dockerfile.DS026",
+     "Query": "data.builtin.dockerfile.DS026.deny",
+     "Resolution": "Add HEALTHCHECK instruction in Dockerfile",
+     "Severity": "LOW",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0026",
+     "References": [
+      "https://blog.aquasec.com/docker-security-best-practices",
+      "https://avd.aquasec.com/misconfig/ds-0026"
+     ],
+     "Status": "FAIL",
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general"
+     }
+    },
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0031",
+     "Title": "Secrets passed via `build-args` or envs or copied secret files",
+     "Description": "Passing secrets via `build-args` or envs or copying secret files can leak them out",
+     "Message": "Possible exposure of secret env \"DB_PASSWORD\" in ENV",
+     "Namespace": "builtin.dockerfile.DS031",
+     "Query": "data.builtin.dockerfile.DS031.deny",
+     "Resolution": "Use secret mount if secrets are needed during image build. Use volume mount if secret files are needed during container runtime.",
+     "Severity": "CRITICAL",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0031",
+     "References": [
+      "https://docs.docker.com/build/building/secrets/",
+      "https://avd.aquasec.com/misconfig/ds-0031"
+     ],
+     "Status": "FAIL",
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general",
+      "StartLine": 1,
+      "EndLine": 1,
+      "Code": {
+       "Lines": [
+        {
+         "Number": 1,
+         "Content": "ENV DB_PASSWORD=\"supersecret123\"",
+         "IsCause": true,
+         "Annotation": "",
+         "Truncated": false,
+         "Highlighted": "\u001b[38;5;64mENV\u001b[0m \u001b[38;5;33mDB_PASSWORD\u001b[0m\u001b[38;5;245m=\u001b[0m\u001b[38;5;37m\"supersecret123\"\u001b[0m",
+         "FirstCause": true,
+         "LastCause": true
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "Target": "app/app/Dockerfile",
+   "Class": "config",
+   "Type": "dockerfile",
+   "MisconfSummary": {
+    "Successes": 23,
+    "Failures": 4
+   },
+   "Misconfigurations": [
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0002",
+     "Title": "Image user should not be 'root'",
+     "Description": "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+     "Message": "Specify at least 1 USER command in Dockerfile with non-root user as argument",
+     "Namespace": "builtin.dockerfile.DS002",
+     "Query": "data.builtin.dockerfile.DS002.deny",
+     "Resolution": "Add 'USER <non root user name>' line to the Dockerfile",
+     "Severity": "HIGH",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0002",
+     "References": [
+      "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+      "https://avd.aquasec.com/misconfig/ds-0002"
+     ],
+     "Status": "FAIL",
+     "Layer": {
+      "Digest": "sha256:1d73364b4734d39304824bfc1398f9cc00694fd7c9c5bbe8ee99a73247e44857",
+      "DiffID": "sha256:59b49d253e837116c662ba3694b43322332a6873b75cecd428778c583e45a4c5"
+     },
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general"
+     }
+    },
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0005",
+     "Title": "ADD instead of COPY",
+     "Description": "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+     "Message": "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+     "Namespace": "builtin.dockerfile.DS005",
+     "Query": "data.builtin.dockerfile.DS005.deny",
+     "Resolution": "Use COPY instead of ADD",
+     "Severity": "LOW",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0005",
+     "References": [
+      "https://docs.docker.com/engine/reference/builder/#add",
+      "https://avd.aquasec.com/misconfig/ds-0005"
+     ],
+     "Status": "FAIL",
+     "Layer": {
+      "Digest": "sha256:1d73364b4734d39304824bfc1398f9cc00694fd7c9c5bbe8ee99a73247e44857",
+      "DiffID": "sha256:59b49d253e837116c662ba3694b43322332a6873b75cecd428778c583e45a4c5"
+     },
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general",
+      "StartLine": 6,
+      "EndLine": 6,
+      "Code": {
+       "Lines": [
+        {
+         "Number": 6,
+         "Content": "ADD . /app",
+         "IsCause": true,
+         "Annotation": "",
+         "Truncated": false,
+         "Highlighted": "\u001b[38;5;64mADD\u001b[0m . /app",
+         "FirstCause": true,
+         "LastCause": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0026",
+     "Title": "No HEALTHCHECK defined",
+     "Description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+     "Message": "Add HEALTHCHECK instruction in your Dockerfile",
+     "Namespace": "builtin.dockerfile.DS026",
+     "Query": "data.builtin.dockerfile.DS026.deny",
+     "Resolution": "Add HEALTHCHECK instruction in Dockerfile",
+     "Severity": "LOW",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0026",
+     "References": [
+      "https://blog.aquasec.com/docker-security-best-practices",
+      "https://avd.aquasec.com/misconfig/ds-0026"
+     ],
+     "Status": "FAIL",
+     "Layer": {
+      "Digest": "sha256:1d73364b4734d39304824bfc1398f9cc00694fd7c9c5bbe8ee99a73247e44857",
+      "DiffID": "sha256:59b49d253e837116c662ba3694b43322332a6873b75cecd428778c583e45a4c5"
+     },
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general"
+     }
+    },
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0031",
+     "Title": "Secrets passed via `build-args` or envs or copied secret files",
+     "Description": "Passing secrets via `build-args` or envs or copying secret files can leak them out",
+     "Message": "Possible exposure of secret env \"DB_PASSWORD\" in ENV",
+     "Namespace": "builtin.dockerfile.DS031",
+     "Query": "data.builtin.dockerfile.DS031.deny",
+     "Resolution": "Use secret mount if secrets are needed during image build. Use volume mount if secret files are needed during container runtime.",
+     "Severity": "CRITICAL",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0031",
+     "References": [
+      "https://docs.docker.com/build/building/secrets/",
+      "https://avd.aquasec.com/misconfig/ds-0031"
+     ],
+     "Status": "FAIL",
+     "Layer": {
+      "Digest": "sha256:1d73364b4734d39304824bfc1398f9cc00694fd7c9c5bbe8ee99a73247e44857",
+      "DiffID": "sha256:59b49d253e837116c662ba3694b43322332a6873b75cecd428778c583e45a4c5"
+     },
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general",
+      "StartLine": 5,
+      "EndLine": 5,
+      "Code": {
+       "Lines": [
+        {
+         "Number": 5,
+         "Content": "ENV DB_PASSWORD=supersecret123",
+         "IsCause": true,
+         "Annotation": "",
+         "Truncated": false,
+         "Highlighted": "\u001b[38;5;64mENV\u001b[0m \u001b[38;5;33mDB_PASSWORD\u001b[0m\u001b[38;5;245m=\u001b[0msupersecret123",
+         "FirstCause": true,
+         "LastCause": true
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "Target": "app/tools/scanners.Dockerfile",
+   "Class": "config",
+   "Type": "dockerfile",
+   "MisconfSummary": {
+    "Successes": 25,
+    "Failures": 2
+   },
+   "Misconfigurations": [
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0002",
+     "Title": "Image user should not be 'root'",
+     "Description": "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+     "Message": "Specify at least 1 USER command in Dockerfile with non-root user as argument",
+     "Namespace": "builtin.dockerfile.DS002",
+     "Query": "data.builtin.dockerfile.DS002.deny",
+     "Resolution": "Add 'USER <non root user name>' line to the Dockerfile",
+     "Severity": "HIGH",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0002",
+     "References": [
+      "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+      "https://avd.aquasec.com/misconfig/ds-0002"
+     ],
+     "Status": "FAIL",
+     "Layer": {
+      "Digest": "sha256:1d73364b4734d39304824bfc1398f9cc00694fd7c9c5bbe8ee99a73247e44857",
+      "DiffID": "sha256:59b49d253e837116c662ba3694b43322332a6873b75cecd428778c583e45a4c5"
+     },
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general"
+     }
+    },
+    {
+     "Type": "Dockerfile Security Check",
+     "ID": "DS-0026",
+     "Title": "No HEALTHCHECK defined",
+     "Description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+     "Message": "Add HEALTHCHECK instruction in your Dockerfile",
+     "Namespace": "builtin.dockerfile.DS026",
+     "Query": "data.builtin.dockerfile.DS026.deny",
+     "Resolution": "Add HEALTHCHECK instruction in Dockerfile",
+     "Severity": "LOW",
+     "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0026",
+     "References": [
+      "https://blog.aquasec.com/docker-security-best-practices",
+      "https://avd.aquasec.com/misconfig/ds-0026"
+     ],
+     "Status": "FAIL",
+     "Layer": {
+      "Digest": "sha256:1d73364b4734d39304824bfc1398f9cc00694fd7c9c5bbe8ee99a73247e44857",
+      "DiffID": "sha256:59b49d253e837116c662ba3694b43322332a6873b75cecd428778c583e45a4c5"
+     },
+     "CauseMetadata": {
+      "Provider": "Dockerfile",
+      "Service": "general"
+     }
+    }
+   ]
+  },
+  {
+   "Target": "/app/app/src/secnotes/config.py",
+   "Class": "secret",
+   "Secrets": [
+    {
+     "RuleID": "aws-access-key-id",
+     "Category": "AWS",
+     "Severity": "CRITICAL",
+     "Title": "AWS Access Key ID",
+     "StartLine": 21,
+     "EndLine": 21,
+     "Match": "AWS_ACCESS_KEY_ID = \"********************\"",
+     "Layer": {
+      "Digest": "sha256:1d73364b4734d39304824bfc1398f9cc00694fd7c9c5bbe8ee99a73247e44857",
+      "DiffID": "sha256:59b49d253e837116c662ba3694b43322332a6873b75cecd428778c583e45a4c5",
+      "CreatedBy": "ADD . /app # buildkit"
+     },
+     "Offset": 687
+    }
+   ]
+  },
+  {
+   "Target": "/root/.cache/pip/http-v2/8/0/6/4/7/80647ed61312831751c201613dddf26c783cdabcedf06d435da5b111.body",
+   "Class": "secret",
+   "Secrets": [
+    {
+     "RuleID": "jwt-token",
+     "Category": "JWT",
+     "Severity": "MEDIUM",
+     "Title": "JWT token",
+     "StartLine": 88,
+     "EndLine": 88,
+     "Match": "    *********************************************************************************************************",
+     "Layer": {
+      "Digest": "sha256:567e26c5b27d6500baeab1f79f282b4696f902b3f238b5f9e5a8912873bbc873",
+      "DiffID": "sha256:343b87b227224ce8f1822f7cb0aa85cf4a086dfd469c8f4170a1ae1948e744e0",
+      "CreatedBy": "RUN /bin/sh -c PIP_CERT=/run/secrets/ca pip install -r app/requirements.txt # buildkit"
+     },
+     "Offset": 3622
+    }
+   ]
+  }
+ ]
+}

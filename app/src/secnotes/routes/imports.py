@@ -47,9 +47,7 @@ def import_notes(
     if isinstance(document, dict) and set(document) == {"notes"}:
         document = document["notes"]
     if not isinstance(document, list):
-        raise _reject(
-            request, status.HTTP_422_UNPROCESSABLE_CONTENT, "not_a_list", "expected a list of notes"
-        )
+        raise _reject(request, status.HTTP_422_UNPROCESSABLE_CONTENT, "not_a_list", "expected a list of notes")
     if len(document) > settings.max_import_notes:
         raise _reject(request, status.HTTP_413_CONTENT_TOO_LARGE, "too_many", "too many notes in one import")
     try:

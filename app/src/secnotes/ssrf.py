@@ -197,9 +197,7 @@ class PreviewFetcher:
                             body.extend(chunk)
                             if len(body) >= MAX_BODY_BYTES:
                                 break
-                        text = bytes(body[:MAX_BODY_BYTES]).decode(
-                            response.encoding or "utf-8", errors="replace"
-                        )
+                        text = bytes(body[:MAX_BODY_BYTES]).decode(response.encoding or "utf-8", errors="replace")
                 except httpx.HTTPError as exc:
                     raise PreviewUnavailable(type(exc).__name__) from exc
                 parser = _MetaParser()

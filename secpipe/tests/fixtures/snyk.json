@@ -1,0 +1,64 @@
+{
+  "vulnerabilities": [
+    {
+      "id": "SNYK-PYTHON-PYYAML-590151",
+      "title": "Arbitrary Code Execution",
+      "severity": "critical",
+      "cvssScore": 9.8,
+      "identifiers": {"CVE": ["CVE-2020-14343"], "CWE": ["CWE-20"], "GHSA": ["GHSA-8q59-q68h-6hv4"]},
+      "packageName": "pyyaml",
+      "version": "5.3.1",
+      "from": ["app/requirements.txt@0.0.0", "pyyaml@5.3.1"],
+      "upgradePath": [false, "pyyaml@5.4"],
+      "fixedIn": ["5.4"],
+      "isUpgradable": true,
+      "isPatchable": false,
+      "language": "python",
+      "packageManager": "pip",
+      "description": "Affected versions of this package are vulnerable to Arbitrary Code Execution via the full_load method or FullLoader."
+    },
+    {
+      "id": "SNYK-PYTHON-PYYAML-590151",
+      "title": "Arbitrary Code Execution",
+      "severity": "critical",
+      "cvssScore": 9.8,
+      "identifiers": {"CVE": ["CVE-2020-14343"], "CWE": ["CWE-20"]},
+      "packageName": "pyyaml",
+      "version": "5.3.1",
+      "from": ["app/requirements.txt@0.0.0", "some-plugin@1.0.0", "pyyaml@5.3.1"],
+      "fixedIn": ["5.4"],
+      "isUpgradable": true,
+      "isPatchable": false
+    },
+    {
+      "id": "SNYK-PYTHON-PYJWT-2840625",
+      "title": "Improper Verification of Cryptographic Signature",
+      "severity": "high",
+      "cvssScore": 7.4,
+      "identifiers": {"CVE": ["CVE-2022-29217"], "CWE": ["CWE-347"]},
+      "packageName": "PyJWT",
+      "version": "2.3.0",
+      "from": ["app/requirements.txt@0.0.0", "pyjwt@2.3.0"],
+      "fixedIn": ["2.4.0"],
+      "isUpgradable": true,
+      "isPatchable": false
+    },
+    {
+      "id": "snyk:lic:pip:example-agpl-lib:AGPL-3.0",
+      "type": "license",
+      "title": "AGPL-3.0 license",
+      "severity": "high",
+      "license": "AGPL-3.0",
+      "packageName": "example-agpl-lib",
+      "version": "1.2.0",
+      "from": ["app/requirements.txt@0.0.0", "example-agpl-lib@1.2.0"]
+    }
+  ],
+  "ok": false,
+  "dependencyCount": 18,
+  "packageManager": "pip",
+  "projectName": "app/requirements.txt",
+  "uniqueCount": 3,
+  "summary": "3 vulnerable dependency paths",
+  "path": "app/requirements.txt"
+}

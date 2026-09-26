@@ -1,0 +1,131 @@
+{
+ "check_type": "dockerfile",
+ "results": {
+  "failed_checks": [
+   {
+    "check_id": "CKV_DOCKER_4",
+    "bc_check_id": null,
+    "check_name": "Ensure that COPY is used instead of ADD in Dockerfiles",
+    "check_result": {
+     "result": "FAILED",
+     "results_configuration": [
+      {
+       "instruction": "ADD",
+       "startline": 5,
+       "endline": 5,
+       "content": "ADD . /app\n",
+       "value": ". /app"
+      }
+     ]
+    },
+    "code_block": null,
+    "file_path": "app/Dockerfile",
+    "file_abs_path": "/repo/app/Dockerfile",
+    "repo_file_path": "/app/Dockerfile",
+    "file_line_range": [
+     6,
+     6
+    ],
+    "resource": "app/Dockerfile.ADD",
+    "evaluations": null,
+    "check_class": "checkov.dockerfile.checks.AddExists",
+    "fixed_definition": null,
+    "entity_tags": null,
+    "caller_file_path": null,
+    "caller_file_line_range": null,
+    "resource_address": null,
+    "severity": null,
+    "bc_category": null,
+    "benchmarks": null,
+    "description": null,
+    "short_description": null,
+    "vulnerability_details": null,
+    "connected_node": null,
+    "guideline": null,
+    "details": [],
+    "check_len": null,
+    "definition_context_file_path": null
+   },
+   {
+    "check_id": "CKV_DOCKER_2",
+    "bc_check_id": null,
+    "check_name": "Ensure that HEALTHCHECK instructions have been added to container images",
+    "check_result": {
+     "result": "FAILED",
+     "results_configuration": null
+    },
+    "code_block": null,
+    "file_path": "app/Dockerfile",
+    "file_abs_path": "/repo/app/Dockerfile",
+    "repo_file_path": "/app/Dockerfile",
+    "file_line_range": [
+     1,
+     10
+    ],
+    "resource": "app/Dockerfile.",
+    "evaluations": null,
+    "check_class": "checkov.dockerfile.checks.HealthcheckExists",
+    "fixed_definition": null,
+    "entity_tags": null,
+    "caller_file_path": null,
+    "caller_file_line_range": null,
+    "resource_address": null,
+    "severity": null,
+    "bc_category": null,
+    "benchmarks": null,
+    "description": null,
+    "short_description": null,
+    "vulnerability_details": null,
+    "connected_node": null,
+    "guideline": null,
+    "details": [],
+    "check_len": null,
+    "definition_context_file_path": null
+   },
+   {
+    "check_id": "CKV_DOCKER_3",
+    "bc_check_id": null,
+    "check_name": "Ensure that a user for the container has been created",
+    "check_result": {
+     "result": "FAILED",
+     "results_configuration": null
+    },
+    "code_block": null,
+    "file_path": "app/Dockerfile",
+    "file_abs_path": "/repo/app/Dockerfile",
+    "repo_file_path": "/app/Dockerfile",
+    "file_line_range": [
+     1,
+     10
+    ],
+    "resource": "app/Dockerfile.",
+    "evaluations": null,
+    "check_class": "checkov.dockerfile.checks.UserExists",
+    "fixed_definition": null,
+    "entity_tags": null,
+    "caller_file_path": null,
+    "caller_file_line_range": null,
+    "resource_address": null,
+    "severity": null,
+    "bc_category": null,
+    "benchmarks": null,
+    "description": null,
+    "short_description": null,
+    "vulnerability_details": null,
+    "connected_node": null,
+    "guideline": null,
+    "details": [],
+    "check_len": null,
+    "definition_context_file_path": null
+   }
+  ]
+ },
+ "summary": {
+  "passed": 32,
+  "failed": 3,
+  "skipped": 0,
+  "parsing_errors": 0,
+  "resource_count": 1,
+  "checkov_version": "3.3.19"
+ }
+}

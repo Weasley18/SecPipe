@@ -1,0 +1,18 @@
+{
+  "issues": [
+    {"key": "AZ1", "rule": "pythonsecurity:S3649", "severity": "BLOCKER", "component": "secnotes:app/src/secnotes/routes/notes.py",
+     "line": 58, "message": "Change this code to not construct SQL queries directly from user-controlled data.", "type": "VULNERABILITY", "status": "OPEN",
+     "impacts": [{"softwareQuality": "SECURITY", "severity": "BLOCKER"}]},
+    {"key": "AZ2", "rule": "python:S1192", "severity": "MINOR", "component": "secnotes:app/src/secnotes/main.py", "line": 10,
+     "message": "Define a constant instead of duplicating this literal.", "type": "CODE_SMELL", "status": "OPEN",
+     "impacts": [{"softwareQuality": "MAINTAINABILITY", "severity": "LOW"}]},
+    {"key": "AZ3", "rule": "python:S4790", "severity": "CRITICAL", "component": "secnotes:app/src/secnotes/auth.py", "line": 33,
+     "message": "Make sure this weak hash algorithm is not used in a sensitive context here.", "type": "VULNERABILITY", "status": "RESOLVED"}
+  ],
+  "hotspots": [
+    {"key": "HS1", "component": "secnotes:app/src/secnotes/routes/admin.py", "securityCategory": "command-injection",
+     "vulnerabilityProbability": "HIGH", "status": "TO_REVIEW", "line": 29, "message": "Make sure that executing this OS command is safe here.", "ruleKey": "python:S4721"},
+    {"key": "HS2", "component": "secnotes:app/src/secnotes/main.py", "securityCategory": "insecure-conf",
+     "vulnerabilityProbability": "LOW", "status": "REVIEWED", "line": 40, "message": "Make sure this permissive CORS policy is safe here.", "ruleKey": "python:S5122"}
+  ]
+}

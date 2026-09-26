@@ -1,0 +1,10 @@
+# Test and lint tooling for the app and the secpipe package. Compile with: make lock
+-c secpipe.txt
+pytest==9.1.1
+pytest-cov==7.1.0
+mypy==2.3.1
+ruff==0.16.9
+types-PyYAML==6.0.12.20260906
+types-jsonschema==4.26.0.20260518
+pip-tools==7.6.1
+pre-commit==4.6.2

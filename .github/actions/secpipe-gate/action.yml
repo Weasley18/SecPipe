@@ -1,0 +1,116 @@
+name: SecPipe gate
+description: >-
+  Aggregate scanner reports, deduplicate and enrich them, apply policy.yaml and
+  pass (exit 0), block (exit 1) or fail closed (exit 2).
+author: Weasley18
+
+inputs:
+  stage:
+    description: Label for this gate run (gate-1 before deploy, gate-2 after DAST).
+    required: true
+  expect:
+    description: Comma-separated scanners that must have produced a usable report (fail closed otherwise).
+    required: true
+  reports:
+    description: Directory containing the scanner reports.
+    default: reports
+  policy:
+    description: Path to policy.yaml.
+    default: policy/policy.yaml
+  branch:
+    description: Branch whose policy applies (defaults to the PR base branch or the pushed branch).
+    default: ""
+  baseline:
+    description: findings.json from the base branch, for new/existing/fixed labelling.
+    default: ""
+  out:
+    description: Output directory (findings.json, comment.md, secpipe.sarif, report.html, metrics).
+    default: out
+  source-root:
+    description: Repository root scanned for in-code suppressions.
+    default: "."
+  labels:
+    description: Pull request labels, comma-separated (for the suppression-approval label).
+    default: ""
+  offline:
+    description: Skip EPSS/KEV enrichment.
+    default: "false"
+  cache-dir:
+    description: EPSS/KEV cache directory (persist it with actions/cache).
+    default: .secpipe-cache
+  python-version:
+    description: Python used to run the aggregator.
+    default: "3.12"
+  fail-on-block:
+    description: Fail this step when the gate blocks or fails closed.
+    default: "true"
+
+outputs:
+  outcome:
+    description: pass, block or error
+    value: ${{ steps.gate.outputs.outcome }}
+  exit-code:
+    description: 0 pass, 1 blocked, 2 tool or configuration error
+    value: ${{ steps.gate.outputs.exit-code }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install SecPipe (hash-verified dependencies)
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        root="$(cd "$ACTION_PATH/../../.." && pwd)"
+        venv="$RUNNER_TEMP/secpipe-venv"
+        python -m venv "$venv"
+        "$venv/bin/pip" install --quiet --disable-pip-version-check --require-hashes -r "$root/requirements/secpipe.txt"
+        "$venv/bin/pip" install --quiet --disable-pip-version-check --no-deps --no-build-isolation "$root"
+        echo "$venv/bin" >> "$GITHUB_PATH"
+
+    - name: Run the gate
+      id: gate
+      shell: bash
+      # Inputs travel through env, never ${{ }} inside the script (no script injection).
+      env:
+        STAGE: ${{ inputs.stage }}
+        EXPECT: ${{ inputs.expect }}
+        REPORTS: ${{ inputs.reports }}
+        POLICY: ${{ inputs.policy }}
+        BRANCH: ${{ inputs.branch }}
+        BASELINE: ${{ inputs.baseline }}
+        OUT: ${{ inputs.out }}
+        SOURCE_ROOT: ${{ inputs.source-root }}
+        LABELS: ${{ inputs.labels }}
+        OFFLINE: ${{ inputs.offline }}
+        CACHE_DIR: ${{ inputs.cache-dir }}
+      run: |
+        set -uo pipefail
+        args=(gate --stage "$STAGE" --reports "$REPORTS" --expect "$EXPECT" --policy "$POLICY"
+              --out "$OUT" --source-root "$SOURCE_ROOT" --cache-dir "$CACHE_DIR" --step-summary)
+        [[ -n "$BRANCH" ]] && args+=(--branch "$BRANCH")
+        [[ -n "$BASELINE" && -f "$BASELINE" ]] && args+=(--baseline "$BASELINE")
+        [[ -n "$LABELS" ]] && args+=(--labels "$LABELS")
+        [[ "$OFFLINE" == "true" ]] && args+=(--offline)
+        secpipe "${args[@]}"
+        code=$?
+        outcome=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["outcome"])' "$OUT/$STAGE.json" 2>/dev/null || echo error)
+        echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+        echo "outcome=$outcome" >> "$GITHUB_OUTPUT"
+
+    - name: Enforce the result
+      if: inputs.fail-on-block == 'true' && steps.gate.outputs.exit-code != '0'
+      shell: bash
+      env:
+        STAGE: ${{ inputs.stage }}
+        CODE: ${{ steps.gate.outputs.exit-code }}
+        OUTCOME: ${{ steps.gate.outputs.outcome }}
+      run: |
+        echo "::error title=SecPipe ${STAGE}::${OUTCOME} (exit ${CODE}). The job summary lists every blocking finding."
+        exit "${CODE}"

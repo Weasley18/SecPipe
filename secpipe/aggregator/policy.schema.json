@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Weasley18/SecPipe/blob/main/secpipe/aggregator/policy.schema.json",
+  "title": "SecPipe policy (policy.yaml)",
+  "description": "Validated on every gate run and in CI, so a typo cannot silently disable policy.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "defaults"],
+  "properties": {
+    "version": {"const": 1},
+    "defaults": {
+      "allOf": [
+        {"$ref": "#/$defs/rules"},
+        {"required": ["block_at_or_above", "warn_at_or_above"]}
+      ]
+    },
+    "branches": {
+      "description": "Per-branch overrides; keys are branch names or globs such as release/*.",
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/rules"}
+    },
+    "licences": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "deny": {"type": "array", "items": {"type": "string", "minLength": 2}, "uniqueItems": true},
+        "allow": {"type": "array", "items": {"type": "string", "minLength": 2}, "uniqueItems": true},
+        "unknown": {"enum": ["ignore", "warn", "block"]}
+      }
+    },
+    "sla_days": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "critical": {"type": "integer", "minimum": 1},
+        "high": {"type": "integer", "minimum": 1},
+        "medium": {"type": "integer", "minimum": 1},
+        "low": {"type": "integer", "minimum": 1}
+      }
+    },
+    "severity_overrides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rule", "severity", "reason"],
+        "properties": {
+          "rule": {"type": "string", "minLength": 2},
+          "tool": {"type": "string"},
+          "severity": {"$ref": "#/$defs/severity"},
+          "reason": {"type": "string", "minLength": 10}
+        }
+      }
+    },
+    "exceptions": {
+      "description": "Accepted risk. Every exception needs a reason, an owner and an expiry date; an expired exception fails the gate.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["reason", "owner", "expires"],
+        "anyOf": [{"required": ["fingerprint"]}, {"required": ["rule"]}],
+        "properties": {
+          "fingerprint": {"type": "string", "pattern": "^[0-9a-f]{16}$"},
+          "rule": {"type": "string", "minLength": 2},
+          "path": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 10},
+          "owner": {"type": "string", "pattern": "^@[A-Za-z0-9][A-Za-z0-9-]*(/[A-Za-z0-9._-]+)?$"},
+          "expires": {"type": "string", "format": "date"},
+          "ticket": {"type": "string"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "severity": {"enum": ["info", "low", "medium", "high", "critical"]},
+    "category": {"enum": ["secret", "sast", "sca", "container", "iac", "k8s", "cloud", "dast"]},
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "block_at_or_above": {"$ref": "#/$defs/severity"},
+        "warn_at_or_above": {"$ref": "#/$defs/severity"},
+        "always_block_categories": {"type": "array", "items": {"$ref": "#/$defs/category"}, "uniqueItems": true},
+        "block_if_in_kev": {"type": "boolean"},
+        "epss_bump_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "no_fix_available": {"enum": ["warn", "block"]},
+        "only_new_findings_block_prs": {"type": "boolean"},
+        "max_suppressions_per_pr": {"type": "integer", "minimum": 0},
+        "exception_warning_days": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

@@ -1,0 +1,440 @@
+{
+ "version": "2.1.0",
+ "runs": [
+  {
+   "invocations": [
+    {
+     "executionSuccessful": true,
+     "toolExecutionNotifications": []
+    }
+   ],
+   "results": [
+    {
+     "fingerprints": {
+      "matchBasedId/v1": "requires login"
+     },
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/auth.py",
+         "uriBaseId": "%SRCROOT%"
+        },
+        "region": {
+         "endColumn": 42,
+         "endLine": 33,
+         "startColumn": 12,
+         "startLine": 33
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "Password hashed with a fast, unsalted digest. MD5/SHA-1/SHA-256 are cracked at billions of guesses per second. Use argon2id (argon2-cffi) or bcrypt."
+     },
+     "properties": {},
+     "ruleId": "policy.semgrep.secnotes-weak-password-hash"
+    },
+    {
+     "fingerprints": {
+      "matchBasedId/v1": "requires login"
+     },
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/auth.py",
+         "uriBaseId": "%SRCROOT%"
+        },
+        "region": {
+         "endColumn": 77,
+         "endLine": 116,
+         "startColumn": 23,
+         "startLine": 116
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "JWT decoded without signature verification (or without pinning the algorithm). Tokens can be forged, e.g. with alg=none or a modified `sub`. Pass the key, `algorithms=[\"HS256\"]` and keep verification on."
+     },
+     "properties": {},
+     "ruleId": "policy.semgrep.secnotes-jwt-verification-disabled"
+    },
+    {
+     "fingerprints": {
+      "matchBasedId/v1": "requires login"
+     },
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/main.py",
+         "uriBaseId": "%SRCROOT%"
+        },
+        "region": {
+         "endColumn": 92,
+         "endLine": 42,
+         "startColumn": 11,
+         "startLine": 42
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "FastAPI/Starlette debug mode returns full tracebacks (paths, SQL, secrets in locals) to the client. Keep `debug=False` and use a generic error handler."
+     },
+     "properties": {},
+     "ruleId": "policy.semgrep.secnotes-fastapi-debug-enabled"
+    },
+    {
+     "fingerprints": {
+      "matchBasedId/v1": "requires login"
+     },
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/main.py",
+         "uriBaseId": "%SRCROOT%"
+        },
+        "region": {
+         "endColumn": 6,
+         "endLine": 57,
+         "startColumn": 5,
+         "startLine": 51
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "CORS allows any origin together with credentials. Starlette reflects the caller's Origin in that case, so any website can make authenticated requests and read the responses. List explicit origins."
+     },
+     "properties": {},
+     "ruleId": "policy.semgrep.secnotes-fastapi-cors-wildcard-credentials"
+    },
+    {
+     "fingerprints": {
+      "matchBasedId/v1": "requires login"
+     },
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/routes/imports.py",
+         "uriBaseId": "%SRCROOT%"
+        },
+        "region": {
+         "endColumn": 54,
+         "endLine": 44,
+         "startColumn": 20,
+         "startLine": 44
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "YAML loaded with a loader that can construct arbitrary Python objects (`!!python/object/apply:os.system`). Use `yaml.safe_load` and validate the result with a Pydantic schema."
+     },
+     "properties": {},
+     "ruleId": "policy.semgrep.secnotes-unsafe-yaml-load"
+    },
+    {
+     "fingerprints": {
+      "matchBasedId/v1": "requires login"
+     },
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/routes/notes.py",
+         "uriBaseId": "%SRCROOT%"
+        },
+        "region": {
+         "endColumn": 54,
+         "endLine": 58,
+         "startColumn": 45,
+         "startLine": 58
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "SQL text built from a string expression (f-string, concatenation, % or .format). User input becomes part of the query: SQL injection. Use SQLAlchemy expressions or `text()` with bound `:params`."
+     },
+     "properties": {},
+     "ruleId": "policy.semgrep.secnotes-sqlalchemy-raw-sql"
+    },
+    {
+     "fingerprints": {
+      "matchBasedId/v1": "requires login"
+     },
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/routes/notes.py",
+         "uriBaseId": "%SRCROOT%"
+        },
+        "region": {
+         "endColumn": 33,
+         "endLine": 64,
+         "startColumn": 12,
+         "startLine": 64
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "Note fetched by id with no owner filter. Check authorisation: filter on `Note.owner_id == current_user.id` (and return 404 for foreign ids)."
+     },
+     "properties": {},
+     "ruleId": "policy.semgrep.secnotes-possible-idor"
+    },
+    {
+     "fingerprints": {
+      "matchBasedId/v1": "requires login"
+     },
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "app/src/secnotes/routes/preview.py",
+         "uriBaseId": "%SRCROOT%"
+        },
+        "region": {
+         "endColumn": 64,
+         "endLine": 21,
+         "startColumn": 16,
+         "startLine": 21
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "A URL taken from the request reaches an outbound HTTP call without validation (SSRF). Attackers can reach cloud metadata (169.254.169.254) or in-cluster services. Allow-list schemes and hosts and reject private, loopback and link-local addresses before fetching."
+     },
+     "properties": {},
+     "ruleId": "policy.semgrep.secnotes-ssrf-user-url"
+    }
+   ],
+   "tool": {
+    "driver": {
+     "name": "Semgrep OSS",
+     "rules": [
+      {
+       "defaultConfiguration": {
+        "level": "error"
+       },
+       "fullDescription": {
+        "text": "CORS allows any origin together with credentials. Starlette reflects the caller's Origin in that case, so any website can make authenticated requests and read the responses. List explicit origins."
+       },
+       "help": {
+        "markdown": "CORS allows any origin together with credentials. Starlette reflects the caller's Origin in that case, so any website can make authenticated requests and read the responses. List explicit origins.",
+        "text": "CORS allows any origin together with credentials. Starlette reflects the caller's Origin in that case, so any website can make authenticated requests and read the responses. List explicit origins."
+       },
+       "id": "policy.semgrep.secnotes-fastapi-cors-wildcard-credentials",
+       "name": "policy.semgrep.secnotes-fastapi-cors-wildcard-credentials",
+       "properties": {
+        "precision": "very-high",
+        "tags": [
+         "CWE-942: Permissive Cross-domain Policy with Untrusted Domains",
+         "HIGH CONFIDENCE",
+         "OWASP-A05:2021 - Security Misconfiguration",
+         "security"
+        ]
+       },
+       "shortDescription": {
+        "text": "Semgrep Finding: policy.semgrep.secnotes-fastapi-cors-wildcard-credentials"
+       }
+      },
+      {
+       "defaultConfiguration": {
+        "level": "warning"
+       },
+       "fullDescription": {
+        "text": "FastAPI/Starlette debug mode returns full tracebacks (paths, SQL, secrets in locals) to the client. Keep `debug=False` and use a generic error handler."
+       },
+       "help": {
+        "markdown": "FastAPI/Starlette debug mode returns full tracebacks (paths, SQL, secrets in locals) to the client. Keep `debug=False` and use a generic error handler.",
+        "text": "FastAPI/Starlette debug mode returns full tracebacks (paths, SQL, secrets in locals) to the client. Keep `debug=False` and use a generic error handler."
+       },
+       "id": "policy.semgrep.secnotes-fastapi-debug-enabled",
+       "name": "policy.semgrep.secnotes-fastapi-debug-enabled",
+       "properties": {
+        "precision": "very-high",
+        "tags": [
+         "CWE-209: Generation of Error Message Containing Sensitive Information",
+         "HIGH CONFIDENCE",
+         "OWASP-A05:2021 - Security Misconfiguration",
+         "security"
+        ]
+       },
+       "shortDescription": {
+        "text": "Semgrep Finding: policy.semgrep.secnotes-fastapi-debug-enabled"
+       }
+      },
+      {
+       "defaultConfiguration": {
+        "level": "error"
+       },
+       "fullDescription": {
+        "text": "JWT decoded without signature verification (or without pinning the algorithm). Tokens can be forged, e.g. with alg=none or a modified `sub`. Pass the key, `algorithms=[\"HS256\"]` and keep verification on."
+       },
+       "help": {
+        "markdown": "JWT decoded without signature verification (or without pinning the algorithm). Tokens can be forged, e.g. with alg=none or a modified `sub`. Pass the key, `algorithms=[\"HS256\"]` and keep verification on.\n\n<b>References:</b>\n - [https://pyjwt.readthedocs.io/en/stable/api.html#jwt.decode](https://pyjwt.readthedocs.io/en/stable/api.html#jwt.decode)\n",
+        "text": "JWT decoded without signature verification (or without pinning the algorithm). Tokens can be forged, e.g. with alg=none or a modified `sub`. Pass the key, `algorithms=[\"HS256\"]` and keep verification on."
+       },
+       "id": "policy.semgrep.secnotes-jwt-verification-disabled",
+       "name": "policy.semgrep.secnotes-jwt-verification-disabled",
+       "properties": {
+        "precision": "very-high",
+        "tags": [
+         "CWE-347: Improper Verification of Cryptographic Signature",
+         "HIGH CONFIDENCE",
+         "OWASP-A07:2021 - Identification and Authentication Failures",
+         "security"
+        ]
+       },
+       "shortDescription": {
+        "text": "Semgrep Finding: policy.semgrep.secnotes-jwt-verification-disabled"
+       }
+      },
+      {
+       "defaultConfiguration": {
+        "level": "warning"
+       },
+       "fullDescription": {
+        "text": "Note fetched by id with no owner filter. Check authorisation: filter on `Note.owner_id == current_user.id` (and return 404 for foreign ids)."
+       },
+       "help": {
+        "markdown": "Note fetched by id with no owner filter. Check authorisation: filter on `Note.owner_id == current_user.id` (and return 404 for foreign ids).",
+        "text": "Note fetched by id with no owner filter. Check authorisation: filter on `Note.owner_id == current_user.id` (and return 404 for foreign ids)."
+       },
+       "id": "policy.semgrep.secnotes-possible-idor",
+       "name": "policy.semgrep.secnotes-possible-idor",
+       "properties": {
+        "precision": "very-high",
+        "tags": [
+         "CWE-639: Authorization Bypass Through User-Controlled Key",
+         "MEDIUM CONFIDENCE",
+         "OWASP-A01:2021 - Broken Access Control",
+         "security"
+        ]
+       },
+       "shortDescription": {
+        "text": "Semgrep Finding: policy.semgrep.secnotes-possible-idor"
+       }
+      },
+      {
+       "defaultConfiguration": {
+        "level": "error"
+       },
+       "fullDescription": {
+        "text": "SQL text built from a string expression (f-string, concatenation, % or .format). User input becomes part of the query: SQL injection. Use SQLAlchemy expressions or `text()` with bound `:params`."
+       },
+       "help": {
+        "markdown": "SQL text built from a string expression (f-string, concatenation, % or .format). User input becomes part of the query: SQL injection. Use SQLAlchemy expressions or `text()` with bound `:params`.",
+        "text": "SQL text built from a string expression (f-string, concatenation, % or .format). User input becomes part of the query: SQL injection. Use SQLAlchemy expressions or `text()` with bound `:params`."
+       },
+       "id": "policy.semgrep.secnotes-sqlalchemy-raw-sql",
+       "name": "policy.semgrep.secnotes-sqlalchemy-raw-sql",
+       "properties": {
+        "precision": "very-high",
+        "tags": [
+         "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+         "HIGH CONFIDENCE",
+         "OWASP-A03:2021 - Injection",
+         "security"
+        ]
+       },
+       "shortDescription": {
+        "text": "Semgrep Finding: policy.semgrep.secnotes-sqlalchemy-raw-sql"
+       }
+      },
+      {
+       "defaultConfiguration": {
+        "level": "error"
+       },
+       "fullDescription": {
+        "text": "A URL taken from the request reaches an outbound HTTP call without validation (SSRF). Attackers can reach cloud metadata (169.254.169.254) or in-cluster services. Allow-list schemes and hosts and reject private, loopback and link-local addresses before fetching."
+       },
+       "help": {
+        "markdown": "A URL taken from the request reaches an outbound HTTP call without validation (SSRF). Attackers can reach cloud metadata (169.254.169.254) or in-cluster services. Allow-list schemes and hosts and reject private, loopback and link-local addresses before fetching.",
+        "text": "A URL taken from the request reaches an outbound HTTP call without validation (SSRF). Attackers can reach cloud metadata (169.254.169.254) or in-cluster services. Allow-list schemes and hosts and reject private, loopback and link-local addresses before fetching."
+       },
+       "id": "policy.semgrep.secnotes-ssrf-user-url",
+       "name": "policy.semgrep.secnotes-ssrf-user-url",
+       "properties": {
+        "precision": "very-high",
+        "tags": [
+         "CWE-918: Server-Side Request Forgery (SSRF)",
+         "MEDIUM CONFIDENCE",
+         "OWASP-A10:2021 - Server-Side Request Forgery",
+         "security"
+        ]
+       },
+       "shortDescription": {
+        "text": "Semgrep Finding: policy.semgrep.secnotes-ssrf-user-url"
+       }
+      },
+      {
+       "defaultConfiguration": {
+        "level": "error"
+       },
+       "fullDescription": {
+        "text": "YAML loaded with a loader that can construct arbitrary Python objects (`!!python/object/apply:os.system`). Use `yaml.safe_load` and validate the result with a Pydantic schema."
+       },
+       "help": {
+        "markdown": "YAML loaded with a loader that can construct arbitrary Python objects (`!!python/object/apply:os.system`). Use `yaml.safe_load` and validate the result with a Pydantic schema.",
+        "text": "YAML loaded with a loader that can construct arbitrary Python objects (`!!python/object/apply:os.system`). Use `yaml.safe_load` and validate the result with a Pydantic schema."
+       },
+       "id": "policy.semgrep.secnotes-unsafe-yaml-load",
+       "name": "policy.semgrep.secnotes-unsafe-yaml-load",
+       "properties": {
+        "precision": "very-high",
+        "tags": [
+         "CWE-502: Deserialization of Untrusted Data",
+         "HIGH CONFIDENCE",
+         "OWASP-A08:2021 - Software and Data Integrity Failures",
+         "security"
+        ]
+       },
+       "shortDescription": {
+        "text": "Semgrep Finding: policy.semgrep.secnotes-unsafe-yaml-load"
+       }
+      },
+      {
+       "defaultConfiguration": {
+        "level": "error"
+       },
+       "fullDescription": {
+        "text": "Password hashed with a fast, unsalted digest. MD5/SHA-1/SHA-256 are cracked at billions of guesses per second. Use argon2id (argon2-cffi) or bcrypt."
+       },
+       "help": {
+        "markdown": "Password hashed with a fast, unsalted digest. MD5/SHA-1/SHA-256 are cracked at billions of guesses per second. Use argon2id (argon2-cffi) or bcrypt.",
+        "text": "Password hashed with a fast, unsalted digest. MD5/SHA-1/SHA-256 are cracked at billions of guesses per second. Use argon2id (argon2-cffi) or bcrypt."
+       },
+       "id": "policy.semgrep.secnotes-weak-password-hash",
+       "name": "policy.semgrep.secnotes-weak-password-hash",
+       "properties": {
+        "precision": "very-high",
+        "tags": [
+         "CWE-916: Use of Password Hash With Insufficient Computational Effort",
+         "HIGH CONFIDENCE",
+         "OWASP-A02:2021 - Cryptographic Failures",
+         "security"
+        ]
+       },
+       "shortDescription": {
+        "text": "Semgrep Finding: policy.semgrep.secnotes-weak-password-hash"
+       }
+      }
+     ],
+     "semanticVersion": "1.178.0"
+    }
+   }
+  }
+ ],
+ "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/schemas/sarif-schema-2.1.0.json"
+}

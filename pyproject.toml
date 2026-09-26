@@ -51,7 +51,7 @@ skips = []
 
 # ---------------------------------------------------------------- ruff
 [tool.ruff]
-line-length = 110
+line-length = 120
 target-version = "py311"
 extend-exclude = ["policy/semgrep"]
 
@@ -61,12 +61,15 @@ ignore = [
   "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004",  # complexity heuristics
   "S101",  # asserts are fine in tests (see per-file) and used for type narrowing
   "RUF012",
+  "PLW2901",  # parsers deliberately rebind loop items after type-narrowing (item = as_dict(item))
+  "PLR0917",
 ]
 
 [tool.ruff.lint.isort]
 known-first-party = ["secnotes", "secpipe", "conftest"]
 
 [tool.ruff.lint.per-file-ignores]
+"secpipe/aggregator/cli.py" = ["PLC0415"]  # subcommands import their modules lazily
 "*/tests/*" = ["S", "PLR", "PT011", "PT018", "B017", "PLC0415", "E501"]
 "secpipe/tests/*" = ["S", "PLR", "PT011", "PT018", "B017", "PLC0415", "E501"]
 
@@ -76,7 +79,7 @@ python_version = "3.12"
 strict = true
 warn_unreachable = true
 mypy_path = "app/src"
-packages = ["secnotes"]
+packages = ["secnotes", "secpipe"]
 exclude = ["secpipe/tests/", "app/tests/"]
 
 [[tool.mypy.overrides]]

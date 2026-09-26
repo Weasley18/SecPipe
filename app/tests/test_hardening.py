@@ -34,8 +34,7 @@ def test_security_headers_on_every_response(client: TestClient, path: str) -> No
 
 def test_request_id_propagated(client: TestClient) -> None:
     assert (
-        client.get("/healthz", headers={"X-Request-ID": "trace-12345678"}).headers["x-request-id"]
-        == "trace-12345678"
+        client.get("/healthz", headers={"X-Request-ID": "trace-12345678"}).headers["x-request-id"] == "trace-12345678"
     )
     assert client.get("/healthz", headers={"X-Request-ID": "bad id!"}).headers["x-request-id"] != "bad id!"
 
@@ -87,9 +86,7 @@ def test_body_size_limit(client: TestClient) -> None:
         for _ in range(3):
             yield b"a" * (512 * 1024)
 
-    streamed = client.post(
-        "/notes", content=chunks(), headers={**headers, "Content-Type": "application/json"}
-    )
+    streamed = client.post("/notes", content=chunks(), headers={**headers, "Content-Type": "application/json"})
     assert streamed.status_code == 413
 
 
@@ -113,9 +110,7 @@ def test_metrics_recorded(client: TestClient) -> None:
     )
 
 
-def test_access_log_includes_user_and_redacts_query(
-    client: TestClient, caplog: pytest.LogCaptureFixture
-) -> None:
+def test_access_log_includes_user_and_redacts_query(client: TestClient, caplog: pytest.LogCaptureFixture) -> None:
     headers = make_user(client, "logged")
     caplog.set_level(logging.INFO, logger="secnotes.access")
     client.get("/notes/search", params={"q": "x", "token": "abc"}, headers=headers)

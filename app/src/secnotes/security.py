@@ -49,9 +49,7 @@ class SecurityHeadersMiddleware:
         async def send_with_headers(message: Message) -> None:
             if message["type"] == "http.response.start":
                 headers = [
-                    (k, v)
-                    for k, v in message.get("headers", [])
-                    if k.lower() not in {b"server", b"x-powered-by"}
+                    (k, v) for k, v in message.get("headers", []) if k.lower() not in {b"server", b"x-powered-by"}
                 ]
                 headers += [
                     (b"content-security-policy", csp.encode()),
@@ -147,15 +145,11 @@ class RequestContextMiddleware:
                 status_holder["status"] = 413
                 await _send_json(send, 413, {"detail": "request body too large"}, request_id)
         except Exception:
-            error_log.exception(
-                "unhandled error", extra={"event": "unhandled_error", "request_id": request_id}
-            )
+            error_log.exception("unhandled error", extra={"event": "unhandled_error", "request_id": request_id})
             if not status_holder["started"]:
                 status_holder["started"] = True
                 status_holder["status"] = 500
-                await _send_json(
-                    send, 500, {"detail": "internal server error", "request_id": request_id}, request_id
-                )
+                await _send_json(send, 500, {"detail": "internal server error", "request_id": request_id}, request_id)
         finally:
             duration = time.perf_counter() - started
             route = scope.get("route")

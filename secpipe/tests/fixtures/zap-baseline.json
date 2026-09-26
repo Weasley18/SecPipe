@@ -1,0 +1,167 @@
+{
+ "@programName": "ZAP",
+ "@version": "2.17.0",
+ "@generated": "Sat, 26 Sept 2026 17:50:47",
+ "created": "2026-09-26T17:50:47.692796687Z",
+ "insights": [
+  {
+   "level": "Low",
+   "reason": "Warning",
+   "site": "",
+   "key": "insight.log.error",
+   "description": "ZAP errors logged - see the zap.log file for details",
+   "statistic": "1"
+  },
+  {
+   "level": "Low",
+   "reason": "Warning",
+   "site": "",
+   "key": "insight.log.warn",
+   "description": "ZAP warnings logged - see the zap.log file for details",
+   "statistic": "12"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "",
+   "key": "insight.network.failure",
+   "description": "Percentage of network failures",
+   "statistic": "38"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "http://localhost:18000",
+   "key": "insight.code.2xx",
+   "description": "Percentage of responses with status code 2xx",
+   "statistic": "9"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "http://localhost:18000",
+   "key": "insight.code.4xx",
+   "description": "Percentage of responses with status code 4xx",
+   "statistic": "90"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "http://localhost:18000",
+   "key": "insight.endpoint.ctype.application/json",
+   "description": "Percentage of endpoints with content type application/json",
+   "statistic": "100"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "http://localhost:18000",
+   "key": "insight.endpoint.method.DELETE",
+   "description": "Percentage of endpoints with method DELETE",
+   "statistic": "5"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "http://localhost:18000",
+   "key": "insight.endpoint.method.GET",
+   "description": "Percentage of endpoints with method GET",
+   "statistic": "45"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "http://localhost:18000",
+   "key": "insight.endpoint.method.POST",
+   "description": "Percentage of endpoints with method POST",
+   "statistic": "45"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "http://localhost:18000",
+   "key": "insight.endpoint.method.PUT",
+   "description": "Percentage of endpoints with method PUT",
+   "statistic": "5"
+  },
+  {
+   "level": "Info",
+   "reason": "Informational",
+   "site": "http://localhost:18000",
+   "key": "insight.endpoint.total",
+   "description": "Count of total endpoints",
+   "statistic": "20"
+  }
+ ],
+ "site": [
+  {
+   "@name": "http://localhost:18000",
+   "@host": "localhost",
+   "@port": "18000",
+   "@ssl": "false",
+   "alerts": [
+    {
+     "pluginid": "10021",
+     "alertRef": "10021",
+     "alert": "X-Content-Type-Options Header Missing",
+     "name": "X-Content-Type-Options Header Missing",
+     "riskcode": "1",
+     "confidence": "2",
+     "riskdesc": "Low (Medium)",
+     "desc": "<p>The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, potentially causing the response body to be interpreted and displayed as a content type other than the declared content type. Current (early 2014) and legacy versions of Firefox will use the declared content type (if one is set), rather than performing MIME-sniffing.</p>",
+     "instances": [
+      {
+       "id": "0",
+       "uri": "http://localhost:18000/openapi.json",
+       "nodeName": "http://localhost:18000/openapi.json",
+       "method": "GET",
+       "param": "x-content-type-options",
+       "attack": "",
+       "evidence": "",
+       "otherinfo": "This issue still applies to error type pages (401, 403, 500, etc.) as those pages are often still affected by injection issues, in which case there is still concern for browsers sniffing pages away from their actual content type.\nAt \"High\" threshold this scan rule will not alert on client or server error responses."
+      }
+     ],
+     "count": "1",
+     "systemic": false,
+     "solution": "<p>Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.</p><p>If possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing.</p>",
+     "otherinfo": "<p>This issue still applies to error type pages (401, 403, 500, etc.) as those pages are often still affected by injection issues, in which case there is still concern for browsers sniffing pages away from their actual content type.</p><p>At \"High\" threshold this scan rule will not alert on client or server error responses.</p>",
+     "reference": "<p>https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/compatibility/gg622941(v=vs.85)</p><p>https://owasp.org/www-community/Security_Headers</p>",
+     "cweid": "693",
+     "wascid": "15",
+     "sourceid": "9"
+    },
+    {
+     "pluginid": "10111",
+     "alertRef": "10111",
+     "alert": "Authentication Request Identified",
+     "name": "Authentication Request Identified",
+     "riskcode": "0",
+     "confidence": "3",
+     "riskdesc": "Informational (High)",
+     "desc": "<p>The given request has been identified as an authentication request. The 'Other Info' field contains a set of key=value lines which identify any relevant fields. If the request is in a context which has an Authentication Method set to \"Auto-Detect\" then this rule will change the authentication to match the request identified.</p>",
+     "instances": [
+      {
+       "id": "2",
+       "uri": "http://localhost:18000/auth/login",
+       "nodeName": "http://localhost:18000/auth/login ()({username,password,totp_code})",
+       "method": "POST",
+       "param": "username",
+       "attack": "",
+       "evidence": "password",
+       "otherinfo": "userParam=username\nuserValue=John Doe\npasswordParam=password"
+      }
+     ],
+     "count": "1",
+     "systemic": false,
+     "solution": "<p>This is an informational alert rather than a vulnerability and so there is nothing to fix.</p>",
+     "otherinfo": "<p>userParam=username</p><p>userValue=John Doe</p><p>passwordParam=password</p>",
+     "reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/auth-req-id/</p>",
+     "cweid": "-1",
+     "wascid": "-1",
+     "sourceid": "14"
+    }
+   ]
+  }
+ ],
+ "sequences": []
+}

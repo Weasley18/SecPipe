@@ -14,13 +14,9 @@ from prometheus_client import Counter, Histogram, start_http_server
 HTTP_REQUESTS = Counter(
     "secnotes_http_requests_total", "HTTP requests by route and status", ["method", "route", "status"]
 )
-HTTP_LATENCY = Histogram(
-    "secnotes_http_request_duration_seconds", "HTTP request latency", ["method", "route"]
-)
+HTTP_LATENCY = Histogram("secnotes_http_request_duration_seconds", "HTTP request latency", ["method", "route"])
 LOGIN_ATTEMPTS = Counter("secnotes_login_attempts_total", "Login attempts by outcome", ["outcome"])
-PREVIEW_BLOCKED = Counter(
-    "secnotes_preview_blocked_total", "Preview URLs rejected by the SSRF guard", ["reason"]
-)
+PREVIEW_BLOCKED = Counter("secnotes_preview_blocked_total", "Preview URLs rejected by the SSRF guard", ["reason"])
 REFRESH_TOKEN_REUSE = Counter(
     "secnotes_refresh_token_reuse_total", "Rotated refresh tokens presented again (possible theft)"
 )

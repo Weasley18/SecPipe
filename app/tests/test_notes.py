@@ -36,9 +36,7 @@ def test_user_b_gets_404_on_user_a_note(client: TestClient) -> None:
     assert client.put(f"/notes/{note_id}", json={"title": "pwned"}, headers=bob).status_code == 404
     assert client.delete(f"/notes/{note_id}", headers=bob).status_code == 404
     # A missing id and someone else's id are indistinguishable.
-    assert (
-        client.get("/notes/999999", headers=bob).json() == client.get(f"/notes/{note_id}", headers=bob).json()
-    )
+    assert client.get("/notes/999999", headers=bob).json() == client.get(f"/notes/{note_id}", headers=bob).json()
     assert client.get(f"/notes/{note_id}", headers=alice).json()["title"] == "secret plan"
     assert client.get("/notes", headers=bob).json() == []
 
@@ -49,9 +47,7 @@ def test_search_is_scoped_and_parameterised(client: TestClient) -> None:
     client.post("/notes", json={"title": "alice diary", "body": "top secret"}, headers=alice)
     client.post("/notes", json={"title": "bob diary", "body": "100% sure_thing"}, headers=bob)
 
-    assert [n["title"] for n in client.get("/notes/search", params={"q": "diary"}, headers=bob).json()] == [
-        "bob diary"
-    ]
+    assert [n["title"] for n in client.get("/notes/search", params={"q": "diary"}, headers=bob).json()] == ["bob diary"]
     for payload in ("' OR '1'='1", "%' OR 1=1 --", "x' UNION SELECT id, title, body, 1, 1 FROM notes --"):
         response = client.get("/notes/search", params={"q": payload}, headers=bob)
         assert response.status_code == 200

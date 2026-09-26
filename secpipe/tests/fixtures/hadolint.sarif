@@ -1,0 +1,114 @@
+{
+ "$schema": "http://json.schemastore.org/sarif-2.1.0",
+ "runs": [
+  {
+   "defaultSourceLanguage": "dockerfile",
+   "results": [
+    {
+     "level": "warning",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "/src/app/Dockerfile"
+        },
+        "region": {
+         "endColumn": 1,
+         "endLine": 5,
+         "sourceLanguage": "dockerfile",
+         "startColumn": 1,
+         "startLine": 5
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "Potentially sensitive data should not be used in the `ARG` or `ENV` commands"
+     },
+     "ruleId": "DL3064"
+    },
+    {
+     "level": "error",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "/src/app/Dockerfile"
+        },
+        "region": {
+         "endColumn": 1,
+         "endLine": 6,
+         "sourceLanguage": "dockerfile",
+         "startColumn": 1,
+         "startLine": 6
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "Use COPY instead of ADD for files and folders"
+     },
+     "ruleId": "DL3020"
+    },
+    {
+     "level": "warning",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "/src/app/Dockerfile"
+        },
+        "region": {
+         "endColumn": 1,
+         "endLine": 8,
+         "sourceLanguage": "dockerfile",
+         "startColumn": 1,
+         "startLine": 8
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`"
+     },
+     "ruleId": "DL3042"
+    },
+    {
+     "level": "warning",
+     "locations": [
+      {
+       "physicalLocation": {
+        "artifactLocation": {
+         "uri": "/src/app/Dockerfile"
+        },
+        "region": {
+         "endColumn": 1,
+         "endLine": 10,
+         "sourceLanguage": "dockerfile",
+         "startColumn": 1,
+         "startLine": 10
+        }
+       }
+      }
+     ],
+     "message": {
+      "text": "Use arguments JSON notation for CMD and ENTRYPOINT arguments"
+     },
+     "ruleId": "DL3025"
+    }
+   ],
+   "tool": {
+    "driver": {
+     "downloadUri": "https://github.com/hadolint/hadolint",
+     "fullName": "Haskell Dockerfile Linter",
+     "name": "Hadolint",
+     "shortDescription": {
+      "text": "Dockerfile linter, validate inline bash, written in Haskell"
+     },
+     "version": "2.15.1"
+    }
+   }
+  }
+ ],
+ "version": "2.1.0"
+}

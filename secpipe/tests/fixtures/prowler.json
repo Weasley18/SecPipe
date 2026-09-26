@@ -1,0 +1,10 @@
+[
+  {"message": "S3 Bucket secpipe-reports has Public Access Block disabled.", "status_code": "FAIL", "severity": "High",
+   "finding_info": {"title": "Check S3 Bucket Level Public Access Block.", "uid": "prowler-aws-s3_bucket_level_public_access_block-123"},
+   "metadata": {"event_code": "s3_bucket_level_public_access_block"},
+   "resources": [{"uid": "arn:aws:s3:::secpipe-reports", "type": "AwsS3Bucket", "region": "ap-south-1"}],
+   "remediation": {"desc": "Enable the S3 bucket public access block."}},
+  {"message": "Root account has MFA enabled.", "status_code": "PASS", "severity": "Critical",
+   "finding_info": {"title": "Ensure MFA is enabled for the root account.", "uid": "prowler-aws-iam_root_mfa_enabled-123"},
+   "metadata": {"event_code": "iam_root_mfa_enabled"}, "resources": [{"uid": "arn:aws:iam::123456789012:root"}]}
+]

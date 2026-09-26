@@ -47,9 +47,7 @@ def create_note(payload: NoteCreate, user: CurrentUser, db: DbSession) -> Note:
 
 
 @router.get("/search", response_model=list[NoteOut])
-def search_notes(
-    user: CurrentUser, db: DbSession, q: str = Query(min_length=1, max_length=100)
-) -> Sequence[Note]:
+def search_notes(user: CurrentUser, db: DbSession, q: str = Query(min_length=1, max_length=100)) -> Sequence[Note]:
     # Bound parameters only: the search term never becomes part of the SQL text.
     pattern = f"%{_escape_like(q)}%"
     stmt = (

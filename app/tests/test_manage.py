@@ -8,9 +8,7 @@ import pytest
 from secnotes import manage
 
 
-def test_create_admin(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_create_admin(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
     monkeypatch.setenv("SECNOTES_ENV", "development")
     monkeypatch.setenv("SECNOTES_JWT_SECRET", "y" * 48)
     monkeypatch.setenv("SECNOTES_DATABASE_URL", f"sqlite:///{tmp_path / 'm.db'}")

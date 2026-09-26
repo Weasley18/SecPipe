@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecPipe report · {{ summary.outcome | upper }}</title>
+<style>
+  :root { --bg:#f7f7f5; --card:#fff; --ink:#1d1d1f; --muted:#66666b; --line:#e3e3e0;
+          --critical:#8b0000; --high:#c0392b; --medium:#b9770e; --low:#1f6f8b; --info:#6b7280;
+          --pass:#1e7b34; --block:#b42318; --error:#7a2e0e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#121214; --card:#1c1c1f; --ink:#ececf0; --muted:#a1a1aa; --line:#2e2e33;
+            --critical:#ff6b6b; --high:#ff8c69; --medium:#f5b942; --low:#6cc4e0; --info:#9ca3af;
+            --pass:#4ade80; --block:#f87171; --error:#fb923c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); }
+  main { max-width:1200px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:17px; margin:32px 0 12px; }
+  .muted { color:var(--muted); } code { font:12px ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .outcome { display:inline-block; padding:2px 10px; border-radius:999px; font-weight:600; color:#fff; }
+  .outcome.pass { background:var(--pass); } .outcome.block { background:var(--block); } .outcome.error { background:var(--error); }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .card b { display:block; font-size:22px; }
+  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  th, td { text-align:left; padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  tr:last-child td { border-bottom:0; }
+  .sev { font-weight:700; font-size:12px; }
+  .sev.critical { color:var(--critical); } .sev.high { color:var(--high); } .sev.medium { color:var(--medium); }
+  .sev.low { color:var(--low); } .sev.info { color:var(--info); }
+  .scroll { overflow-x:auto; }
+  .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+  .filters label { background:var(--card); border:1px solid var(--line); border-radius:999px; padding:2px 10px; cursor:pointer; }
+  ul.problems li { color:var(--block); }
+</style>
+</head>
+<body>
+<main>
+  <h1>SecPipe security gate <span class="outcome {{ summary.outcome }}">{{ summary.outcome | upper }}</span></h1>
+  <div class="muted">
+    {{ summary.stage }}{% if summary.branch %} · branch policy <code>{{ summary.branch }}</code>{% endif %}
+    {% if summary.commit %} · commit <code>{{ summary.commit[:12] }}</code>{% endif %}
+    · policy <code>{{ r.policy_ref }}</code> · generated {{ summary.generated_at }}
+    {% if summary.run_url %} · <a href="{{ summary.run_url }}">workflow run</a>{% endif %}
+  </div>
+
+  <div class="cards">
+    <div class="card"><span class="muted">Raw results</span><b>{{ summary.counts.raw_results }}</b></div>
+    <div class="card"><span class="muted">Unique findings</span><b>{{ summary.counts.unique_findings }}</b></div>
+    <div class="card"><span class="muted">Blocking</span><b>{{ summary.counts.blocking }}</b></div>
+    <div class="card"><span class="muted">Warnings</span><b>{{ summary.counts.warnings }}</b></div>
+    <div class="card"><span class="muted">New / existing / fixed</span><b>{{ summary.counts.new }} / {{ summary.counts.existing }} / {{ summary.counts.fixed }}</b></div>
+    {% for sev in severities %}
+    <div class="card"><span class="sev {{ sev }}">{{ sev | upper }}</span><b>{{ summary.counts.by_severity[sev] }}</b></div>
+    {% endfor %}
+  </div>
+
+  {% if r.tool_errors or r.evaluation.gate_errors %}
+  <h2>Why the gate cannot pass</h2>
+  <ul class="problems">
+    {% for e in r.tool_errors %}<li>Failed closed: {{ e }}</li>{% endfor %}
+    {% for e in r.evaluation.gate_errors %}<li>{{ e }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  <h2>Stages</h2>
+  <table>
+    <tr><th>Stage</th><th>Result</th><th>New</th><th>Existing</th><th>Fixed</th><th>Scanners</th></tr>
+    {% for s in stages %}
+    <tr><td>{{ s.name }}</td><td>{{ s.result }}</td><td>{{ s.new }}</td><td>{{ s.existing }}</td><td>{{ s.fixed }}</td><td>{{ s.tools | join(", ") }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Findings</h2>
+  <div class="filters">
+    {% for d in ["block", "warn", "excepted", "info"] %}
+    <label><input type="checkbox" class="decision" value="{{ d }}" {% if d in ["block", "warn"] %}checked{% endif %}> {{ d }}</label>
+    {% endfor %}
+  </div>
+  <div class="scroll">
+  <table id="findings">
+    <tr><th>Severity</th><th>Decision</th><th>Status</th><th>Stage</th><th>Tool(s)</th><th>Finding</th><th>Location</th><th>Fix</th><th>Fingerprint</th></tr>
+    {% for f in findings[:3000] %}
+    <tr data-decision="{{ f.decision }}">
+      <td class="sev {{ f.severity.label }}">{{ f.severity.label | upper }}</td>
+      <td>{{ f.decision }}</td>
+      <td>{{ f.status }}</td>
+      <td>{{ f.stage }}</td>
+      <td>{{ f.tool }}{% if f.also_reported_by %} <span class="muted">+{{ f.also_reported_by | join(",") }}</span>{% endif %}</td>
+      <td>{% if f.help_url %}<a href="{{ f.help_url }}">{{ f.title }}</a>{% else %}{{ f.title }}{% endif %}
+        {% if f.cve %}<br><code>{{ f.cve }}</code>{% endif %}
+        {% if f.in_kev %} <b>KEV</b>{% endif %}{% if f.epss is not none %} <span class="muted">EPSS {{ '%.3f' % f.epss }}</span>{% endif %}
+        {% for reason in f.severity_reasons %}<br><span class="muted">{{ reason }}</span>{% endfor %}
+        {% for reason in f.reasons %}<br><span class="muted">{{ reason }}</span>{% endfor %}</td>
+      <td><code>{{ f.location }}</code></td>
+      <td>{% if f.category == "secret" %}rotate + remove{% elif f.fix_available is false %}no fix yet{% else %}{{ f.fix_version or "" }}{% endif %}</td>
+      <td><code>{{ f.fingerprint }}</code></td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+  {% if findings | length > 3000 %}<p class="muted">Showing 3000 of {{ findings | length }} findings; findings.json has all of them.</p>{% endif %}
+
+  <h2>Scanners</h2>
+  <table>
+    <tr><th>Scanner</th><th>Stage</th><th>Status</th><th>Raw</th><th>Findings</th><th>Duration</th><th>Version</th><th>Notes</th></tr>
+    {% for run in r.runs %}
+    <tr><td>{{ run.name }}</td><td>{{ run.stage }}</td><td>{{ run.status }}</td><td>{{ run.raw }}</td><td>{{ run.findings }}</td>
+      <td>{% if run.duration is not none %}{{ '%.1f' % run.duration }}s{% endif %}</td><td>{{ run.version or "" }}</td><td>{{ run.errors | join("; ") }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Suppressions ({{ r.suppressions | length }})</h2>
+  <table>
+    <tr><th>Location</th><th>Kind</th><th>Rules</th><th>Justification</th></tr>
+    {% for s in r.suppressions %}
+    <tr><td><code>{{ s.file }}:{{ s.line }}</code></td><td>{{ s.kind }}</td><td>{{ s.rules | join(", ") }}</td>
+      <td>{% if s.justified %}{{ s.justification }}{% else %}<b>missing</b>{% endif %}</td></tr>
+    {% else %}
+    <tr><td colspan="4" class="muted">No in-code suppressions.</td></tr>
+    {% endfor %}
+  </table>
+
+  {% if r.warnings %}
+  <h2>Notes</h2>
+  <ul>{% for w in r.warnings %}<li>{{ w }}</li>{% endfor %}</ul>
+  {% endif %}
+</main>
+<script>
+  const boxes = document.querySelectorAll("input.decision");
+  function apply() {
+    const shown = new Set([...boxes].filter(b => b.checked).map(b => b.value));
+    document.querySelectorAll("#findings tr[data-decision]").forEach(row => {
+      row.style.display = shown.has(row.dataset.decision) ? "" : "none";
+    });
+  }
+  boxes.forEach(b => b.addEventListener("change", apply));
+  apply();
+</script>
+</body>
+</html>

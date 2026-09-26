@@ -8,9 +8,7 @@ from conftest import make_settings, make_user
 
 
 def _upload(client: TestClient, headers: dict[str, str], content: bytes) -> object:
-    return client.post(
-        "/notes/import", files={"file": ("notes.yaml", content, "application/x-yaml")}, headers=headers
-    )
+    return client.post("/notes/import", files={"file": ("notes.yaml", content, "application/x-yaml")}, headers=headers)
 
 
 def test_import_valid_yaml(client: TestClient) -> None:

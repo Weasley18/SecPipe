@@ -53,9 +53,9 @@ def test_production_requires_database() -> None:
         Settings.from_env({"SECNOTES_JWT_SECRET": STRONG})
     with pytest.raises(ConfigError, match="DB_PASSWORD"):
         Settings.from_env({"SECNOTES_JWT_SECRET": STRONG, "SECNOTES_DB_HOST": "db"})
-    assert Settings.from_env(
-        {"SECNOTES_JWT_SECRET": STRONG, "SECNOTES_ENV": "development"}
-    ).database_url.startswith("sqlite")
+    assert Settings.from_env({"SECNOTES_JWT_SECRET": STRONG, "SECNOTES_ENV": "development"}).database_url.startswith(
+        "sqlite"
+    )
 
 
 @pytest.mark.parametrize(

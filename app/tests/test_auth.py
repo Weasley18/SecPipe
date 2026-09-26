@@ -53,9 +53,7 @@ def test_register_login_and_me(client: TestClient) -> None:
 
 
 def test_register_rejects_role_field(client: TestClient) -> None:
-    response = client.post(
-        "/auth/register", json={"username": "mallory", "password": PASSWORD, "role": "admin"}
-    )
+    response = client.post("/auth/register", json={"username": "mallory", "password": PASSWORD, "role": "admin"})
     assert response.status_code == 422
     assert PASSWORD not in response.text, "validation errors must not echo submitted values"
 
@@ -110,23 +108,17 @@ def test_login_rate_limited(client: TestClient) -> None:
         pytest.param(lambda c, s: jwt.encode(c, "secret123", algorithm="HS256"), id="weak-secret"),
         pytest.param(lambda c, s: f"{_b64({'alg': 'none', 'typ': 'JWT'})}.{_b64(c)}.", id="alg-none"),
         pytest.param(lambda c, s: jwt.encode(c, s, algorithm="HS512"), id="alg-switch-hs512"),
-        pytest.param(
-            lambda c, s: jwt.encode({**c, "aud": "other-api"}, s, algorithm="HS256"), id="wrong-aud"
-        ),
+        pytest.param(lambda c, s: jwt.encode({**c, "aud": "other-api"}, s, algorithm="HS256"), id="wrong-aud"),
         pytest.param(lambda c, s: jwt.encode({**c, "iss": "evil"}, s, algorithm="HS256"), id="wrong-iss"),
         pytest.param(
-            lambda c, s: jwt.encode(
-                {**c, "exp": int(datetime.now(UTC).timestamp()) - 60}, s, algorithm="HS256"
-            ),
+            lambda c, s: jwt.encode({**c, "exp": int(datetime.now(UTC).timestamp()) - 60}, s, algorithm="HS256"),
             id="expired",
         ),
         pytest.param(
             lambda c, s: jwt.encode({k: v for k, v in c.items() if k != "exp"}, s, algorithm="HS256"),
             id="missing-exp",
         ),
-        pytest.param(
-            lambda c, s: jwt.encode({**c, "typ": "refresh"}, s, algorithm="HS256"), id="refresh-as-access"
-        ),
+        pytest.param(lambda c, s: jwt.encode({**c, "typ": "refresh"}, s, algorithm="HS256"), id="refresh-as-access"),
     ],
 )
 def test_forged_tokens_rejected(client: TestClient, settings: Settings, mutate: object) -> None:

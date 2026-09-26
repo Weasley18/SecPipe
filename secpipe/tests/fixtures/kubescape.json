@@ -1,0 +1,41 @@
+{
+  "clusterName": "",
+  "generationTime": "2026-09-26T17:00:00Z",
+  "summaryDetails": {
+    "complianceScore": 61.5,
+    "frameworks": [{"name": "NSA", "complianceScore": 61.5}],
+    "controls": {
+      "C-0057": {"name": "Privileged container", "status": "failed", "scoreFactor": 8, "complianceScore": 0},
+      "C-0013": {"name": "Non-root containers", "status": "failed", "scoreFactor": 6, "complianceScore": 0},
+      "C-0009": {"name": "Resource limits", "status": "failed", "scoreFactor": 7, "complianceScore": 0},
+      "C-0017": {"name": "Immutable container filesystem", "status": "passed", "scoreFactor": 3, "complianceScore": 100}
+    }
+  },
+  "resources": [
+    {
+      "resourceID": "path=1827361/api=apps/v1/secnotes/Deployment/secnotes-api",
+      "object": {"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"name": "secnotes-api", "namespace": "secnotes"}}
+    }
+  ],
+  "results": [
+    {
+      "resourceID": "path=1827361/api=apps/v1/secnotes/Deployment/secnotes-api",
+      "controls": [
+        {"controlID": "C-0057", "name": "Privileged container", "status": {"status": "failed"},
+         "rules": [{"name": "rule-privilege-escalation", "status": "failed",
+                    "paths": [{"failedPath": "spec.template.spec.containers[0].securityContext.privileged"}]}]},
+        {"controlID": "C-0013", "name": "Non-root containers", "status": {"status": "failed"},
+         "rules": [{"name": "non-root-containers", "status": "failed",
+                    "paths": [{"fixPath": {"path": "spec.template.spec.containers[0].securityContext.runAsNonRoot", "value": "true"}}]}]},
+        {"controlID": "C-0009", "name": "Resource limits", "status": {"status": "failed"}, "rules": []},
+        {"controlID": "C-0017", "name": "Immutable container filesystem", "status": {"status": "passed"}, "rules": []}
+      ]
+    },
+    {
+      "resourceID": "path=1827361/api=v1/secnotes/Service/secnotes-api",
+      "controls": [
+        {"controlID": "C-0044", "name": "Container hostPort", "status": {"status": "passed"}, "rules": []}
+      ]
+    }
+  ]
+}

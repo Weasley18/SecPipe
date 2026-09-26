@@ -1,0 +1,20 @@
+{
+  "matches": [
+    {
+      "vulnerability": {"id": "GHSA-8q59-q68h-6hv4", "severity": "Critical", "description": "PyYAML full_load RCE",
+                        "fix": {"versions": ["5.4"], "state": "fixed"}, "cvss": [{"metrics": {"baseScore": 9.8}}],
+                        "dataSource": "https://github.com/advisories/GHSA-8q59-q68h-6hv4"},
+      "relatedVulnerabilities": [{"id": "CVE-2020-14343"}],
+      "artifact": {"name": "PyYAML", "version": "5.3.1", "type": "python", "purl": "pkg:pypi/pyyaml@5.3.1"}
+    },
+    {
+      "vulnerability": {"id": "CVE-2023-4911", "severity": "High", "description": "glibc ld.so buffer overflow",
+                        "fix": {"versions": [], "state": "not-fixed"}, "cvss": [{"metrics": {"baseScore": 7.8}}],
+                        "dataSource": "https://security-tracker.debian.org/tracker/CVE-2023-4911"},
+      "relatedVulnerabilities": [],
+      "artifact": {"name": "libc6", "version": "2.36-9", "type": "deb", "purl": "pkg:deb/debian/libc6@2.36-9"}
+    }
+  ],
+  "source": {"type": "sbom", "target": "reports/sbom.cdx.json"},
+  "descriptor": {"name": "grype", "version": "0.119.0"}
+}
