@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Shared helpers for the kind cluster scripts (make cluster/deploy locally,
 # scripts/ci/deploy-kind.sh in CI). Every remote manifest is checked against
-# the SHA-256 pinned in k8s/cluster/versions.env before it is applied.
+# the SHA-256 pinned in k8s/cluster/versions.sh before it is applied.
 set -euo pipefail
 
 K8S_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-# shellcheck source=../k8s/cluster/versions.env
-source "$K8S_ROOT/k8s/cluster/versions.env"
+# shellcheck source=../k8s/cluster/versions.sh
+source "$K8S_ROOT/k8s/cluster/versions.sh"
 APP_NS="${APP_NS:-secnotes}"
 BUILD_DIR="$K8S_ROOT/build/k8s"
 
