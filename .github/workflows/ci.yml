@@ -41,8 +41,8 @@ jobs:
           python -m pip install --no-deps --no-build-isolation -e .
       - name: ruff
         run: |
-          ruff check app secpipe policy/checkov
-          ruff format --check app secpipe policy/checkov
+          ruff check app secpipe policy/checkov monitoring/grafana
+          ruff format --check app secpipe policy/checkov monitoring/grafana
       - name: mypy --strict
         run: mypy
       - name: SecNotes tests (security regression test per fix)
@@ -76,6 +76,8 @@ jobs:
         run: ./scripts/ci/checkov-policy-test.sh
       - name: Kyverno policy tests
         run: ./scripts/ci/kyverno-test.sh
+      - name: Monitoring config tests (promtool, amtool, falco -V)
+        run: ./scripts/ci/monitoring-test.sh
       - name: Kustomize overlays render
         run: |
           for o in k8s/overlays/*/; do kubectl kustomize "$o" > /dev/null && echo "ok $o"; done

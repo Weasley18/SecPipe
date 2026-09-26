@@ -5,9 +5,13 @@ variable "name" {
 }
 
 variable "node_image" {
-  description = "kindest/node image, pinned by digest (the kind v0.33 default)."
+  description = <<-EOT
+    kindest/node image, pinned by digest. It must match the kind library the
+    tehcyx/kind provider embeds (0.11.0 -> kind v0.31.0, whose default is
+    Kubernetes 1.35); a newer image (e.g. kind v0.33's 1.37) fails kubeadm init.
+  EOT
   type        = string
-  default     = "kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5"
+  default     = "kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f"
 }
 
 variable "workers" {

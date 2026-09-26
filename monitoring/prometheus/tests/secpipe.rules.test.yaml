@@ -1,0 +1,105 @@
+# promtool test rules monitoring/prometheus/tests/secpipe.rules.test.yaml
+rule_files:
+  - ../rules/secpipe.rules.yaml
+evaluation_interval: 1m
+
+tests:
+  - name: gate blocking on main fires after 5 minutes, not on feature branches
+    interval: 1m
+    input_series:
+      - series: 'secpipe_gate_result{branch="main", gate="gate-2"}'
+        values: "0x10"
+      - series: 'secpipe_gate_result{branch="feature", gate="gate-2"}'
+        values: "0x10"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: SecPipeGateBlockingOnMain
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: SecPipeGateBlockingOnMain
+        exp_alerts:
+          - exp_labels: { severity: high, team: security, branch: main, gate: gate-2 }
+            exp_annotations:
+              summary: "The SecPipe gate is blocking (or failing closed) on main"
+              description: "The latest main run did not pass gate-2; main must stay releasable."
+              runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/critical-cve.md
+
+  - name: critical findings ignore fixed ones
+    interval: 1m
+    input_series:
+      - series: 'secpipe_findings{branch="main", severity="critical", category="sca", status="fixed"}'
+        values: "3x5"
+      - series: 'secpipe_findings{branch="main", severity="critical", category="secret", status="existing"}'
+        values: "0 0 1 1 1"
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: SecPipeCriticalFindingOnMain
+        exp_alerts: []
+      - eval_time: 3m
+        alertname: SecPipeCriticalFindingOnMain
+        exp_alerts:
+          - exp_labels: { severity: critical, team: security }
+            exp_annotations:
+              summary: "1 critical finding(s) open on main"
+              runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/critical-cve.md
+
+  - name: exception expiry warning
+    interval: 1m
+    input_series:
+      - series: 'secpipe_exception_expiry_days{exception="B608 app/*", owner="@Weasley18"}'
+        values: "20 13"
+    alert_rule_test:
+      - eval_time: 0m
+        alertname: SecPipeExceptionExpiringSoon
+        exp_alerts: []
+      - eval_time: 1m
+        alertname: SecPipeExceptionExpiringSoon
+        exp_alerts:
+          - exp_labels: { severity: low, team: security, exception: "B608 app/*", owner: "@Weasley18" }
+            exp_annotations:
+              summary: "Exception B608 app/* (owner @Weasley18) expires in 13 days"
+              description: "Fix the finding or renew the exception with a new review before it expires and blocks the gate."
+
+  - name: login failure spike counts rate-limited attempts too
+    interval: 1m
+    input_series:
+      - series: 'secnotes_login_attempts_total{outcome="failure"}'
+        values: "0+3x10"
+      - series: 'secnotes_login_attempts_total{outcome="rate_limited"}'
+        values: "0+3x10"
+      - series: 'secnotes_login_attempts_total{outcome="success"}'
+        values: "0+50x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: SecNotesLoginFailureSpike
+        exp_alerts:
+          - exp_labels: { severity: medium, team: security }
+            exp_annotations:
+              summary: "30 failed or rate-limited logins in 5 minutes"
+              description: "Volume signal only; the correlator attributes attempts to source IPs."
+              runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/brute-force.md
+
+  - name: ssrf probes are reported per blocked reason
+    interval: 1m
+    input_series:
+      - series: 'secnotes_preview_blocked_total{reason="link_local"}'
+        values: "0 0 1 2"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: SecNotesSSRFBlocked
+        exp_alerts:
+          - exp_labels: { severity: high, team: security, reason: link_local }
+            exp_annotations:
+              summary: "Preview requests to link_local addresses were blocked (SSRF probing)"
+              runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/container-compromise.md
+
+  - name: exporter absent
+    interval: 1m
+    input_series: []
+    alert_rule_test:
+      - eval_time: 11m
+        alertname: SecPipeExporterDown
+        exp_alerts:
+          - exp_labels: { severity: low, team: security }
+            exp_annotations:
+              summary: "The SecPipe metrics exporter cannot read the metrics history"

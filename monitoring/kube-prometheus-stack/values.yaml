@@ -1,0 +1,53 @@
+# kube-prometheus-stack for the local kind cluster: Prometheus, Alertmanager
+# (config from the alertmanager-secpipe Secret), Grafana with Loki as a second
+# datasource and the SecPipe dashboard provisioned by the sidecar.
+fullnameOverride: kps
+
+prometheus:
+  prometheusSpec:
+    retention: 30d
+    # Pick up ServiceMonitors/PodMonitors/rules from every namespace, not only
+    # ones labelled for this Helm release.
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    resources:
+      requests: { cpu: 100m, memory: 512Mi }
+      limits: { cpu: "1", memory: 1Gi }
+
+alertmanager:
+  alertmanagerSpec:
+    useExistingSecret: true
+    configSecret: alertmanager-secpipe
+    secrets: [alertmanager-webhook, alertmanager-smtp]
+
+grafana:
+  defaultDashboardsEnabled: false
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: monitoring
+  additionalDataSources:
+    - name: Loki
+      uid: loki
+      type: loki
+      access: proxy
+      url: http://loki-gateway.monitoring.svc
+      jsonData:
+        maxLines: 5000
+  grafana.ini:
+    auth.anonymous:
+      enabled: false
+    security:
+      cookie_secure: false # local http://localhost port-forward only
+      disable_gravatar: true
+    analytics:
+      reporting_enabled: false
+      check_for_updates: false
+
+# kind runs these control-plane components on localhost-only ports.
+kubeControllerManager: { enabled: false }
+kubeScheduler: { enabled: false }
+kubeEtcd: { enabled: false }
+kubeProxy: { enabled: false }

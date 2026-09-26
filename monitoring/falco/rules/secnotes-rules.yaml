@@ -1,0 +1,70 @@
+# SecNotes-specific Falco rules (loaded after the default falco_rules.yaml).
+# The API pod's expected behaviour is narrow: Python serving HTTP, talking to
+# Postgres and DNS. Anything else is either a bug or an attacker.
+
+- list: secnotes_api_egress_ports
+  items: [5432, 53]
+
+- macro: secnotes_api_container
+  condition: >
+    container and k8s.ns.name = "secnotes"
+    and k8s.pod.name startswith "secnotes-api"
+
+- rule: SecNotes API unexpected outbound connection
+  desc: >
+    The API pod should only talk to Postgres and DNS. Catches SSRF to the cloud
+    metadata service or internal hosts, and reverse shells, even if the
+    NetworkPolicy were missing.
+  condition: >
+    outbound and secnotes_api_container
+    and not fd.sport in (secnotes_api_egress_ports)
+    and not (fd.sport = 443 and fd.sip.name != "")
+  output: >
+    Unexpected egress from SecNotes API
+    (pod=%k8s.pod.name dest=%fd.sip:%fd.sport cmd=%proc.cmdline user=%user.name container=%container.id)
+  priority: WARNING
+  tags: [secnotes, network, mitre_command_and_control, T1071]
+
+- rule: SecNotes preview fetch to public HTTPS
+  desc: Link previews (opt-in preview-egress component) are expected; recorded for the SSRF timeline.
+  condition: outbound and secnotes_api_container and fd.sport = 443
+  output: SecNotes preview fetch (pod=%k8s.pod.name dest=%fd.sip:%fd.sport)
+  priority: INFORMATIONAL
+  tags: [secnotes, network]
+
+- rule: Shell spawned in SecNotes pod
+  desc: >
+    Neither the API nor Postgres ever starts a shell (probes exec pg_isready
+    directly). A shell means kubectl exec or command injection.
+  condition: >
+    spawned_process and container and k8s.ns.name = "secnotes"
+    and proc.name in (shell_binaries)
+  output: >
+    Shell in SecNotes pod (pod=%k8s.pod.name shell=%proc.name parent=%proc.pname
+    cmdline=%proc.cmdline tty=%proc.tty user=%user.name container=%container.id)
+  priority: CRITICAL
+  tags: [secnotes, shell, mitre_execution, T1059]
+
+- rule: SecNotes secret file read by unexpected process
+  desc: >
+    Only the application process reads the mounted DB password and JWT key
+    (/run/secrets/secnotes). Any other reader is credential access.
+  condition: >
+    open_read and container and k8s.ns.name = "secnotes"
+    and fd.name startswith /run/secrets/secnotes/
+    and not proc.name in (python, python3, python3.12, uvicorn, postgres, pg_isready)
+  output: >
+    Secret file read in SecNotes pod (pod=%k8s.pod.name file=%fd.name proc=%proc.cmdline
+    parent=%proc.pname user=%user.name)
+  priority: CRITICAL
+  tags: [secnotes, credential_access, mitre_credential_access, T1552]
+
+- rule: SecNotes package manager or download tool run
+  desc: The runtime image has no pip; downloading tools at runtime is post-exploitation.
+  condition: >
+    spawned_process and container and k8s.ns.name = "secnotes"
+    and proc.name in (pip, pip3, curl, wget, apt, apt-get, apk, nc, ncat)
+  output: >
+    Tool download/package manager in SecNotes pod (pod=%k8s.pod.name cmdline=%proc.cmdline parent=%proc.pname)
+  priority: ERROR
+  tags: [secnotes, mitre_command_and_control, T1105]

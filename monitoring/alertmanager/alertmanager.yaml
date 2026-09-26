@@ -1,0 +1,63 @@
+# Alert routing by severity (Alertmanager v0.34): critical pages immediately
+# to chat + email; high goes to chat; everything else is batched into a daily
+# digest. Every alert carries runbook_url and a Grafana Explore link.
+# The SMTP_* and ALERT_EMAIL placeholders are filled from the environment by
+# scripts/install-monitoring.sh; the rendered file is stored as a Secret.
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: ${SMTP_SMARTHOST}
+  smtp_from: ${SMTP_FROM}
+  smtp_auth_username: ${SMTP_USERNAME}
+  smtp_auth_password_file: /etc/alertmanager/secrets/alertmanager-smtp/password
+  smtp_require_tls: true
+
+route:
+  receiver: daily-digest
+  group_by: [alertname, rule, severity]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 24h
+  routes:
+    - matchers: ['severity="critical"']
+      receiver: page
+      group_wait: 10s
+      repeat_interval: 1h
+    - matchers: ['severity="high"']
+      receiver: chat
+      repeat_interval: 4h
+    - matchers: ['alertname="Watchdog"']
+      receiver: "null"
+    - matchers: ['severity=~"medium|low|info|warning|informational"']
+      receiver: daily-digest
+      group_by: [severity]
+      group_wait: 5m
+      group_interval: 24h
+      repeat_interval: 24h
+
+inhibit_rules:
+  # A post-exploitation chain supersedes the individual signals on the same pod.
+  - source_matchers: ['rule="post_exploitation_chain"']
+    target_matchers: ['severity=~"high|medium"']
+    equal: [pod]
+  # Brute force followed by success supersedes the plain brute-force alert for that IP.
+  - source_matchers: ['rule="brute_force_then_success"']
+    target_matchers: ['rule="brute_force"']
+    equal: [ip]
+
+receivers:
+  - name: "null"
+  - name: page
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/alertmanager-webhook/url
+        send_resolved: true
+    email_configs:
+      - to: ${ALERT_EMAIL}
+        send_resolved: true
+  - name: chat
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/alertmanager-webhook/url
+        send_resolved: true
+  - name: daily-digest
+    email_configs:
+      - to: ${ALERT_EMAIL}
+        send_resolved: false

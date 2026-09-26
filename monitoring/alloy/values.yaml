@@ -1,0 +1,23 @@
+# Grafana Alloy DaemonSet (config: monitoring/alloy/config.alloy, passed with
+# --set-file alloy.configMap.content). Runs on the control-plane node too, to
+# read the API server audit log.
+alloy:
+  clustering:
+    enabled: true
+  mounts:
+    extra:
+      - name: audit-log
+        mountPath: /var/log/kubernetes/audit
+        readOnly: true
+controller:
+  type: daemonset
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  volumes:
+    extra:
+      - name: audit-log
+        hostPath:
+          path: /var/log/kubernetes/audit
+          type: DirectoryOrCreate

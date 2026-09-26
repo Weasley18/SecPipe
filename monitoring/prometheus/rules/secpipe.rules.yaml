@@ -1,0 +1,101 @@
+# Prometheus alerting rules: build-time risk (SecPipe gate metrics served by
+# the exporter from the secpipe-metrics history) and run-time signals from the
+# SecNotes app and Kyverno. Unit-tested with promtool (monitoring/prometheus/tests).
+# Multi-source, stateful detections (brute force then success, shell after a
+# suspicious request) live in the Python correlator instead.
+groups:
+  - name: secpipe-pipeline
+    rules:
+      - alert: SecPipeGateBlockingOnMain
+        expr: secpipe_gate_result{branch="main", gate="gate-2"} == 0
+        for: 5m
+        labels:
+          severity: high
+          team: security
+        annotations:
+          summary: "The SecPipe gate is blocking (or failing closed) on main"
+          description: "The latest main run did not pass gate-2; main must stay releasable."
+          runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/critical-cve.md
+
+      - alert: SecPipeCriticalFindingOnMain
+        expr: sum(secpipe_findings{branch="main", severity="critical", status!="fixed"}) > 0
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "{{ $value }} critical finding(s) open on main"
+          runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/critical-cve.md
+
+      - alert: SecPipeRemediationSLABreached
+        expr: secpipe_sla_breached_issues > 0
+        labels:
+          severity: medium
+          team: security
+        annotations:
+          summary: "{{ $value }} security issue(s) are past their remediation SLA"
+
+      - alert: SecPipeExceptionExpiringSoon
+        expr: secpipe_exception_expiry_days < 14
+        labels:
+          severity: low
+          team: security
+        annotations:
+          summary: "Exception {{ $labels.exception }} (owner {{ $labels.owner }}) expires in {{ $value }} days"
+          description: "Fix the finding or renew the exception with a new review before it expires and blocks the gate."
+
+      - alert: SecPipeNoRecentGateRun
+        expr: time() - max(secpipe_last_run_timestamp_seconds) > 2 * 86400
+        for: 30m
+        labels:
+          severity: medium
+          team: security
+        annotations:
+          summary: "No SecPipe gate run recorded for 2 days: is the nightly scan broken?"
+
+      - alert: SecPipeExporterDown
+        expr: secpipe_exporter_up == 0 or absent(secpipe_exporter_up)
+        for: 10m
+        labels:
+          severity: low
+          team: security
+        annotations:
+          summary: "The SecPipe metrics exporter cannot read the metrics history"
+
+  - name: secnotes-runtime
+    rules:
+      - alert: SecNotesLoginFailureSpike
+        expr: sum(increase(secnotes_login_attempts_total{outcome=~"failure|rate_limited"}[5m])) > 20
+        labels:
+          severity: medium
+          team: security
+        annotations:
+          summary: "{{ $value | printf \"%.0f\" }} failed or rate-limited logins in 5 minutes"
+          description: "Volume signal only; the correlator attributes attempts to source IPs."
+          runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/brute-force.md
+
+      - alert: SecNotesSSRFBlocked
+        expr: sum by (reason) (increase(secnotes_preview_blocked_total[5m])) > 0
+        labels:
+          severity: high
+          team: security
+        annotations:
+          summary: "Preview requests to {{ $labels.reason }} addresses were blocked (SSRF probing)"
+          runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/container-compromise.md
+
+      - alert: SecNotesRefreshTokenReuse
+        expr: increase(secnotes_refresh_token_reuse_total[10m]) > 0
+        labels:
+          severity: high
+          team: security
+        annotations:
+          summary: "A rotated refresh token was presented again: likely token theft (family revoked)"
+          runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/leaked-secret.md
+
+      - alert: KyvernoAdmissionDenied
+        expr: sum by (resource_namespace) (increase(kyverno_admission_requests_total{request_allowed="false"}[10m])) > 0
+        labels:
+          severity: medium
+          team: platform
+        annotations:
+          summary: "Kyverno denied {{ $value | printf \"%.0f\" }} admission request(s) in {{ $labels.resource_namespace }}"
+          runbook_url: https://github.com/Weasley18/SecPipe/blob/main/docs/runbooks/policy-bypass.md

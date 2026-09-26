@@ -1,0 +1,27 @@
+# Falco (chart 9.x, Falco 0.41) with the modern eBPF probe: no kernel module,
+# works on kind nodes. JSON events go to stdout (shipped to Loki by Alloy,
+# read by the correlator) and to Falcosidekick, which forwards WARNING and
+# above to Alertmanager. Custom rules: monitoring/falco/rules/secnotes-rules.yaml
+# (passed with --set-file customRules."secnotes-rules\.yaml"=...).
+driver:
+  kind: modern_ebpf
+tty: true
+falco:
+  json_output: true
+  json_include_output_property: true
+  json_include_tags_property: true
+  priority: notice
+  buffered_outputs: false
+falcosidekick:
+  enabled: true
+  config:
+    alertmanager:
+      hostport: http://kps-alertmanager.monitoring.svc:9093
+      endpoint: /api/v2/alerts # the v1 API was removed in Alertmanager 0.27
+      minimumpriority: warning
+      extralabels: "team:security,source:falco"
+      # Falco priorities -> SecPipe severities used by the Alertmanager routes.
+      customseveritymap: "critical:critical,error:high,warning:medium,notice:low"
+    loki:
+      hostport: http://loki-gateway.monitoring.svc
+      minimumpriority: notice

@@ -29,10 +29,6 @@ env:
   TF_INPUT: "0"
   AWS_DIR: infra/envs/aws
   AWS_REGION: ${{ vars.AWS_REGION || 'eu-west-2' }}
-  TF_VAR_state_bucket: ${{ vars.TF_STATE_BUCKET }}
-  TF_VAR_state_kms_key_arn: ${{ vars.TF_STATE_KMS_KEY_ARN }}
-  TF_VAR_reports_bucket_name: ${{ vars.REPORTS_BUCKET_NAME }}
-  TF_VAR_budget_emails: ${{ vars.BUDGET_EMAILS_JSON }}
 
 jobs:
   lint:
@@ -99,6 +95,12 @@ jobs:
     if: github.event_name == 'pull_request' && vars.AWS_PLAN_ROLE_ARN != '' && github.event.pull_request.head.repo.fork != true
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env: &aws-tfvars
+      # Only set where AWS is configured: an empty TF_VAR_ breaks validate.
+      TF_VAR_state_bucket: ${{ vars.TF_STATE_BUCKET }}
+      TF_VAR_state_kms_key_arn: ${{ vars.TF_STATE_KMS_KEY_ARN }}
+      TF_VAR_reports_bucket_name: ${{ vars.REPORTS_BUCKET_NAME }}
+      TF_VAR_budget_emails: ${{ vars.BUDGET_EMAILS_JSON }}
     permissions:
       contents: read
       id-token: write # OIDC -> secpipe-tf-plan (read-only)
@@ -160,6 +162,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     environment: aws-demo # required reviewer; OIDC sub = repo:<repo>:environment:aws-demo
+    env: *aws-tfvars
     permissions:
       contents: read
       id-token: write
@@ -182,6 +185,7 @@ jobs:
     if: github.event_name == 'schedule' && vars.AWS_PLAN_ROLE_ARN != ''
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env: *aws-tfvars
     permissions:
       contents: read
       id-token: write
