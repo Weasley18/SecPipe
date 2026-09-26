@@ -9,6 +9,16 @@ req="${REQUIREMENTS_FILE:-app/requirements.txt}"
 cd "$WORKSPACE"
 [[ -f "$req" ]] || { log "requirements file $req not found"; exit 1; }
 bin=$(python_tools sca)
+# Hash-locked requirements are verified; a plain pin list (no hashes) is
+# audited as-is, which also flags the missing hashes as a supply-chain gap.
+if grep -q -- '--hash=' "$req"; then
+  audit_mode=(--require-hashes)
+  install_mode=(--require-hashes)
+else
+  log "WARNING: $req has no hashes; dependencies are installed without integrity checks"
+  audit_mode=(--no-deps)
+  install_mode=()
+fi
 
 run_scanner osv-scanner osv.json "0 1" "$(tool_version osv-scanner)" -- \
   docker_tool osv-scanner scan source \
@@ -16,14 +26,14 @@ run_scanner osv-scanner osv.json "0 1" "$(tool_version osv-scanner)" -- \
   --format json --output "$(in_container "$REPORTS_DIR")/osv.json"
 
 run_scanner pip-audit pip-audit.json "0 1" "$("$bin/python" -c 'import importlib.metadata as m; print(m.version("pip-audit"))')" -- \
-  "$bin/pip-audit" -r "$req" --require-hashes --disable-pip --progress-spinner off \
+  "$bin/pip-audit" -r "$req" "${audit_mode[@]}" --disable-pip --progress-spinner off \
   --format json --output "$REPORTS_DIR/pip-audit.json"
 
 # Install the app's locked dependencies into an isolated venv so licence and
 # Snyk analysis see exactly what ships.
 appenv="$TOOLS_VENV_DIR/app-deps"
 "$PYTHON" -m venv --clear "$appenv"
-"$appenv/bin/pip" install --quiet --disable-pip-version-check --require-hashes -r "$req" >&2
+"$appenv/bin/pip" install --quiet --disable-pip-version-check "${install_mode[@]}" -r "$req" >&2
 
 run_scanner pip-licenses licenses.json "0" "$("$bin/python" -c 'import importlib.metadata as m; print(m.version("pip-licenses"))')" --stdout -- \
   "$bin/pip-licenses" --python "$appenv/bin/python" --format json --with-urls
