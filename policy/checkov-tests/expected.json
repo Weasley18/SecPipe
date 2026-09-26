@@ -1,0 +1,15 @@
+{
+  "CKV2_SECPIPE_1": {
+    "passed": ["aws_s3_bucket.pass_owner", "aws_s3_bucket.pass_owner_merged"],
+    "failed": ["aws_s3_bucket.fail_no_tags", "aws_s3_bucket.fail_other_tags"]
+  },
+  "CKV_SECPIPE_2": {
+    "passed": ["aws_iam_policy_document.pass_exact"],
+    "failed": [
+      "aws_iam_policy_document.fail_owner_wildcard",
+      "aws_iam_policy_document.fail_branch_wildcard",
+      "aws_iam_policy_document.fail_audience_only",
+      "aws_iam_policy_document.fail_interpolated_wildcard"
+    ]
+  }
+}

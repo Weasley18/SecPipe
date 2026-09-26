@@ -34,3 +34,6 @@ evidence/
 .secpipe-cache/
 .secpipe-tools/
 .secpipe-tooling/
+*.tfvars
+!*.tfvars.example
+backend.hcl

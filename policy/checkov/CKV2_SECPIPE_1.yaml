@@ -1,0 +1,13 @@
+# Every S3 bucket needs an owner tag, so a finding (or a bill) always has a
+# person to go to. Graph check: evaluated on the resolved resource, so tags
+# built with merge() from module variables count.
+metadata:
+  id: "CKV2_SECPIPE_1"
+  name: "Ensure every S3 bucket has an owner tag"
+  category: "GENERAL_SECURITY"
+  guideline: "https://github.com/Weasley18/SecPipe/blob/main/policy/checkov/README.md#ckv2_secpipe_1"
+definition:
+  cond_type: "attribute"
+  resource_types: ["aws_s3_bucket"]
+  attribute: "tags.owner"
+  operator: "exists"

@@ -1,0 +1,37 @@
+# API server audit policy: who ran `kubectl exec`, created pods, read secrets or
+# changed RBAC. Kept deliberately small so a laptop Loki can hold a week of it.
+apiVersion: audit.k8s.io/v1
+kind: Policy
+omitStages: ["RequestReceived"]
+rules:
+  # Interactive access into workloads: the key signal for container compromise.
+  - level: RequestResponse
+    resources:
+      - group: ""
+        resources: ["pods/exec", "pods/attach", "pods/portforward"]
+  # Secret access: metadata only, never the values.
+  - level: Metadata
+    resources:
+      - group: ""
+        resources: ["secrets", "serviceaccounts/token"]
+  # RBAC and admission configuration changes.
+  - level: RequestResponse
+    verbs: ["create", "update", "patch", "delete"]
+    resources:
+      - group: "rbac.authorization.k8s.io"
+      - group: "admissionregistration.k8s.io"
+      - group: "kyverno.io"
+  # Workload changes (including quarantine labelling).
+  - level: Request
+    verbs: ["create", "update", "patch", "delete"]
+    resources:
+      - group: ""
+        resources: ["pods", "services", "configmaps"]
+      - group: "apps"
+      - group: "networking.k8s.io"
+  # Everything else: drop noise from system components, keep metadata.
+  - level: None
+    users: ["system:kube-proxy", "system:kube-scheduler", "system:kube-controller-manager"]
+  - level: None
+    nonResourceURLs: ["/healthz*", "/readyz*", "/livez*", "/metrics", "/version"]
+  - level: Metadata

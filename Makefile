@@ -35,7 +35,7 @@ secrets: ## Generate random local secrets for docker compose (.secrets/, git-ign
 	./scripts/gen-local-secrets.sh
 
 # -------------------------------------------------------------- quality
-.PHONY: test test-app test-secpipe lint typecheck rules-test policy-validate kyverno-test check
+.PHONY: test test-app test-secpipe lint typecheck rules-test policy-validate kyverno-test tf-lint check
 test: test-app test-secpipe ## Run all unit tests
 
 test-app: $(VENV)/.installed ## SecNotes tests (security regression tests for every fix)
@@ -51,8 +51,9 @@ lint: $(VENV)/.installed ## ruff lint + format check
 typecheck: $(VENV)/.installed ## mypy --strict
 	$(BIN)/mypy
 
-rules-test: ## Semgrep custom rule tests (# ruleid / # ok annotations)
+rules-test: ## Custom Semgrep rule tests and custom Checkov policy tests
 	source scripts/ci/lib.sh && "$$(python_tools sast)/semgrep" --test --metrics off policy/semgrep/
+	./scripts/ci/checkov-policy-test.sh
 
 policy-validate: $(VENV)/.installed ## Validate policy.yaml against its JSON Schema
 	$(BIN)/secpipe policy validate policy/policy.yaml
@@ -60,7 +61,13 @@ policy-validate: $(VENV)/.installed ## Validate policy.yaml against its JSON Sch
 kyverno-test: ## Kyverno policy unit tests
 	./scripts/ci/kyverno-test.sh
 
-check: lint typecheck test rules-test policy-validate kyverno-test ## Everything CI's quality workflow runs
+TF_ROOTS := infra/envs/local infra/envs/aws infra/bootstrap
+tf-lint: ## terraform fmt/validate + tflint on every root module
+	terraform fmt -check -recursive infra
+	for d in $(TF_ROOTS); do terraform -chdir=$$d init -backend=false -input=false >/dev/null && terraform -chdir=$$d validate || exit 1; done
+	cd infra && tflint --config "$$PWD/.tflint.hcl" --init && tflint --config "$$PWD/.tflint.hcl" --recursive
+
+check: lint typecheck test rules-test policy-validate kyverno-test tf-lint ## Everything CI's quality workflow runs
 
 # ------------------------------------------------------------------ scans
 .PHONY: scan scan-secrets scan-sast scan-sca scan-iac scan-dockerfile scan-image build gate
