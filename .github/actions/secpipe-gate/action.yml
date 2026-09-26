@@ -96,7 +96,7 @@ runs:
         OFFLINE: ${{ inputs.offline }}
         CACHE_DIR: ${{ inputs.cache-dir }}
       run: |
-        set -uo pipefail
+        set +e -uo pipefail  # the gate exits 1/2 by design; record it, enforce later
         args=(gate --stage "$STAGE" --reports "$REPORTS" --expect "$EXPECT" --policy "$POLICY"
               --out "$OUT" --source-root "$SOURCE_ROOT" --cache-dir "$CACHE_DIR" --step-summary)
         [[ -n "$BRANCH" ]] && args+=(--branch "$BRANCH")

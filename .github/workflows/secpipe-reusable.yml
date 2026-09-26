@@ -398,9 +398,11 @@ jobs:
           docker tag "secnotes:${SHA}" "${repo}:sha-${SHA}"
           docker push "${repo}:sha-${SHA}"
           digest="$(docker inspect --format '{{index .RepoDigests 0}}' "${repo}:sha-${SHA}")"
-          echo "image=${digest}" >> "$GITHUB_OUTPUT"
-          echo "repo=${repo}" >> "$GITHUB_OUTPUT"
-          echo "digest=${digest#*@}" >> "$GITHUB_OUTPUT"
+          {
+            echo "image=${digest}"
+            echo "repo=${repo}"
+            echo "digest=${digest#*@}"
+          } >> "$GITHUB_OUTPUT"
           echo "### Published \`${digest}\`" >> "$GITHUB_STEP_SUMMARY"
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:

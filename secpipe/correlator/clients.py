@@ -47,7 +47,7 @@ class LokiClient:
 
 
 def explore_url(grafana: str, ip: str | None, pod: str | None) -> str:
-    selector = '{namespace=~"secnotes|ingress-nginx"}'
+    selector = '{namespace=~"secnotes|ingress"}'
     needle = ip or pod or ""
     expr = f'{selector} |= "{needle}"' if needle else selector
     state = {

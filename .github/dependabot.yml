@@ -1,23 +1,30 @@
 # Every pinned dependency has an updater: Python locks, container digests
 # (app base image, compose, scanner images), SHA-pinned actions, Terraform.
+# The cooldown delays adoption of brand-new releases for a week, the window
+# in which compromised packages are usually caught and yanked.
 version: 2
 updates:
   - package-ecosystem: pip
     directories: ["/app", "/requirements", "/scripts/ci/requirements"]
     schedule: { interval: weekly }
+    cooldown: { default-days: 7 } # let a fresh release age before adopting it (hijacked-package window)
     groups:
       python-minor: { update-types: [minor, patch] }
   - package-ecosystem: docker
     directories: ["/app", "/tools"]
     schedule: { interval: weekly }
+    cooldown: { default-days: 7 } # let a fresh release age before adopting it (hijacked-package window)
   - package-ecosystem: docker-compose
     directory: "/"
     schedule: { interval: weekly }
+    cooldown: { default-days: 7 } # let a fresh release age before adopting it (hijacked-package window)
   - package-ecosystem: github-actions
     directories: ["/", "/.github/actions/secpipe-gate"]
     schedule: { interval: weekly }
+    cooldown: { default-days: 7 } # let a fresh release age before adopting it (hijacked-package window)
     groups:
       actions: { patterns: ["*"] }
   - package-ecosystem: terraform
     directories: ["/infra/envs/aws", "/infra/envs/local", "/infra/bootstrap"]
     schedule: { interval: weekly }
+    cooldown: { default-days: 7 } # let a fresh release age before adopting it (hijacked-package window)

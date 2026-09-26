@@ -15,3 +15,8 @@ secpipe/tests/
 
 # Semgrep rule test files: intentionally vulnerable examples for `semgrep --test`.
 policy/semgrep/
+
+# Policy test fixtures: deliberately insecure Terraform and pods that the
+# Checkov and Kyverno test suites must flag.
+policy/checkov-tests/
+policy/kyverno/tests/

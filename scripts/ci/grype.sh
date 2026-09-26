@@ -7,7 +7,7 @@ sbom="${1:?usage: grype.sh <sbom.cdx.json>}"
 cd "$WORKSPACE"
 cache="${GRYPE_DB_CACHE_DIR:-$HOME/.cache/grype}"
 mkdir -p "$cache"
-DOCKER_TOOL_ARGS=(-v "$cache:/cache" -e GRYPE_DB_CACHE_DIR=/cache)
+DOCKER_TOOL_ARGS=(-v "$cache:/cache" -e GRYPE_DB_CACHE_DIR=/cache -e GRYPE_CHECK_FOR_APP_UPDATE=false)
 run_scanner grype grype.json "0" "$(tool_version grype)" -- \
   docker_tool grype "sbom:$(in_container "$sbom")" --output json \
   --file "$(in_container "$REPORTS_DIR")/grype.json"

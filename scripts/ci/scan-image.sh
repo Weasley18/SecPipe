@@ -21,7 +21,7 @@ run_scanner trivy-image trivy-image.json "0" "$(tool_version trivy)" -- \
   --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL \
   --format json --output "$(in_container "$REPORTS_DIR")/trivy-image.json"
 
-DOCKER_TOOL_ARGS=()
+DOCKER_TOOL_ARGS=(-e SYFT_CHECK_FOR_APP_UPDATE=false)
 run_scanner syft sbom.cdx.json "0" "$(tool_version syft)" -- \
   docker_tool syft scan "docker-archive:/src/$tarball" --quiet \
   -o "cyclonedx-json=$(in_container "$REPORTS_DIR")/sbom.cdx.json"

@@ -76,6 +76,37 @@ def test_ingress_logs_detect_brute_force_without_app_logging() -> None:
     assert {"brute_force", "brute_force_then_success"} <= rules
 
 
+def test_traefik_access_logs_feed_the_rules() -> None:
+    base = dt.datetime(2026, 9, 26, 12, 0, tzinfo=dt.UTC)
+    lines = [
+        json.dumps(
+            {
+                "StartUTC": (base + dt.timedelta(seconds=i)).isoformat(),
+                "ClientHost": "10.8.8.8",
+                "RequestMethod": "POST",
+                "RequestPath": "/auth/login",
+                "DownstreamStatus": 401 if i < 11 else 200,
+            }
+        )
+        for i in range(12)
+    ]
+    lines.append(
+        json.dumps(
+            {
+                "StartUTC": base.isoformat(),
+                "ClientHost": "10.8.8.8",
+                "RequestPath": "/preview?url=http://169.254.169.254/latest/meta-data/",
+                "DownstreamStatus": 400,
+            }
+        )
+    )
+    events = [e for e in (from_line(line, {"namespace": "ingress", "app": "traefik"}) for line in lines) if e]
+    assert {e.source for e in events} == {"ingress"}
+    assert events[0].ip == "10.8.8.8" and events[0].status == 401 and events[0].path == "/auth/login"
+    rules = {a.rule for a in evaluate(events, base + dt.timedelta(minutes=1))}
+    assert {"brute_force", "brute_force_then_success", "ssrf_probe"} <= rules
+
+
 @pytest.mark.parametrize(
     ("host", "kind"),
     [

@@ -1,4 +1,5 @@
-"""Normalised log events from the app, ingress-nginx and Falco."""
+"""Normalised log events from the app, the ingress (Traefik JSON access logs,
+or ingress-nginx with a JSON log format), Falco and the Kubernetes audit log."""
 
 from __future__ import annotations
 
@@ -45,7 +46,7 @@ class LogEvent:
 
     @property
     def ip(self) -> str:
-        return as_str(self.fields.get("client_ip") or self.fields.get("remote_addr"))
+        return as_str(self.fields.get("client_ip") or self.fields.get("remote_addr") or self.fields.get("ClientHost"))
 
     @property
     def pod(self) -> str:
@@ -54,15 +55,19 @@ class LogEvent:
 
     @property
     def path(self) -> str:
-        return as_str(self.fields.get("path")) or urlsplit(as_str(self.fields.get("request_uri"))).path
+        return as_str(self.fields.get("path")) or urlsplit(self._uri).path
 
     @property
     def query(self) -> str:
-        return as_str(self.fields.get("query")) or urlsplit(as_str(self.fields.get("request_uri"))).query
+        return as_str(self.fields.get("query")) or urlsplit(self._uri).query
+
+    @property
+    def _uri(self) -> str:
+        return as_str(self.fields.get("request_uri") or self.fields.get("RequestPath"))
 
     @property
     def status(self) -> int | None:
-        return as_int(self.fields.get("status"))
+        return as_int(self.fields.get("status") or self.fields.get("DownstreamStatus"))
 
     def is_failed_login(self) -> bool:
         """A rejected login attempt, including ones stopped by the rate limiter:
@@ -135,10 +140,13 @@ def _parse_ts(value: object, fallback_ns: str | None = None) -> dt.datetime:
     return dt.datetime.now(dt.UTC)
 
 
+INGRESS_NAMESPACES = {"ingress", "ingress-nginx"}
+
+
 def classify(labels: dict[str, str], fields: dict[str, Any]) -> str:
     if "output_fields" in fields and "rule" in fields:
         return "falco"
-    if labels.get("namespace") == "ingress-nginx" or "request_uri" in fields:
+    if labels.get("namespace") in INGRESS_NAMESPACES or "request_uri" in fields or "RequestPath" in fields:
         return "ingress"
     if fields.get("kind") == "Event" and "auditID" in fields:
         return "audit"
@@ -154,7 +162,11 @@ def from_line(line: str, labels: dict[str, str] | None = None, ts_ns: str | None
         return None
     labels = labels or {}
     ts = _parse_ts(
-        fields.get("ts") or fields.get("time") or fields.get("timestamp") or fields.get("stageTimestamp"),
+        fields.get("ts")
+        or fields.get("time")
+        or fields.get("timestamp")
+        or fields.get("StartUTC")
+        or fields.get("stageTimestamp"),
         ts_ns,
     )
     return LogEvent(ts=ts, source=classify(labels, fields), fields=fields, labels=dict(labels))

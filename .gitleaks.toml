@@ -24,7 +24,8 @@ keywords = ["secnotes_"]
 [[rules]]
 id = "secnotes-hardcoded-jwt-secret"
 description = "JWT signing key assigned as a string literal; it must come from a secret store"
-regex = '''(?i)\bjwt[_-]?(?:secret|signing)[_-]?(?:key)?\b["']?\s*[:=]\s*["']([^"'\s]{6,})["']'''
+regex = '''(?i)\bjwt[_-]?(?:secret|signing)[_-]?(?:key)?\b["']?\s*[:=]\s*["']([^"'\s$]{6,})["']'''
+# Values containing "$" are shell/template references (e.g. --from-file=jwt_secret="$tmp/jwt_secret"), not literals.
 secretGroup = 1
 keywords = ["jwt"]
 
@@ -60,3 +61,11 @@ paths = ['''^app/tests/test_config\.py$''']
 [[allowlists]]
 description = "Semgrep rule tests contain intentionally vulnerable example code with dummy literals"
 paths = ['''^policy/semgrep/[^/]+\.py$''']
+
+[[allowlists]]
+description = "SonarCloud project key: a public project identifier, not a credential (generic-api-key matches 'projectKey=')"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^sonar-project\.properties$''']
+regexTarget = "line"
+regexes = ['''sonar\.projectKey=[A-Za-z0-9_.-]+\s*$''']

@@ -15,10 +15,11 @@ from secpipe.correlator.events import LogEvent, from_record
 from secpipe.correlator.rules import RULES, evaluate
 from secpipe.http import HttpError
 
+# Stream labels set by Grafana Alloy (monitoring/alloy/config.alloy).
 DEFAULT_QUERIES = [
     '{namespace="secnotes", app="secnotes-api"}',
-    '{namespace="ingress-nginx"} |= "request_uri"',
-    '{job="falco"}',
+    '{namespace="ingress", app="traefik"} |= "RequestPath"',
+    '{namespace="monitoring", app="falco"} |= "output_fields"',
 ]
 
 
