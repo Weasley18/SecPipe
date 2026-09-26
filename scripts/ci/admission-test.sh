@@ -82,8 +82,10 @@ admit "kyverno-rejects-latest-tag" "$test_ns" denied "disallow-latest-tag" "dock
 admit "kyverno-rejects-root" "$test_ns" denied "require-non-root" "$signed" \
   'spec["securityContext"] = {"runAsUser": 0}'
 admit "kyverno-rejects-missing-limits" "$test_ns" denied "require-limits" "$signed" 'c.pop("resources")'
+# privileged + allowPrivilegeEscalation=false is rejected by API validation
+# before admission runs, so the probe drops both, like a real privileged pod.
 admit "kyverno-rejects-privileged" "$test_ns" denied "disallow-privileged" "$signed" \
-  'c["securityContext"]["privileged"] = True'
+  'c["securityContext"]["privileged"] = True; c["securityContext"]["allowPrivilegeEscalation"] = True'
 admit "kyverno-rejects-host-path" "$test_ns" denied "disallow-privileged" "$signed" \
   'spec["volumes"] = [{"name": "root", "hostPath": {"path": "/"}}]'
 admit "kyverno-rejects-unsigned-image" "$test_ns" denied "verify-image-signature" "$unsigned"
