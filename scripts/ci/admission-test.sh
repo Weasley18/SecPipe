@@ -8,8 +8,10 @@
 #                           the API pod can reach Postgres
 #   admission-test.sh <signed image@digest> <unsigned image@digest>
 # Writes reports/admission-tests.json and exits 1 if any expectation fails.
-set -uo pipefail
 source "$(dirname "$0")/../k8s-lib.sh"
+# k8s-lib enables errexit; here most commands are expected to fail (denials,
+# blocked connections), so results are checked explicitly instead.
+set +e -uo pipefail
 
 signed="${1:?signed image digest ref}"
 unsigned="${2:?unsigned image digest ref}"

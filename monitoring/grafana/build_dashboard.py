@@ -229,7 +229,7 @@ def build() -> dict[str, Any]:
         ),
         panel(
             11,
-            "Security alerts firing (correlator + Prometheus rules)",
+            "Prometheus rule alerts firing",
             "table",
             (0, 31, 12, 8),
             [target('sum by (alertname, severity, rule) (ALERTS{alertstate="firing", team="security"})', instant=True)],
@@ -264,6 +264,21 @@ def build() -> dict[str, Any]:
             options={"showTime": True, "wrapLogMessage": True, "sortOrder": "Descending"},
         ),
     ]
+    panels.append(
+        panel(
+            14,
+            "Correlator alerts (multi-source rules, from its CronJob log)",
+            "logs",
+            (0, 47, 24, 8),
+            [
+                target(
+                    '{namespace="monitoring", app="secpipe-correlator"} |~ "\\\\[(CRITICAL|HIGH|MEDIUM|LOW) *\\\\]"',
+                    ds=LOKI,
+                )
+            ],
+            options={"showTime": True, "wrapLogMessage": True, "sortOrder": "Descending"},
+        )
+    )
     return {
         "uid": "secpipe-posture",
         "title": "SecPipe Security Posture",

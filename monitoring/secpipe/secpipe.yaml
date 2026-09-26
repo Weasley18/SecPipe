@@ -1,0 +1,162 @@
+# SecPipe inside the monitoring namespace:
+#   secpipe-exporter    serves the latest gate metrics from the secpipe-metrics
+#                       branch history (scraped by Prometheus via ServiceMonitor)
+#   secpipe-correlator  CronJob, every minute: Loki -> 6 correlation rules ->
+#                       Alertmanager (/api/v2/alerts)
+# Image: secpipe-tools (tools/secpipe.Dockerfile), loaded into kind by
+# scripts/install-monitoring.sh.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: secpipe
+  namespace: monitoring
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secpipe-exporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: secpipe-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: secpipe-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: secpipe-exporter
+    spec:
+      serviceAccountName: secpipe
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10002
+        runAsGroup: 10002
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: exporter
+          image: secpipe-tools:local
+          imagePullPolicy: IfNotPresent
+          args:
+            - exporter
+            - --history=https://raw.githubusercontent.com/Weasley18/SecPipe/secpipe-metrics/metrics/history.jsonl
+            - --port=9108
+            - --refresh=300
+          ports:
+            - name: metrics
+              containerPort: 9108
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            privileged: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: { cpu: 10m, memory: 48Mi }
+            limits: { cpu: 200m, memory: 128Mi }
+          readinessProbe:
+            httpGet: { path: /metrics, port: metrics }
+            periodSeconds: 30
+          livenessProbe:
+            httpGet: { path: /metrics, port: metrics }
+            periodSeconds: 60
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: secpipe-exporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: secpipe-exporter
+spec:
+  selector:
+    app.kubernetes.io/name: secpipe-exporter
+  ports:
+    - name: metrics
+      port: 9108
+      targetPort: metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: secpipe-exporter
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: secpipe-exporter
+  endpoints:
+    - port: metrics
+      interval: 60s
+---
+# SecNotes exposes /metrics on a separate port (9090) that the Ingress never
+# routes; only the monitoring namespace may reach it (allow-prometheus-scrape).
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: secnotes-api
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [secnotes]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: secnotes-api
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 30s
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: secpipe-correlator
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: secpipe-correlator
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 55
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: secpipe-correlator
+        spec:
+          restartPolicy: Never
+          serviceAccountName: secpipe
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10002
+            runAsGroup: 10002
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: correlator
+              image: secpipe-tools:local
+              imagePullPolicy: IfNotPresent
+              args:
+                - correlate
+                - --loki-url=http://loki-gateway.monitoring.svc
+                - --alertmanager-url=http://kps-alertmanager.monitoring.svc:9093
+                - --grafana-url=http://localhost:3000
+                # 35m covers the longest rule window (brute force then success: 30m).
+                - --lookback=35m
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                privileged: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                requests: { cpu: 20m, memory: 64Mi }
+                limits: { cpu: 500m, memory: 256Mi }

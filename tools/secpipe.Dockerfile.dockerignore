@@ -1,0 +1,7 @@
+# Allow-list for tools/secpipe.Dockerfile (BuildKit reads <Dockerfile>.dockerignore).
+*
+!pyproject.toml
+!requirements/secpipe.txt
+!secpipe/
+secpipe/tests/
+**/__pycache__

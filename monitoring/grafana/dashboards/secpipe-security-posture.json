@@ -629,7 +629,7 @@
     },
     {
       "id": 11,
-      "title": "Security alerts firing (correlator + Prometheus rules)",
+      "title": "Prometheus rule alerts firing",
       "type": "table",
       "gridPos": {
         "x": 0,
@@ -744,6 +744,41 @@
             "uid": "loki"
           },
           "expr": "{namespace=\"secnotes\", app=\"secnotes-api\"} |= \"event\" | json | event=~\"login_.*|token_.*|preview_blocked|authz_denied|rate_limited\"",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "id": 14,
+      "title": "Correlator alerts (multi-source rules, from its CronJob log)",
+      "type": "logs",
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{namespace=\"monitoring\", app=\"secpipe-correlator\"} |~ \"\\\\[(CRITICAL|HIGH|MEDIUM|LOW) *\\\\]\"",
           "refId": "A",
           "legendFormat": ""
         }
