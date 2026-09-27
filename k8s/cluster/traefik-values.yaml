@@ -27,6 +27,12 @@ ports:
 ingressClass:
   enabled: true
   isDefaultClass: false
+# JSON access logs on stdout: the correlator's ingress rules read ClientHost,
+# RequestPath and DownstreamStatus from them (via Loki), and CI keeps the tail
+# as DAST evidence. Off by default in the chart.
+accessLog:
+  enabled: true
+  format: json
 providers:
   kubernetesIngress:
     enabled: true
