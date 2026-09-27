@@ -41,5 +41,67 @@ severity_overrides:
 # Accepted risk. Each entry needs a reason, an owner and an expiry date; an
 # expired exception fails the gate and forces a re-review. Match by the
 # finding fingerprint (shown in the PR comment and findings.json) or by rule
-# (+ optional path glob). Currently none: main has no accepted findings.
-exceptions: []
+# (+ optional path glob, + optional tool: only that scanner's findings, and
+# "matched no finding" only on runs where that scanner ran).
+#
+# CPython 3.12 stdlib CVEs from the nightly Grype re-scan of the released SBOM
+# (docs/triage-log.md, M19). NVD records fixes only on 3.13+; 3.12.14 is the
+# newest 3.12 release and does not carry them. None is reachable in SecNotes.
+# Re-review by the expiry: move the runtime to a fixed Python, or renew.
+exceptions:
+  - rule: CVE-2026-82049
+    tool: grype
+    path: "python@3.12.*"
+    reason: "tarfile extraction filters; SecNotes only writes a tarball (admin export) and never extracts archives."
+    owner: "@Weasley18"
+    expires: "2026-12-31"
+    ticket: "docs/triage-log.md (M19)"
+  - rule: CVE-2025-12781
+    tool: grype
+    path: "python@3.12.*"
+    reason: "base64 accepts '+/' despite altchars; only PyJWT decodes base64 here, on HMAC-verified tokens, and revocation and refresh reuse key on jti."
+    owner: "@Weasley18"
+    expires: "2026-12-31"
+    ticket: "docs/triage-log.md (M19)"
+  - rule: CVE-2026-3446
+    tool: grype
+    path: "python@3.12.*"
+    reason: "base64 stops at the first padded quad; only PyJWT decodes base64 here, on HMAC-verified tokens, and revocation and refresh reuse key on jti."
+    owner: "@Weasley18"
+    expires: "2026-12-31"
+    ticket: "docs/triage-log.md (M19)"
+  - rule: CVE-2026-6019
+    tool: grype
+    path: "python@3.12.*"
+    reason: "http.cookies Morsel.js_output; SecNotes uses bearer tokens and never builds cookies."
+    owner: "@Weasley18"
+    expires: "2026-12-31"
+    ticket: "docs/triage-log.md (M19)"
+  - rule: CVE-2026-15806
+    tool: grype
+    path: "python@3.12.*"
+    reason: "urllib.request password managers; unused (previews use httpx, and URLs with credentials are rejected)."
+    owner: "@Weasley18"
+    expires: "2026-12-31"
+    ticket: "docs/triage-log.md (M19)"
+  - rule: CVE-2025-15366
+    tool: grype
+    path: "python@3.12.*"
+    reason: "imaplib command injection; imaplib is not used."
+    owner: "@Weasley18"
+    expires: "2026-12-31"
+    ticket: "docs/triage-log.md (M19)"
+  - rule: CVE-2025-15367
+    tool: grype
+    path: "python@3.12.*"
+    reason: "poplib command injection; poplib is not used."
+    owner: "@Weasley18"
+    expires: "2026-12-31"
+    ticket: "docs/triage-log.md (M19)"
+  - rule: CVE-2026-17084
+    tool: grype
+    path: "python@3.12.*"
+    reason: "stringprep (IDNA 2003 codec); only link-preview hosts reach it, after the exact allow-list check, and resolved addresses are still checked."
+    owner: "@Weasley18"
+    expires: "2026-12-31"
+    ticket: "docs/triage-log.md (M19)"

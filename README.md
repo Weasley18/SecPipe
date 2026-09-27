@@ -188,10 +188,10 @@ reporting PASS for the planted SQL injection (N4); CI now scans through the TLS
 Ingress and fails closed if the target stops answering.
 **Findings on SecPipe's own code:** 20 triaged
 ([section 2](docs/triage-log.md#2-findings-on-main-while-building-secpipe)): 9
-true positives fixed (M3, M5, M6, M10, M11, M17, M18, M20, M21), 1 true positive
-awaiting an owner decision (M19: CPython 3.12 CVEs from the nightly re-scan, not
-reachable in SecNotes), 6 false positives, 2 accepted risks, 1 class of ZAP probe
-noise and 1 set of deliberately insecure test fixtures. Three of the fixed bugs
+true positives fixed (M3, M5, M6, M10, M11, M17, M18, M20, M21), 6 false
+positives, 3 accepted risks (M7, M9, and M19: CPython 3.12 CVEs from the nightly
+re-scan, not reachable in SecNotes, accepted until 2026-12-31), 1 class of ZAP
+probe noise and 1 set of deliberately insecure test fixtures. Three of the fixed bugs
 (M17, M20, M21) only showed up against the real stack, in ZAP's scans of `main`.
 Each false positive was fixed at the narrowest scope (one rule, one path or one
 control input), never by disabling a rule.
