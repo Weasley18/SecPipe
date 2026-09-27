@@ -20,6 +20,16 @@ patches:
       - op: replace
         path: /data/SECNOTES_ENABLE_DOCS
         value: "true"
+      # Every DAST request comes from one client, so production limits would
+      # answer most of ZAP's probes with 429 and the scan would test nothing.
+      # The limiter itself is covered by unit tests (app/tests/test_ratelimit.py)
+      # and the drill; the local overlay keeps the production limits.
+      - op: add
+        path: /data/SECNOTES_DEFAULT_RATE_LIMIT
+        value: "100000/minute"
+      - op: add
+        path: /data/SECNOTES_LOGIN_RATE_LIMIT
+        value: "100000/minute"
   # CI pulls from GHCR with a short-lived token (secret created by the job).
   - target:
       kind: ServiceAccount

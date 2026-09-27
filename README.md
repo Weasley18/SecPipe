@@ -158,6 +158,13 @@ _Filled in from the CI runs of `main` and the `vulnerable` pull request._
 - **DAST coverage depends on the OpenAPI document**; endpoints missing from it
   are only spidered. ZAP's API scan is capped at 8 minutes per PR; the full
   scan runs nightly.
+- **DAST runs unthrottled in CI.** All of ZAP's requests come from one client,
+  so the `ci` overlay raises both rate limits to 100000/minute; the limiter
+  itself is covered by `app/tests/test_ratelimit.py` and the drill. `make dast`
+  scans the `local` overlay with production limits, so most active-scan probes
+  get a 429 there; for a comparable local scan, raise `SECNOTES_DEFAULT_RATE_LIMIT`
+  and `SECNOTES_LOGIN_RATE_LIMIT` in the `secnotes-config` ConfigMap and restart
+  the API.
 - **kind is not production:** single control plane, local-path storage, no
   etcd encryption at rest; kube-bench findings on kind are expected. The node
   image is pinned to Kubernetes 1.35 because of the Terraform kind provider
