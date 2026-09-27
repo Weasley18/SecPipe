@@ -11,6 +11,10 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 USERNAME_PATTERN = r"^[A-Za-z0-9_.-]{3,32}$"
+# PostgreSQL text cannot hold NUL: psycopg raises and the request ended in a 500
+# (ZAP's API scan on main). Every free-text input that reaches the database
+# rejects it with a 422 instead.
+NO_NUL = r"^[^\x00]*$"
 
 
 class StrictModel(BaseModel):
@@ -23,7 +27,7 @@ class RegisterRequest(StrictModel):
 
 
 class LoginRequest(StrictModel):
-    username: str = Field(min_length=1, max_length=64)
+    username: str = Field(min_length=1, max_length=64, pattern=NO_NUL)
     password: str = Field(min_length=1, max_length=128)
     totp_code: str | None = Field(default=None, pattern=r"^\d{6}$")
 
@@ -49,13 +53,13 @@ class UserOut(BaseModel):
 
 
 class NoteCreate(StrictModel):
-    title: str = Field(min_length=1, max_length=200)
-    body: str = Field(default="", max_length=10_000)
+    title: str = Field(min_length=1, max_length=200, pattern=NO_NUL)
+    body: str = Field(default="", max_length=10_000, pattern=NO_NUL)
 
 
 class NoteUpdate(StrictModel):
-    title: str | None = Field(default=None, min_length=1, max_length=200)
-    body: str | None = Field(default=None, max_length=10_000)
+    title: str | None = Field(default=None, min_length=1, max_length=200, pattern=NO_NUL)
+    body: str | None = Field(default=None, max_length=10_000, pattern=NO_NUL)
 
 
 class NoteOut(BaseModel):
@@ -69,8 +73,8 @@ class NoteOut(BaseModel):
 
 
 class NoteImportItem(StrictModel):
-    title: str = Field(min_length=1, max_length=200)
-    body: str = Field(default="", max_length=10_000)
+    title: str = Field(min_length=1, max_length=200, pattern=NO_NUL)
+    body: str = Field(default="", max_length=10_000, pattern=NO_NUL)
 
 
 class ImportResult(BaseModel):

@@ -10,7 +10,7 @@ from sqlalchemy import or_, select
 
 from secnotes.auth import CurrentUser, DbSession
 from secnotes.models import Note, User
-from secnotes.schemas import NoteCreate, NoteOut, NoteUpdate
+from secnotes.schemas import NO_NUL, NoteCreate, NoteOut, NoteUpdate
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
@@ -18,6 +18,7 @@ router = APIRouter(prefix="/notes", tags=["notes"])
 # there ("integer out of range", an HTTP 500 found by ZAP's API scan on main), so
 # it is rejected here like any other invalid input.
 NoteId = Annotated[int, Path(ge=1, le=2**31 - 1)]
+SearchTerm = Annotated[str, Query(min_length=1, max_length=100, pattern=NO_NUL)]
 
 
 def _escape_like(term: str) -> str:
@@ -53,7 +54,7 @@ def create_note(payload: NoteCreate, user: CurrentUser, db: DbSession) -> Note:
 
 
 @router.get("/search", response_model=list[NoteOut])
-def search_notes(user: CurrentUser, db: DbSession, q: str = Query(min_length=1, max_length=100)) -> Sequence[Note]:
+def search_notes(user: CurrentUser, db: DbSession, q: SearchTerm) -> Sequence[Note]:
     # Bound parameters only: the search term never becomes part of the SQL text.
     pattern = f"%{_escape_like(q)}%"
     stmt = (

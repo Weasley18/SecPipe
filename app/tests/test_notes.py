@@ -33,6 +33,21 @@ def test_note_validation(client: TestClient) -> None:
     assert client.get("/notes/0", headers=headers).status_code == 422
 
 
+def test_nul_bytes_are_rejected(client: TestClient) -> None:
+    # PostgreSQL text cannot hold NUL (psycopg raises, the app answered 500; found
+    # by ZAP's API scan on main). SQLite stores it, so assert the 422 directly.
+    headers = make_user(client, "nul")
+    note_id = client.post("/notes", json={"title": "ok"}, headers=headers).json()["id"]
+    assert client.post("/notes", json={"title": "a\x00b"}, headers=headers).status_code == 422
+    assert client.post("/notes", json={"title": "ok", "body": "x\x00"}, headers=headers).status_code == 422
+    assert client.put(f"/notes/{note_id}", json={"body": "x\x00"}, headers=headers).status_code == 422
+    assert client.get("/notes/search", params={"q": "\x00"}, headers=headers).status_code == 422
+    upload = {"file": ("notes.yaml", b'- title: "a\\0b"\n', "application/x-yaml")}
+    assert client.post("/notes/import", files=upload, headers=headers).status_code == 422
+    assert client.post("/auth/login", json={"username": "a\x00", "password": "x" * 12}).status_code == 422
+    assert client.get(f"/notes/{note_id}", headers=headers).json()["title"] == "ok"
+
+
 def test_user_b_gets_404_on_user_a_note(client: TestClient) -> None:
     alice = make_user(client, "alice")
     bob = make_user(client, "bob")
