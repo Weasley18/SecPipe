@@ -1,8 +1,39 @@
-# Self-signed issuer for the local demo. Browsers will warn; production uses
-# an ACME (Let's Encrypt) or private CA ClusterIssuer instead.
+# A private CA for the local and CI clusters, bootstrapped the standard
+# cert-manager way: a self-signed issuer mints one CA certificate, and the CA
+# issuer signs the Ingress certificates. Clients trust the CA
+# (scripts/k8s-lib.sh export_ingress_ca writes it to build/k8s/ingress-ca.pem)
+# and verify TLS normally; a self-signed leaf (CA:FALSE, empty issuer) is not a
+# usable trust anchor for curl/OpenSSL. Browsers warn unless the CA is imported;
+# production uses an ACME (Let's Encrypt) or corporate CA ClusterIssuer instead.
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: secpipe-selfsigned
+  name: secpipe-selfsigned-root
 spec:
   selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: secpipe-ca
+  namespace: cert-manager
+spec:
+  isCA: true
+  commonName: SecPipe local CA
+  secretName: secpipe-ca
+  duration: 8760h # 1 year; the clusters are throwaway
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: secpipe-selfsigned-root
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: secpipe-ca
+spec:
+  ca:
+    secretName: secpipe-ca

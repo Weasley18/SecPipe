@@ -62,14 +62,41 @@ install_cert_manager() {
   kubectl apply --server-side --force-conflicts -f "$manifest" >/dev/null
   rm -f "$manifest"
   kubectl -n cert-manager wait --for=condition=Available deployment --all --timeout=300s
-  kubectl apply -f "$K8S_ROOT/k8s/cluster/cert-manager-issuer.yaml"
+  # The issuers go through cert-manager's webhook, which can still be starting
+  # after "Available" (the same race as Kyverno's).
+  retry 10 6 kubectl apply -f "$K8S_ROOT/k8s/cluster/cert-manager-issuer.yaml"
+  kubectl -n cert-manager wait certificate/secpipe-ca --for=condition=Ready --timeout=120s
+  kubectl wait clusterissuer/secpipe-ca --for=condition=Ready --timeout=120s
 }
 
 install_traefik() {
-  klog "installing Traefik (chart $TRAEFIK_CHART_VERSION) into namespace ingress"
-  helm upgrade --install traefik traefik --repo https://traefik.github.io/charts \
-    --version "$TRAEFIK_CHART_VERSION" --namespace ingress --create-namespace \
+  klog "installing Traefik (chart $TRAEFIK_CHART_VERSION, $(helm version --short)) into namespace ingress"
+  local dir
+  dir="$(mktemp -d)"
+  fetch_verified "https://traefik.github.io/charts/traefik/traefik-${TRAEFIK_CHART_VERSION}.tgz" \
+    "$TRAEFIK_CHART_SHA256" "$dir/traefik.tgz"
+  helm upgrade --install traefik "$dir/traefik.tgz" --namespace ingress --create-namespace \
     --values "$K8S_ROOT/k8s/cluster/traefik-values.yaml" --wait --timeout 5m
+  rm -rf "$dir"
+}
+
+# export_ingress_ca: wait for cert-manager to issue the Ingress certificate and
+# write the CA that signed it (the secret's ca.crt) to build/k8s/ingress-ca.pem,
+# so clients (zap.sh, drill.sh) verify TLS instead of skipping verification.
+export_ingress_ca() {
+  # cert-manager creates the Certificate from the Ingress asynchronously, and
+  # `kubectl wait` fails at once on an object that does not exist yet.
+  retry 30 2 kubectl -n "$APP_NS" get certificate secnotes-tls -o name >/dev/null
+  kubectl -n "$APP_NS" wait certificate/secnotes-tls --for=condition=Ready --timeout=180s
+  local ca
+  ca="$(kubectl -n "$APP_NS" get secret secnotes-tls -o jsonpath='{.data.ca\.crt}')"
+  [[ -n "$ca" ]] || {
+    klog "secret secnotes-tls holds no ca.crt"
+    return 1
+  }
+  mkdir -p "$BUILD_DIR"
+  base64 -d <<<"$ca" >"$BUILD_DIR/ingress-ca.pem"
+  klog "ingress trust anchor: $BUILD_DIR/ingress-ca.pem"
 }
 
 # apply_policies [extra-ref]

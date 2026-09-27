@@ -110,9 +110,9 @@ deploy: ## Build, kind-load and deploy the hardened image (local overlay, Ingres
 monitoring: ## Prometheus, Grafana, Loki, Alloy, Alertmanager, Falco, SecPipe exporter + correlator
 	./scripts/install-monitoring.sh
 
-dast: ## ZAP baseline + authenticated API scan against the local deployment
-	kubectl -n secnotes port-forward --address 127.0.0.1 svc/secnotes-api 18080:80 >/dev/null 2>&1 & pf=$$!; \
-	trap "kill $$pf" EXIT; sleep 3; ./scripts/ci/zap.sh http://127.0.0.1:18080 $(ZAP_TIERS)
+dast: ## ZAP baseline + authenticated API scan through the local TLS Ingress (after make deploy)
+	source scripts/k8s-lib.sh && export_ingress_ca
+	ZAP_CA_CERT="$(CURDIR)/build/k8s/ingress-ca.pem" ./scripts/ci/zap.sh https://secnotes.localtest.me:8443 $(ZAP_TIERS)
 
 demo: ## The 5-minute demo: admission rejections, attack drill, quarantine
 	./scripts/demo.sh

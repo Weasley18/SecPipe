@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # DAST with OWASP ZAP against a running SecNotes.
 #   zap.sh <base-url> [baseline] [api] [full]      (default: baseline api)
+#   ZAP_CA_CERT   trust anchor for an https target with a private CA (CI's
+#                 Ingress). curl verifies the target with it; ZAP does not
+#                 check certificates at all.
 #
 #   baseline  spider + passive rules, unauthenticated               (every PR)
 #   api       imports /openapi.json and actively attacks every
@@ -10,8 +13,9 @@
 #             full active scan                                      (nightly)
 #
 # ZAP's exit code is advisory: every report goes to the aggregator, which
-# applies policy.yaml like it does for every other scanner. Only a ZAP crash
-# (exit 3) or a missing report fails closed.
+# applies policy.yaml like it does for every other scanner. A ZAP crash (exit 3),
+# a missing report, or a target that stopped answering during a scan (ZAP then
+# "passes" every remaining rule without having tested it) fails closed.
 source "$(dirname "$0")/lib.sh"
 
 base="${1:?usage: zap.sh <base-url> [baseline|api|full]...}"
@@ -24,6 +28,8 @@ base="${base%/}"
 # wrong server. Pin plain-HTTP localhost so both use the same socket.
 [[ "$base" =~ ^http://localhost([:/].*)?$ ]] && base="http://127.0.0.1${BASH_REMATCH[1]}"
 version="$(tool_version zap)"
+curl_opts=(-fsS)
+[[ -n "${ZAP_CA_CERT:-}" ]] && curl_opts+=(--cacert "$ZAP_CA_CERT")
 
 work="$WORKSPACE/build/zap"
 rm -rf "$work"
@@ -35,10 +41,10 @@ cp "$SECPIPE_ROOT/zap/rules.tsv" "$SECPIPE_ROOT/zap/automation.yaml" "$work/"
 
 log "waiting for $base/healthz"
 for _ in $(seq 60); do
-  curl -fsS -o /dev/null "$base/healthz" && break
+  curl "${curl_opts[@]}" -o /dev/null "$base/healthz" && break
   sleep 2
 done
-curl -fsS -o /dev/null "$base/healthz" || {
+curl "${curl_opts[@]}" -o /dev/null "$base/healthz" || {
   log "target $base is not healthy"
   exit 1
 }
@@ -48,16 +54,16 @@ scan_user="zapscan$(date +%s)"
 scan_password="$(python3 -c 'import secrets; print(secrets.token_urlsafe(24))')"
 body="$(python3 -c 'import json,sys; print(json.dumps({"username": sys.argv[1], "password": sys.argv[2]}))' \
   "$scan_user" "$scan_password")"
-curl -fsS -o /dev/null -X POST "$base/auth/register" -H 'Content-Type: application/json' -d "$body" ||
+curl "${curl_opts[@]}" -o /dev/null -X POST "$base/auth/register" -H 'Content-Type: application/json' -d "$body" ||
   log "registering the scan user failed (continuing: it may exist already)"
 login() {
-  curl -fsS -X POST "$base/auth/login" -H 'Content-Type: application/json' -d "$body" |
+  curl "${curl_opts[@]}" -X POST "$base/auth/login" -H 'Content-Type: application/json' -d "$body" |
     python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])'
 }
 
 # The OpenAPI document, minus /auth/logout: calling it mid-scan revokes the
 # scan token and every later request would be tested unauthenticated.
-curl -fsS "$base/openapi.json" | python3 -c '
+curl "${curl_opts[@]}" "$base/openapi.json" | python3 -c '
 import json, sys
 spec = json.load(sys.stdin)
 for path in [p for p in spec.get("paths", {}) if p.rstrip("/").endswith("/auth/logout")]:
@@ -70,7 +76,7 @@ chmod 600 "$envfile"
 trap 'rm -f "$envfile"' EXIT
 zap_docker() {
   # zap_docker <report-name> <command...>: run ZAP on the host network (the
-  # target is a port-forward on localhost) and copy the report to reports/.
+  # target listens on the runner's loopback) and copy the report to reports/.
   local report=$1
   shift
   # -w: the API scan writes zap.out to its working directory.
@@ -79,6 +85,10 @@ zap_docker() {
   local code=$?
   DOCKER_TOOL_ARGS=()
   [[ -s "$work/$report" ]] && cp "$work/$report" "$REPORTS_DIR/$report"
+  if ! curl "${curl_opts[@]}" -o /dev/null --max-time 10 "$base/healthz"; then
+    log "target $base stopped answering during the $report scan; failing closed"
+    return 3
+  fi
   return "$code"
 }
 

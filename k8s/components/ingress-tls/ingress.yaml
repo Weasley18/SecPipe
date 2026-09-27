@@ -1,13 +1,13 @@
-# TLS terminates at the ingress controller (namespace "ingress"); the
-# certificate comes from cert-manager's self-signed ClusterIssuer
-# (k8s/cluster/cert-manager-issuer.yaml). Without a controller installed (CI)
-# the object is inert but still scanned and admitted.
+# TLS terminates at the ingress controller (Traefik, namespace "ingress"); the
+# certificate comes from cert-manager's private CA ClusterIssuer
+# (k8s/cluster/cert-manager-issuer.yaml). Locally and in CI alike, kind serves
+# it on https://secnotes.localtest.me:8443, and CI's ZAP scan goes through it.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: secnotes-api
   annotations:
-    cert-manager.io/cluster-issuer: secpipe-selfsigned
+    cert-manager.io/cluster-issuer: secpipe-ca
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:

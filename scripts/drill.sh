@@ -10,7 +10,8 @@
 # Output: evidence/drill-<timestamp>/timeline.json + timeline.md, for
 # docs/incidents/drill-NN.md. Numbers are only what this run measured.
 #
-#   BASE_URL      default https://secnotes.localtest.me:8443 (self-signed TLS)
+#   BASE_URL      default https://secnotes.localtest.me:8443 (TLS verified against
+#                 the cluster CA, written to build/k8s/ingress-ca.pem)
 #   DETECT_TIMEOUT seconds to wait for each alert (default 180)
 set -euo pipefail
 
@@ -22,6 +23,10 @@ stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 out="$root/evidence/drill-$stamp"
 mkdir -p "$out"
 timeline="$out/timeline.jsonl"
+# shellcheck source=k8s-lib.sh
+source "$root/scripts/k8s-lib.sh"
+export_ingress_ca
+tls=(--cacert "$BUILD_DIR/ingress-ca.pem")
 log() { printf '[drill %s] %s\n' "$(date -u +%H:%M:%S)" "$*" >&2; }
 
 kubectl -n monitoring port-forward svc/kps-alertmanager 19093:9093 >/dev/null 2>&1 &
@@ -29,7 +34,7 @@ pf=$!
 trap 'kill $pf 2>/dev/null || true' EXIT
 sleep 3
 
-curl_app() { curl -ks -o /dev/null -w '%{http_code}' "$@"; }
+curl_app() { curl -s "${tls[@]}" -o /dev/null -w '%{http_code}' "$@"; }
 now() { date -u +%s.%N; }
 
 # wait_alert <step> <started> <label=value>...  (first alert matching all labels, active since the step)
@@ -93,7 +98,7 @@ wait_alert "1-brute-force" "$t1" rule=brute_force
 log "waiting 61 s for the login rate-limit window to reset"
 sleep 61
 t2="$(now)"
-token="$(curl -ks -X POST "$BASE_URL/auth/login" -H 'Content-Type: application/json' -d "$(creds "$password")" |
+token="$(curl -s "${tls[@]}" -X POST "$BASE_URL/auth/login" -H 'Content-Type: application/json' -d "$(creds "$password")" |
   python3 -c 'import json,sys; print(json.load(sys.stdin).get("access_token",""))')"
 [[ -n "$token" ]] || { log "login failed; is the app reachable at $BASE_URL?"; exit 1; }
 log "step 2: successful login with the right password"

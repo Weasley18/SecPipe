@@ -10,4 +10,5 @@ docker build -f "$K8S_ROOT/app/Dockerfile" -t "$IMAGE" "$K8S_ROOT"
 kind load docker-image "$IMAGE" --name "$CLUSTER"
 ensure_app_secrets
 deploy_app k8s/overlays/local "$IMAGE"
-klog "SecNotes: https://secnotes.localtest.me:8443 (self-signed certificate)"
+export_ingress_ca
+klog "SecNotes: https://secnotes.localtest.me:8443 (private CA: curl --cacert build/k8s/ingress-ca.pem)"
