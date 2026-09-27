@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
+from sqlalchemy import event
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.orm import ORMExecuteState, Session
 
 from conftest import make_user
 
@@ -46,6 +49,38 @@ def test_nul_bytes_are_rejected(client: TestClient) -> None:
     assert client.post("/notes/import", files=upload, headers=headers).status_code == 422
     assert client.post("/auth/login", json={"username": "a\x00", "password": "x" * 12}).status_code == 422
     assert client.get(f"/notes/{note_id}", headers=headers).json()["title"] == "ok"
+
+
+def test_update_and_delete_lock_the_note_row(client: TestClient) -> None:
+    # A DELETE racing a PUT of the same note made the PUT reload a deleted row:
+    # a 500 on PostgreSQL (ZAP's multi-threaded API scan on main). PUT and DELETE
+    # read the note with SELECT ... FOR UPDATE so they serialise; SQLite has no
+    # row locks, so check the statements as PostgreSQL would receive them.
+    headers = make_user(client, "lock")
+    note_id = client.post("/notes", json={"title": "x"}, headers=headers).json()["id"]
+    note_reads: list[str] = []
+
+    def record(state: ORMExecuteState) -> None:
+        sql = str(state.statement.compile(dialect=postgresql.dialect()))
+        if state.is_select and "FROM notes" in sql:
+            note_reads.append(sql)
+
+    def reads_during(method: str) -> tuple[int, list[str]]:
+        note_reads.clear()
+        response = client.request(
+            method, f"/notes/{note_id}", json={"body": "y"} if method == "PUT" else None, headers=headers
+        )
+        return response.status_code, list(note_reads)
+
+    event.listen(Session, "do_orm_execute", record)
+    try:
+        status, reads = reads_during("GET")
+        assert status == 200 and reads and not any("FOR UPDATE" in sql for sql in reads)
+        for method, expected in (("PUT", 200), ("DELETE", 204)):
+            status, reads = reads_during(method)
+            assert status == expected and "FOR UPDATE" in reads[0], method
+    finally:
+        event.remove(Session, "do_orm_execute", record)
 
 
 def test_user_b_gets_404_on_user_a_note(client: TestClient) -> None:

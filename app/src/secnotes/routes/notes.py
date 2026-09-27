@@ -25,8 +25,14 @@ def _escape_like(term: str) -> str:
     return term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
-def _owned_note(db: DbSession, note_id: int, user: User) -> Note:
-    note = db.scalar(select(Note).where(Note.id == note_id, Note.owner_id == user.id))
+def _owned_note(db: DbSession, note_id: int, user: User, *, lock: bool = False) -> Note:
+    stmt = select(Note).where(Note.id == note_id, Note.owner_id == user.id)
+    if lock:
+        # SELECT ... FOR UPDATE: a concurrent PUT and DELETE of one note serialise
+        # instead of the PUT reloading a row that was deleted under it (a 500 that
+        # ZAP's multi-threaded active scan hit on main). SQLite has no row locks.
+        stmt = stmt.with_for_update()
+    note = db.scalar(stmt)
     if note is None:
         # 404 rather than 403, so callers cannot probe which ids exist.
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="note not found")
@@ -48,8 +54,9 @@ def list_notes(
 def create_note(payload: NoteCreate, user: CurrentUser, db: DbSession) -> Note:
     note = Note(owner_id=user.id, title=payload.title, body=payload.body)
     db.add(note)
-    db.commit()
+    db.flush()
     db.refresh(note)
+    db.commit()
     return note
 
 
@@ -76,19 +83,21 @@ def get_note(note_id: NoteId, user: CurrentUser, db: DbSession) -> Note:
 
 @router.put("/{note_id}", response_model=NoteOut)
 def update_note(note_id: NoteId, payload: NoteUpdate, user: CurrentUser, db: DbSession) -> Note:
-    note = _owned_note(db, note_id, user)
+    note = _owned_note(db, note_id, user, lock=True)
     if payload.title is not None:
         note.title = payload.title
     if payload.body is not None:
         note.body = payload.body
-    db.commit()
+    # Reload while the row lock is held; the session keeps the values after commit.
+    db.flush()
     db.refresh(note)
+    db.commit()
     return note
 
 
 @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_note(note_id: NoteId, user: CurrentUser, db: DbSession) -> Response:
-    note = _owned_note(db, note_id, user)
+    note = _owned_note(db, note_id, user, lock=True)
     db.delete(note)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
