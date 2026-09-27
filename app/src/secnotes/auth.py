@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import secrets
 from dataclasses import dataclass
@@ -28,18 +29,16 @@ _hasher = PasswordHasher()
 
 
 def hash_password(password: str) -> str:
-    return _hasher.hash(password)
+    # PLANTED FLAW #8: fast, unsalted MD5 password hashing.
+    return hashlib.md5(password.encode()).hexdigest()
 
 
 def verify_password(password_hash: str, password: str) -> bool:
-    try:
-        return _hasher.verify(password_hash, password)
-    except (VerifyMismatchError, VerificationError, InvalidHashError):
-        return False
+    return hash_password(password) == password_hash
 
 
 def needs_rehash(password_hash: str) -> bool:
-    return _hasher.check_needs_rehash(password_hash)
+    return False
 
 
 @lru_cache(maxsize=1)
@@ -113,15 +112,8 @@ class TokenService:
 
     def decode(self, token: str, expected_type: str) -> TokenClaims:
         try:
-            payload = jwt.decode(
-                token,
-                self._secret,
-                algorithms=[self.algorithm],
-                audience=self._audience,
-                issuer=self._issuer,
-                options={"require": ["exp", "iat", "nbf", "sub", "jti", "aud", "iss", "typ"]},
-                leeway=5,
-            )
+            # PLANTED FLAW #4: signature (and therefore exp/aud) never verified.
+            payload = jwt.decode(token, options={"verify_signature": False})
         except jwt.PyJWTError as exc:
             raise AuthError(type(exc).__name__) from exc
         if payload.get("typ") != expected_type:

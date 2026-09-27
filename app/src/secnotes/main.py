@@ -11,10 +11,9 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from slowapi.errors import RateLimitExceeded
 from sqlalchemy import text
 
 from secnotes import __version__, ratelimit
@@ -24,7 +23,6 @@ from secnotes.db import Database
 from secnotes.logging_config import configure_logging
 from secnotes.metrics import start_metrics_server
 from secnotes.routes import admin, imports, notes, preview, users
-from secnotes.security import RequestContextMiddleware, SecurityHeadersMiddleware, install_exception_handlers
 from secnotes.ssrf import PreviewFetcher
 
 
@@ -40,36 +38,23 @@ def create_app(settings: Settings | None = None, *, preview_fetcher: PreviewFetc
         yield
         database.engine.dispose()
 
-    app = FastAPI(
-        title="SecNotes API",
-        version=__version__,
-        debug=False,
-        lifespan=lifespan,
-        docs_url="/docs" if settings.enable_docs else None,
-        redoc_url=None,
-        openapi_url="/openapi.json",
-        dependencies=[Depends(ratelimit.enforce_default_limit)],
-    )
+    # PLANTED FLAW #10: debug mode returns full tracebacks to clients.
+    app = FastAPI(title="SecNotes API", version=__version__, debug=True, lifespan=lifespan)
     app.state.settings = settings
     app.state.db = database
     app.state.tokens = TokenService(settings)
     app.state.preview_fetcher = preview_fetcher or PreviewFetcher(settings.preview_allowed_hosts)
     app.state.limiter = ratelimit.limiter
 
-    # add_middleware wraps outward: the last one added runs first.
-    if settings.cors_origins:
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=list(settings.cors_origins),
-            allow_credentials=True,
-            allow_methods=["GET", "POST", "PUT", "DELETE"],
-            allow_headers=["Authorization", "Content-Type"],
-            max_age=600,
-        )
-    app.add_middleware(RequestContextMiddleware, max_body_bytes=settings.max_request_bytes)
-    app.add_middleware(SecurityHeadersMiddleware, docs_enabled=settings.enable_docs)
-    install_exception_handlers(app)
-    app.add_exception_handler(RateLimitExceeded, ratelimit.rate_limit_exceeded_handler)
+    # PLANTED FLAW #10: any origin may send credentialed requests; no security
+    # headers middleware, no generic error handler, no request size limit.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     app.include_router(users.router)
     app.include_router(imports.router)

@@ -34,11 +34,11 @@ resource "aws_kms_alias" "ecr" {
 
 resource "aws_ecr_repository" "this" {
   name                 = var.name
-  image_tag_mutability = "IMMUTABLE"
+  image_tag_mutability = "MUTABLE"
   force_delete         = false
 
   image_scanning_configuration {
-    scan_on_push = true
+    scan_on_push = false
   }
 
   encryption_configuration {

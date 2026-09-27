@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "trust" {
     }
 
     condition {
-      test     = "StringEquals"
+      test     = "StringLike"
       variable = "${local.oidc_host}:sub"
       values   = var.allowed_subjects
     }

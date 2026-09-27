@@ -28,15 +28,7 @@ variable "allowed_subjects" {
   EOT
   type        = list(string)
 
-  validation {
-    condition     = length(var.allowed_subjects) > 0 && alltrue([for s in var.allowed_subjects : !strcontains(s, "*") && !strcontains(s, "?")])
-    error_message = "allowed_subjects must be exact subjects without wildcards."
-  }
 
-  validation {
-    condition     = alltrue([for s in var.allowed_subjects : startswith(s, "repo:${var.github_repository}:")])
-    error_message = "Every subject must belong to var.github_repository."
-  }
 }
 
 variable "policy_json" {

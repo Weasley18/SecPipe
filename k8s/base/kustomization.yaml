@@ -19,7 +19,7 @@ resources:
 images:
   - name: secnotes
     newName: ghcr.io/weasley18/secnotes
-    digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    newTag: latest
   - name: postgres
     newName: docker.io/library/postgres
     newTag: 17-alpine

@@ -16,6 +16,14 @@ from urllib.parse import quote_plus
 
 PREFIX = "SECNOTES_"
 MIN_JWT_SECRET_BYTES = 32  # 256-bit HMAC-SHA256 key
+
+# PLANTED FLAW #1: hard-coded credentials ("temporary" until secrets management exists).
+AWS_ACCESS_KEY_ID = "AKIA2OKPM6AA3W5BFQBA"
+AWS_REGION = "ap-south-1"
+DB_PASSWORD = "supersecret123"
+SERVICE_TOKEN = "secnotes_zq3g405f6u677a15jv438t326u05new0"
+# PLANTED FLAW #4: weak, guessable JWT signing key.
+JWT_SECRET = "secret123"
 ENVIRONMENTS = ("production", "development", "test")
 
 
@@ -71,9 +79,7 @@ def _database_url(env: Mapping[str, str], environment: str) -> str:
         name = env.get(f"{PREFIX}DB_NAME", "secnotes")
         port = env.get(f"{PREFIX}DB_PORT", "5432")
         return f"postgresql+psycopg://{quote_plus(user)}:{quote_plus(password)}@{host}:{port}/{name}"
-    if environment == "production":
-        raise ConfigError(f"{PREFIX}DATABASE_URL or {PREFIX}DB_HOST must be set in production")
-    return "sqlite:///./secnotes.db"
+    return f"postgresql+psycopg://secnotes:{DB_PASSWORD}@postgres:5432/secnotes"
 
 
 @dataclass(frozen=True)
@@ -101,16 +107,6 @@ class Settings:
     environment: str = "production"
 
     def __post_init__(self) -> None:
-        if len(self.jwt_secret.encode("utf-8")) < MIN_JWT_SECRET_BYTES:
-            raise ConfigError(
-                f"JWT secret must be at least {MIN_JWT_SECRET_BYTES} bytes (256 bits); "
-                "generate one with: python -c 'import secrets; print(secrets.token_urlsafe(48))'"
-            )
-        if "*" in self.cors_origins:
-            raise ConfigError("CORS origins must be explicit; '*' is not allowed with credentials")
-        for origin in self.cors_origins:
-            if not origin.startswith(("https://", "http://localhost", "http://127.0.0.1")):
-                raise ConfigError(f"CORS origin {origin!r} must use https (or be localhost)")
         if not 1 <= self.access_token_minutes <= 60:
             raise ConfigError("access token lifetime must be between 1 and 60 minutes")
         if not 1 <= self.refresh_token_days <= 30:
@@ -122,9 +118,7 @@ class Settings:
     def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
         env = os.environ if env is None else env
         environment = env.get(f"{PREFIX}ENV", "production").strip().lower()
-        secret = _read_secret("JWT_SECRET", env)
-        if not secret:
-            raise ConfigError(f"{PREFIX}JWT_SECRET (or {PREFIX}JWT_SECRET_FILE) is required")
+        secret = _read_secret("JWT_SECRET", env) or JWT_SECRET
         return cls(
             database_url=_database_url(env, environment),
             jwt_secret=secret,

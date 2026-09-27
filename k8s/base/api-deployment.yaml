@@ -19,15 +19,9 @@ spec:
         prometheus.io/port: "9090"
     spec:
       serviceAccountName: secnotes-api
-      automountServiceAccountToken: false
       enableServiceLinks: false
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 10001
-        runAsGroup: 10001
-        fsGroup: 10001
-        seccompProfile:
-          type: RuntimeDefault
+        runAsUser: 0
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
@@ -47,16 +41,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: secnotes-config
+          # Needed to debug networking in the pod.
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            privileged: false
-            runAsNonRoot: true
-            capabilities:
-              drop: ["ALL"]
-          resources:
-            requests: { cpu: 100m, memory: 128Mi, ephemeral-storage: 64Mi }
-            limits: { cpu: 500m, memory: 256Mi, ephemeral-storage: 128Mi }
+            privileged: true
           startupProbe:
             httpGet: { path: /healthz, port: http }
             periodSeconds: 2

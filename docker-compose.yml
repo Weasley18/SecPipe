@@ -9,8 +9,7 @@ services:
     environment:
       POSTGRES_USER: secnotes
       POSTGRES_DB: secnotes
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-    secrets: [db_password]
+      POSTGRES_PASSWORD: supersecret123
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -26,29 +25,13 @@ services:
       dockerfile: app/Dockerfile
     image: secnotes:local
     environment:
-      SECNOTES_ENV: development
-      SECNOTES_DB_HOST: db
-      SECNOTES_DB_PASSWORD_FILE: /run/secrets/db_password
-      SECNOTES_JWT_SECRET_FILE: /run/secrets/jwt_secret
-      SECNOTES_CORS_ORIGINS: http://localhost:3000
-      SECNOTES_PREVIEW_ALLOWED_HOSTS: example.com,*.wikipedia.org
-      SECNOTES_ENABLE_DOCS: "true"
-    secrets: [db_password, jwt_secret]
+      SECNOTES_DATABASE_URL: postgresql+psycopg://secnotes:supersecret123@db:5432/secnotes
+      SECNOTES_METRICS_PORT: "0"
     ports:
       - "127.0.0.1:8000:8000"
-    read_only: true
-    tmpfs: [/tmp]
-    cap_drop: [ALL]
-    security_opt: ["no-new-privileges:true"]
     depends_on:
       db:
         condition: service_healthy
-
-secrets:
-  db_password:
-    file: ./.secrets/db_password
-  jwt_secret:
-    file: ./.secrets/jwt_secret
 
 volumes:
   pgdata:
