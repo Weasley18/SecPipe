@@ -111,8 +111,23 @@ for tier in "${tiers[@]}"; do
         -z "-config scanner.maxScanDurationInMins=${ZAP_API_MAX_MINUTES:-8} -config scanner.maxRuleDurationInMins=2"
       ;;
     full)
-      printf 'TARGET=%s\nSCAN_USER=%s\nSCAN_PASSWORD=%s\nMAX_SCAN_MINUTES=%s\n' \
-        "$base" "$scan_user" "$scan_password" "${ZAP_FULL_MAX_MINUTES:-45}" >"$envfile"
+      minutes="${ZAP_FULL_MAX_MINUTES:-45}"
+      [[ "$minutes" =~ ^[0-9]+$ ]] || {
+        log "ZAP_FULL_MAX_MINUTES must be a whole number of minutes (got '$minutes')"
+        exit 2
+      }
+      # ZAP does not resolve ${VARS} everywhere (not in integer fields, not in
+      # the authentication poll URL), so the non-secret values go into the
+      # working copy of the plan; the credentials stay in the environment.
+      python3 - "$work/automation.yaml" "$base" "$minutes" <<'PY'
+import sys
+path, target, minutes = sys.argv[1:]
+with open(path, encoding="utf-8") as fh:
+    plan = fh.read()
+with open(path, "w", encoding="utf-8") as fh:
+    fh.write(plan.replace("${TARGET}", target).replace("${MAX_SCAN_MINUTES}", minutes))
+PY
+      printf 'SCAN_USER=%s\nSCAN_PASSWORD=%s\n' "$scan_user" "$scan_password" >"$envfile"
       # zap.sh -cmd starts ZAP's own proxy, on 8080 unless told otherwise; on the
       # host network that is kind's published HTTP port. (The baseline and API
       # scripts already pick a free port.)

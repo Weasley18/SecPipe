@@ -2,8 +2,10 @@
 # Authenticates like a real client: POSTs JSON credentials to /auth/login,
 # pulls access_token out of the JSON response and sends it as a Bearer header,
 # polls /users/me to notice when the 15-minute token expires and logs in again.
-# ${TARGET}, ${SCAN_USER}, ${SCAN_PASSWORD}, ${MAX_SCAN_MINUTES} come from the
-# environment (a 0600 env file, never the command line).
+# ${SCAN_USER} and ${SCAN_PASSWORD} come from the environment (a 0600 env file,
+# never the command line). ZAP does not resolve variables everywhere (not in
+# integer fields, not in the authentication poll URL), so zap.sh writes the
+# non-secret ${TARGET} and ${MAX_SCAN_MINUTES} into its working copy of the plan.
 env:
   contexts:
     - name: secnotes
