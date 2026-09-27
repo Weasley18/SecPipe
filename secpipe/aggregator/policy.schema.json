@@ -64,6 +64,7 @@
           "fingerprint": {"type": "string", "pattern": "^[0-9a-f]{16}$"},
           "rule": {"type": "string", "minLength": 2},
           "path": {"type": "string", "minLength": 1},
+          "tool": {"type": "string", "minLength": 2, "description": "Only findings reported by this scanner; the exception is not flagged as unused on runs where it did not run."},
           "reason": {"type": "string", "minLength": 10},
           "owner": {"type": "string", "pattern": "^@[A-Za-z0-9][A-Za-z0-9-]*(/[A-Za-z0-9._-]+)?$"},
           "expires": {"type": "string", "format": "date"},

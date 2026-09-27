@@ -70,13 +70,17 @@ class PolicyException:
     fingerprint: str | None = None
     rule: str | None = None
     path: str | None = None
+    tool: str | None = None
     ticket: str | None = None
 
     @property
     def label(self) -> str:
-        return self.fingerprint or f"{self.rule}{'@' + self.path if self.path else ''}"
+        label = self.fingerprint or f"{self.rule}{'@' + self.path if self.path else ''}"
+        return f"{self.tool}:{label}" if self.tool else label
 
     def matches(self, finding: Finding) -> bool:
+        if self.tool and self.tool not in finding.tools:
+            return False
         if self.fingerprint:
             return finding.fingerprint == self.fingerprint
         if self.rule and finding.rule_id != self.rule and not finding.rule_id.endswith("." + self.rule):
@@ -90,6 +94,7 @@ class PolicyException:
             "fingerprint": self.fingerprint,
             "rule": self.rule,
             "path": self.path,
+            "tool": self.tool,
             "reason": self.reason,
             "owner": self.owner,
             "expires": self.expires.isoformat(),
@@ -159,6 +164,7 @@ class Policy:
                     fingerprint=e.get("fingerprint"),
                     rule=e.get("rule"),
                     path=e.get("path"),
+                    tool=e.get("tool"),
                     ticket=e.get("ticket"),
                 )
                 for e in (as_dict(x) for x in as_list(data.get("exceptions")))
@@ -354,6 +360,7 @@ def evaluate(
     today: dt.date,
     new_suppressions: int = 0,
     labels: tuple[str, ...] = (),
+    tools_run: frozenset[str] | None = None,
 ) -> Evaluation:
     rules = policy.rules_for(branch)
     result = Evaluation(rules=rules, new_suppressions=new_suppressions)
@@ -406,6 +413,10 @@ def evaluate(
             result.blocking.append(finding)
 
     for exc in result.active_exceptions:
+        # An exception scoped to a scanner that did not run in this gate (Grype
+        # runs nightly only) has nothing to match, which says nothing about it.
+        if exc.tool and tools_run is not None and exc.tool not in tools_run:
+            continue
         if exc.label not in used:
             result.warnings.append(f"exception {exc.label} matched no finding: remove it")
 

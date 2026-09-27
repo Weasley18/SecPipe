@@ -7,6 +7,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from secpipe.aggregator.enrich import ThreatIntel
 from secpipe.aggregator.gate import (
     EXIT_BLOCK,
@@ -72,6 +74,25 @@ def test_clean_reports_pass(tmp_path: Path) -> None:
     result = run_gate(options(reports, expect=["gitleaks", "semgrep", "hadolint"]))
     assert (result.outcome, result.exit_code) == ("pass", EXIT_PASS)
     assert result.stages["SCA"].result == "skipped"
+
+
+def test_tool_scoped_exception_is_quiet_when_its_scanner_did_not_run(tmp_path: Path) -> None:
+    data = yaml.safe_load(POLICY.read_text())
+    data["exceptions"] = [
+        {
+            "rule": "CVE-2000-0001",
+            "tool": "grype",
+            "reason": "only the nightly Grype re-scan reports this",
+            "owner": "@Weasley18",
+            "expires": "2027-01-01",
+        }
+    ]
+    policy = tmp_path / "policy.yaml"
+    policy.write_text(yaml.safe_dump(data))
+    without_grype = run_gate(options(copy_reports(tmp_path / "pr", "semgrep.sarif"), policy=policy, expect=[]))
+    assert not any("matched no finding" in w for w in without_grype.warnings)
+    with_grype = run_gate(options(copy_reports(tmp_path / "nightly", "grype.json"), policy=policy, expect=[]))
+    assert any("matched no finding" in w for w in with_grype.warnings)
 
 
 def test_missing_expected_scanner_fails_closed(tmp_path: Path) -> None:

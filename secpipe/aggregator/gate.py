@@ -406,6 +406,7 @@ def run_gate(opts: GateOptions) -> GateResult:
         today=today,
         new_suppressions=new_suppressions,
         labels=opts.labels,
+        tools_run=frozenset(name for r in runs if r.status != "skipped" for name in (r.name, r.parser) if name),
     )
     warnings.extend(evaluation.warnings)
     for finding in unique:

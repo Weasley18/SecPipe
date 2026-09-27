@@ -199,11 +199,38 @@ def test_rule_and_path_exception() -> None:
     assert (finding.decision, other.decision) == ("excepted", "block")
 
 
+def test_tool_scoped_exception() -> None:
+    # Grype runs only in the nightly scan. An exception scoped to it must not
+    # cover another tool's finding, and must not tell every run where Grype did
+    # not run to remove it; where Grype ran and nothing matched, it still does.
+    location = {"category": "container", "rule_id": "CVE-2026-82049", "file": None, "location": "python@3.12.14"}
+    grype = make_finding(tool="grype", **location)
+    trivy = make_finding(tool="trivy", **location)
+    exc = [
+        {
+            "rule": "CVE-2026-82049",
+            "path": "python@3.12.*",
+            "tool": "grype",
+            "reason": "tarfile extraction is not reachable",
+            "owner": "@Weasley18",
+            "expires": "2027-01-01",
+        }
+    ]
+    pol = policy(exceptions=exc)
+    decide([grype, trivy], pol=pol)
+    assert (grype.decision, trivy.decision) == ("excepted", "block")
+    assert grype.exception is not None and grype.exception["tool"] == "grype"
+    quiet = decide([], pol=pol, tools_run=frozenset({"semgrep", "trivy"}))
+    assert not any("matched no finding" in w for w in quiet.warnings)
+    stale = decide([], pol=pol, tools_run=frozenset({"grype"}))
+    assert any("grype:CVE-2026-82049@python@3.12.* matched no finding" in w for w in stale.warnings)
+
+
 def test_suppression_cap_and_approval_label() -> None:
     result = decide([], new_suppressions=4)
     assert result.suppression_cap_exceeded and not result.passed
     approved = decide([], new_suppressions=4, labels=(APPROVAL_LABEL,))
-    assert approved.passed and "approved" in approved.warnings[0]
+    assert approved.passed and any("approved" in w for w in approved.warnings)
     assert decide([], new_suppressions=9, event="push").passed, "the cap is per pull request"
 
 

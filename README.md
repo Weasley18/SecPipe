@@ -129,7 +129,9 @@ validated against [a JSON Schema](secpipe/aggregator/policy.schema.json)
 - **Pull requests:** only findings new against the base branch block (`only_new_findings_block_prs`); existing ones warn.
 - **Licences:** deny list (AGPL-3.0, SSPL-1.0, GPL-3.0, BUSL-1.1) and allow list; unknown licences warn.
 - **SLAs:** critical 7 days, high 30, medium 90, low 180; Issues on `main` carry the due date.
-- **Exceptions:** by fingerprint or rule + path, with `reason`, `owner` and `expires`:
+- **Exceptions:** by fingerprint or rule + path, optionally limited to one scanner
+  (`tool`; such an exception is only reported as unused on runs where that scanner
+  ran), with `reason`, `owner` and `expires`:
   ```yaml
   exceptions:
     - rule: B608

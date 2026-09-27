@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import yaml
 
 from secpipe.aggregator import cli
 from secpipe.correlator.cli import parse_duration
@@ -246,12 +247,15 @@ def test_cli_policy_validate(tmp_path: Path, capsys: pytest.CaptureFixture[str])
     bad.write_text("version: 1\ndefaults: {block_at_or_above: high, warn_at_or_above: low, typo: 1}\n")
     assert cli.main(["policy", "validate", str(bad)]) == 2
     expired = tmp_path / "expired.yaml"
-    expired.write_text(
-        POLICY.read_text().replace(
-            "exceptions: []",
-            "exceptions:\n  - fingerprint: '0123456789abcdef'\n    reason: temporary acceptance\n    owner: '@Weasley18'\n    expires: 2020-01-01\n",
-        )
-    )
+    data = yaml.safe_load(POLICY.read_text())
+    stale = {
+        "fingerprint": "0123456789abcdef",
+        "reason": "temporary acceptance",
+        "owner": "@Weasley18",
+        "expires": "2020-01-01",
+    }
+    data["exceptions"] = [*data["exceptions"], stale]
+    expired.write_text(yaml.safe_dump(data))
     assert cli.main(["policy", "validate", str(expired)]) == 1
     assert cli.main(["policy", "schema"]) == 0
     assert '"$schema"' in capsys.readouterr().out
