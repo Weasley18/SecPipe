@@ -68,7 +68,7 @@ It is never merged; its pull request exists to show the gate blocking.
 | 7 | `subprocess` with `shell=True` | Bandit, Semgrep | SAST |
 | 8 | MD5 password hashing | Semgrep (custom), Bandit | SAST |
 | 9 | Old libraries (PyYAML 5.3.1, PyJWT 2.3.0, ...) | pip-audit, OSV-Scanner, Trivy (KEV/EPSS enrichment) | SCA, Container |
-| 10 | CORS `*` with credentials, debug tracebacks, no headers | Semgrep (custom), ZAP baseline | SAST, DAST |
+| 10 | CORS `*` with credentials, debug tracebacks, no headers | Semgrep (custom), ZAP (baseline and API scan) | SAST, DAST |
 | 11 | No failed-login logging, no rate limit | Not scanner-detectable (by design); covered by tests and the runtime rules | Manual |
 | 12 | Root user, EOL base, secret in `ENV`, `ADD .` | Hadolint, Trivy (image + config), Checkov | Container |
 | 13 | Public S3 bucket, SSH from `0.0.0.0/0`, IAM `*`, mutable ECR, `repo:owner/*` OIDC trust | Checkov (+ `CKV2_SECPIPE_1`, `CKV_SECPIPE_2`), Trivy config | IaC |
@@ -145,9 +145,54 @@ validated against [a JSON Schema](secpipe/aggregator/policy.schema.json)
 
 ## Results
 
-> Numbers here are only ones measured from real runs; see the linked runs.
+> Numbers here are only ones measured from real runs; see the linked runs and
+> [the triage log](docs/triage-log.md) for every finding behind them.
 
-_Filled in from the CI runs of `main` and the `vulnerable` pull request._
+**The demo pull request is blocked.** [Weasley18/SecPipe#3](https://github.com/Weasley18/SecPipe/pull/3)
+(`vulnerable` into `main`, [run 17](https://github.com/Weasley18/SecPipe/actions/runs/36268158424);
+it has stayed blocked on every rebase since):
+
+| | |
+| --- | --- |
+| Scanners | 18 (16 ran; Snyk and SonarCloud skip without a token) |
+| Raw results, unique findings | 11,223 raw, 7,516 unique after cross-tool deduplication (-33%) |
+| Blocking, new against `main` | 2,255 (46 critical, 580 high, 1,629 medium) |
+| Warnings | 4,419 (almost all base-image OS CVEs with no fix yet) |
+| Planted flaws caught | 13 of 14 by at least one scanner, 11 by two or more tools; #11 (no failed-login logging or rate limit) only by tests and runtime rules |
+| Time to decision | Gate 1 blocked 1 min 52 s into the run, the PR comment followed at 2 min 11 s; publish and deploy never ran |
+| Admission | Kyverno rejected the branch's own Deployment: `:latest` has no verifiable signature ([forced run 22](https://github.com/Weasley18/SecPipe/actions/runs/36305793177)) |
+| DAST on the running vulnerable app | [Forced run 22](https://github.com/Weasley18/SecPipe/actions/runs/36305793177) (image deployed with `main`'s hardened manifests): ZAP reached 209 URLs through the TLS Ingress and reported SQL injection (`40018`, `/notes/search?q='`, flaw #2), application error disclosure (`90022`) and missing `X-Content-Type-Options`, `Cross-Origin-Resource-Policy` and HSTS headers (`10021`, `90004`, `10035`) for flaw #10; gate 2 blocked |
+
+Cross-tool agreement is visible in the report: every CVE in the vulnerable
+libraries was reported by OSV-Scanner, pip-audit and Trivy and merged into one
+finding (`pyyaml@5.3.1`, `CVE-2020-14343`, critical, EPSS 0.06), and the MD5
+password hash was reported by Bandit and two Semgrep rules. Per-flaw detail:
+[triage log, section 1](docs/triage-log.md#1-planted-flaws-on-the-vulnerable-branch).
+
+**`main` passes, end to end.** [Run 23](https://github.com/Weasley18/SecPipe/actions/runs/36306627036) (commit `84b9824`): gate 1
+passed 70 s into the run; the image was pushed by digest, signed keylessly and
+attested (SBOM, SLSA provenance) by 107 s; kind came up through Terraform, Kyverno
+admitted the signed image and 12/12 admission and NetworkPolicy tests passed; ZAP
+scanned through the TLS Ingress (baseline 23 URLs, authenticated API scan 207 URLs,
+no warning above informational) and gate 2 passed at 537 s. The API scan of `main`
+reached 106 URLs in run 16, through a port-forward that died mid-scan (N4); through
+the Ingress it found two more real bugs on the way to this run (M20, M21).
+
+**Scanner blind spots found:** 4 ([N1-N4](docs/triage-log.md#3-scanner-blind-spots-found-false-negatives)),
+most notably Checkov's built-in GitHub OIDC check passing `repo:owner/*` trust
+policies, now covered by the custom check `CKV_SECPIPE_2`, and SecPipe's own
+earlier DAST transport: a `kubectl port-forward` that died mid-scan left ZAP
+reporting PASS for the planted SQL injection (N4); CI now scans through the TLS
+Ingress and fails closed if the target stops answering.
+**Findings on SecPipe's own code:** 20 triaged
+([section 2](docs/triage-log.md#2-findings-on-main-while-building-secpipe)): 9
+true positives fixed (M3, M5, M6, M10, M11, M17, M18, M20, M21), 1 true positive
+awaiting an owner decision (M19: CPython 3.12 CVEs from the nightly re-scan, not
+reachable in SecNotes), 6 false positives, 2 accepted risks, 1 class of ZAP probe
+noise and 1 set of deliberately insecure test fixtures. Three of the fixed bugs
+(M17, M20, M21) only showed up against the real stack, in ZAP's scans of `main`.
+Each false positive was fixed at the narrowest scope (one rule, one path or one
+control input), never by disabling a rule.
 
 ## Limitations and known gaps
 
