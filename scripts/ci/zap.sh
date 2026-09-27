@@ -113,8 +113,12 @@ for tier in "${tiers[@]}"; do
     full)
       printf 'TARGET=%s\nSCAN_USER=%s\nSCAN_PASSWORD=%s\nMAX_SCAN_MINUTES=%s\n' \
         "$base" "$scan_user" "$scan_password" "${ZAP_FULL_MAX_MINUTES:-45}" >"$envfile"
+      # zap.sh -cmd starts ZAP's own proxy, on 8080 unless told otherwise; on the
+      # host network that is kind's published HTTP port. (The baseline and API
+      # scripts already pick a free port.)
+      zap_port="$(python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')"
       run_scanner zap-full zap-full.json "0 1 2" "$version" -- \
-        zap_docker zap-full.json zap.sh -cmd -autorun /zap/wrk/automation.yaml
+        zap_docker zap-full.json zap.sh -cmd -port "$zap_port" -autorun /zap/wrk/automation.yaml
       ;;
     *)
       log "unknown ZAP tier: $tier"

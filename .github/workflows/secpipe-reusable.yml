@@ -454,7 +454,8 @@ jobs:
     needs: [gate-1, publish]
     if: always() && inputs.enable-dast && needs.publish.result == 'success'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    # The nightly full ZAP scan alone may take 45 minutes (ZAP_FULL_MAX_MINUTES).
+    timeout-minutes: ${{ contains(inputs.zap-tiers, 'full') && 90 || 40 }}
     permissions:
       contents: read
       packages: read # pull the image into kind, and let Kyverno read its signature
