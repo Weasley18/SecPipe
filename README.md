@@ -179,6 +179,8 @@ scanned through the TLS Ingress (baseline 23 URLs, authenticated API scan 207 UR
 no warning above informational) and gate 2 passed at 537 s. The API scan of `main`
 reached 106 URLs in run 16, through a port-forward that died mid-scan (N4); through
 the Ingress it found two more real bugs on the way to this run (M20, M21).
+The nightly deep scan (no baselines, a Grype re-scan of the released SBOM, the
+authenticated full ZAP scan) passed end to end in [nightly 4](https://github.com/Weasley18/SecPipe/actions/runs/36310122308).
 
 **Scanner blind spots found:** 4 ([N1-N4](docs/triage-log.md#3-scanner-blind-spots-found-false-negatives)),
 most notably Checkov's built-in GitHub OIDC check passing `repo:owner/*` trust
