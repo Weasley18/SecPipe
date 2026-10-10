@@ -160,9 +160,9 @@ attrs==26.1.0 \
     #   aiohttp
     #   jsonschema
     #   referencing
-bc-detect-secrets==1.5.50 \
-    --hash=sha256:016ce9e79f692adbabcbef4a7293db427352911c3f81404a136e6f5c3e54a7f2 \
-    --hash=sha256:99037375d9cb49ed07e5bb12722f4bbb76fb8acaff6f367eef9df7559e7642b3
+bc-detect-secrets==1.5.52 \
+    --hash=sha256:772353c949a131b7b5efd2b20473e0128af9c25ea27cdb15a3a6a6727ca73c4e \
+    --hash=sha256:bb437db4b4ad81b19d52feaf8e0ebaf6ca0421ee6fefbdd9d41210bd4983e16b
     # via checkov
 bc-jsonpath-ng==1.6.1 \
     --hash=sha256:2c85bb1d194376808fe1fc49558dd484e39024b15c719995e22de811e6ba4dc8 \
@@ -487,10 +487,10 @@ charset-normalizer==3.5.1 \
     # via
     #   checkov
     #   requests
-checkov==3.3.19 \
-    --hash=sha256:2a2477588967b2eb97bce486001dfeb471f13da94a0c8544885d4036c22c2f49 \
-    --hash=sha256:801b02c1c667bd17229ba21ff85425f7e7389042e42f4fc90abdbc12e24f9d1a
-    # via -r scripts/ci/requirements/iac.in
+checkov==3.3.22 \
+    --hash=sha256:53fa6ce894afcb17bfc448aad0f6100abb32a798fe17bdeed553b5ae6478daf0 \
+    --hash=sha256:f77b44e9264d53cbbf2976eddf6b2b17d05a912294ca40f2a7feef4b01d61a76
+    # via -r iac.in
 click==8.5.0 \
     --hash=sha256:255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360 \
     --hash=sha256:ba0d2089de75ea0310e2dde03160e6ca10009947fb95a182f9b54021bb272e34
@@ -2194,4 +2194,4 @@ zizmor==1.30.1 \
     --hash=sha256:cbb7e5cb2fec471066d5c326bcaa69ed3eefdcf6a76d7ad38335b924acf86c07 \
     --hash=sha256:eee12266b793cb87ad4a7e3af2e72404f8a63e3de5eb099b80bf7b1cfd232a8e \
     --hash=sha256:f9eb092f089e35fa9fb3b70aeec0a19eca7dacf2ab161f1d50b18351895f085c
-    # via -r scripts/ci/requirements/iac.in
+    # via -r iac.in

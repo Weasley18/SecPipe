@@ -2,11 +2,11 @@
 #   pip-compile --generate-hashes --strip-extras --output-file=app/requirements.txt app/requirements.in
 # The Dockerfile installs with `pip install --require-hashes`, so a tampered or
 # substituted package fails the build. Dependabot keeps both files current.
-fastapi==0.141.1
+fastapi==0.142.2
 uvicorn==0.54.0
-sqlalchemy==2.1.1
+sqlalchemy==2.1.3
 psycopg[binary]==3.3.6
-pyjwt==2.15.0
+pyjwt==2.15.1
 argon2-cffi==25.1.0
 slowapi==0.1.10
 pyotp==2.10.0
