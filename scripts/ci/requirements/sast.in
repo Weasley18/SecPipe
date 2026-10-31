@@ -1,2 +1,2 @@
-semgrep==1.178.0
+semgrep==1.182.1
 bandit[toml]==1.9.4
